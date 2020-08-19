@@ -11,11 +11,6 @@ library(plotly)
 # library(httr) # for accessing latest data; needed this when updates were done within the app but don't need it whilst running "prepping_the_data.R" manually
 # options(shiny.trace = FALSE)
 
-Sys.setenv("AWS_ACCESS_KEY_ID" = "LCT_data",
-           "AWS_SECRET_ACCESS_KEY" = "9a7b34ab-365d-491a-888b-57e8f1d20922",
-           "AWS_DEFAULT_REGION" = "us-east-1",
-           "AWS_SESSION_TOKEN" = "mytoken")
-
 bs <- 24 # base font size for plots
 
 source("prep/setup.R") # load data and plotting scripts for daily tracker page
