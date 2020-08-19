@@ -1,0 +1,401 @@
+load("data/latest_df.for.plotting.incidence.utlas.RData")
+load("data/latest_df.for.plotting.R.utlas.RData")
+load("data/latest_projected.cases.utlas.RData")
+
+load("data/latest_df.for.plotting.incidence.regions.RData")
+load("data/latest_df.for.plotting.R.regions.RData")
+load("data/latest_projected.cases.regions.RData")
+
+load("data/latest_df.for.plotting.incidence.ltlas.RData")
+load("data/latest_df.for.plotting.R.ltlas.RData")
+load("data/latest_projected.cases.ltlas.RData")
+
+# could load these direct from the saved data but this will cope if an area is missing
+regions.alphabetical <- sort(unique(df.for.plotting.R.regions$Area))
+utlas.alphabetical <- unique(df.for.plotting.R.utlas$Area)
+ltlas.alphabetical <- sort(unique(df.for.plotting.R.ltlas$Area))
+
+start.date <- as.Date("2020-03-01")
+last.date <- max(df.for.plotting.incidence.ltlas$Dates)
+
+# trim last few dates where there's uncertainty
+projected.cases.utlas <- projected.cases.utlas %>% filter(Dates < last.date - 12)
+df.for.plotting.incidence.utlas <- df.for.plotting.incidence.utlas %>% filter(Dates < last.date - 9)
+df.for.plotting.R.utlas <- df.for.plotting.R.utlas %>% filter(Dates < last.date - 12)
+
+projected.cases.regions <- projected.cases.regions %>% filter(Dates < last.date - 12)
+df.for.plotting.incidence.regions <- df.for.plotting.incidence.regions %>% filter(Dates < last.date - 9)
+df.for.plotting.R.regions <- df.for.plotting.R.regions %>% filter(Dates < last.date - 12)
+
+projected.cases.ltlas <- projected.cases.ltlas %>% filter(Dates < last.date - 12)
+df.for.plotting.incidence.ltlas <- df.for.plotting.incidence.ltlas %>% filter(Dates < last.date - 9)
+df.for.plotting.R.ltlas <- df.for.plotting.R.ltlas %>% filter(Dates < last.date - 12)
+
+##########################
+# Plotting
+
+f1 <- list(
+  family = "Arial, sans-serif",
+  size = 22,
+  color = "darkgrey"
+)
+f2 <- list(
+  family = "Arial, sans-serif",
+  size = 14,
+  color = "darkgrey"
+)
+
+### plots for UTLAs
+
+plotIncidenceUTLAs <- df.for.plotting.incidence.utlas %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~scaled_per_capita) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',df.for.plotting.incidence.utlas$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>')) %>%
+  layout(xaxis = list(
+    title = "",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E",
+    range=c(start.date, last.date - 9)
+  ),
+  yaxis = list(
+    title = "Estimated new infections per day which\nwent on to be confirmed by a positive test result,\nper 100,000 population",
+    titlefont = f2,
+    showticklabels = TRUE,
+    tickfont = f2,
+    exponentformat = "E"
+  ), showlegend = FALSE)
+
+plotRUTLAs <- df.for.plotting.R.utlas %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~R) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',df.for.plotting.R.utlas$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              'R = %{y:.1f}<extra></extra>'))  %>%
+  add_segments(type="line",
+               x = start.date, xend = max(df.for.plotting.R.utlas$Dates), 
+               y = 1, yend = 1,
+               line=list(dash='dash',
+                         color="black"),
+               hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                 x= "2020-03-05",
+                 y= 1.5,
+                 xref = "x",
+                 yref = "y",
+                 text = "
+                 See 'Details' for
+                 explanation of why
+                 R appears to be 
+                 increasing here",
+                 showarrow = F
+                 #ax = 20,
+                 #ay = -40
+               ) %>%
+  layout(xaxis = list(
+    title = "",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E",
+    range=c(start.date, last.date - 12)
+  ), 
+  yaxis = list(
+    title = "Estimated R",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E"
+  ), showlegend = FALSE)
+
+plotProjectionUTLAs <- projected.cases.utlas %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~scaled_per_capita) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',projected.cases.utlas$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>')) %>%
+  layout(xaxis = list(
+    title = "",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E",
+    range=c(start.date, last.date - 12)
+  ), 
+  yaxis = list(
+    title = "Expected number of infections which will go on\nto be confirmed by a positive test result\nper day in the near future, per 100,000 population\n",
+    titlefont = f2,
+    showticklabels = TRUE,
+    tickfont = f2,
+    exponentformat = "E",
+    range=c(0,30)
+  ), showlegend = FALSE)
+
+plotROneUTLA <- df.for.plotting.R.utlas %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~R) %>%
+  add_segments(type="line",
+               x = start.date, xend = max(df.for.plotting.R.utlas$Dates), 
+               y = 1, yend = 1,
+               line=list(dash='dash',
+                         color="black"),
+               hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                 x= "2020-03-05",
+                 y= 1.5,
+                 xref = "x",
+                 yref = "y",
+                 text = "
+                 See 'Details' for
+                 explanation of why
+                 R appears to be 
+                 increasing here",
+                 showarrow = F
+                 #ax = 20,
+                 #ay = -40
+               ) %>%
+  layout(xaxis = list(
+    title = "",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E",
+    range=c(start.date, last.date - 12)
+  ), 
+  yaxis = list(
+    title = "Estimated R with 95% credibility interval",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E"
+  ), showlegend = FALSE)
+
+
+
+### Regions
+
+plotIncidenceregions <- df.for.plotting.incidence.regions %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~scaled_per_capita) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',df.for.plotting.incidence.regions$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>')) %>%
+  layout(xaxis = list(
+    title = "",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E",
+    range=c(start.date, last.date - 9)
+  ), 
+  yaxis = list(
+    title = "Estimated new infections per day which\nwent on to be confirmed by a positive test result,\nper 100,000 population",
+    titlefont = f2,
+    showticklabels = TRUE,
+    tickfont = f2,
+    exponentformat = "E"
+  ), showlegend = FALSE)
+
+plotRregions <- df.for.plotting.R.regions %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~R) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',df.for.plotting.R.regions$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              'R = %{y:.1f}<extra></extra>'))  %>%
+  add_segments(type="line",
+               x = start.date, xend = max(df.for.plotting.R.regions$Dates), 
+               y = 1, yend = 1,
+               line=list(dash='dash',
+                         color="black"),
+               hovertemplate = paste('<extra></extra>')) %>% 
+  layout(xaxis = list(
+    title = "",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E",
+    range=c(start.date, last.date - 12)
+  ), 
+  yaxis = list(
+    title = "Estimated R",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E"
+  ), showlegend = FALSE)
+
+plotProjectionregions <- projected.cases.regions %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~scaled_per_capita) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',projected.cases.regions$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>')) %>%
+  layout(xaxis = list(
+    title = "",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E",
+    range=c(start.date, last.date - 12)
+  ), 
+  yaxis = list(
+    title = "Expected number of infections which will go on\nto be confirmed by a positive test result\nper day in the near future, per 100,000 population\n",
+    titlefont = f2,
+    showticklabels = TRUE,
+    tickfont = f2,
+    exponentformat = "E"
+  ), showlegend = FALSE)
+
+plotROneRegion <- df.for.plotting.R.regions %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~R) %>%
+  add_segments(type="line",
+               x = start.date, xend = max(df.for.plotting.R.regions$Dates), 
+               y = 1, yend = 1,
+               line=list(dash='dash',
+                         color="black"),
+               hovertemplate = paste('<extra></extra>')) %>% 
+  layout(xaxis = list(
+    title = "",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E",
+    range=c(start.date, last.date - 12)
+  ), 
+  yaxis = list(
+    title = "Estimated R with 95% credibility interval",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E"
+  ), showlegend = FALSE)
+
+
+### plots for LTLAs
+
+plotIncidenceLTLAs <- df.for.plotting.incidence.ltlas %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~scaled_per_capita) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',df.for.plotting.incidence.ltlas$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>')) %>%
+  layout(xaxis = list(
+    title = "",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E",
+    range=c(start.date, last.date - 9)
+  ), 
+  yaxis = list(
+    title = "Estimated new infections per day which\nwent on to be confirmed by a positive test result,\nper 100,000 population",
+    titlefont = f2,
+    showticklabels = TRUE,
+    tickfont = f2,
+    exponentformat = "E"
+  ), showlegend = FALSE)
+
+plotRLTLAs <- df.for.plotting.R.ltlas %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~R) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',df.for.plotting.R.ltlas$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              'R = %{y:.1f}<extra></extra>'))  %>%
+  add_segments(type="line",
+               x = start.date, xend = max(df.for.plotting.R.ltlas$Dates), 
+               y = 1, yend = 1,
+               line=list(dash='dash',
+                         color="black"),
+               hovertemplate = paste('<extra></extra>')) %>% 
+  layout(xaxis = list(
+    title = "",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E",
+    range=c(start.date, last.date - 12)
+  ), 
+  yaxis = list(
+    title = "Estimated R",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E"
+  ), showlegend = FALSE)
+
+plotProjectionLTLAs <- projected.cases.ltlas %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~scaled_per_capita) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',projected.cases.ltlas$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>')) %>%
+  layout(xaxis = list(
+    title = "",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E",
+    range=c(start.date, last.date - 12)
+  ), 
+  yaxis = list(
+    title = "Expected number of infections which will go on\nto be confirmed by a positive test result\nper day in the near future, per 100,000 population\n",
+    titlefont = f2,
+    showticklabels = TRUE,
+    tickfont = f2,
+    exponentformat = "E",
+    range=c(0,30)
+  ), showlegend = FALSE)
+
+plotROneLTLA <- df.for.plotting.R.ltlas %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~R) %>%
+  add_segments(type="line",
+               x = start.date, xend = max(df.for.plotting.R.ltlas$Dates), 
+               y = 1, yend = 1,
+               line=list(dash='dash',
+                         color="black"),
+               hovertemplate = paste('<extra></extra>')) %>% 
+  layout(xaxis = list(
+    title = "",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E",
+    range=c(start.date, last.date - 12)
+  ), 
+  yaxis = list(
+    title = "Estimated R with 95% credibility interval",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    exponentformat = "E"
+  ), showlegend = FALSE)
