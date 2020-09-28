@@ -4,8 +4,8 @@ library(RColorBrewer)
 library(glue)
 library(shinythemes) # for "yeti" theme
 library(shinycssloaders) # for "calculating" spinners
-library(Cairo) # for better graphics resolution
-options(shiny.usecairo=T)
+#library(Cairo) # for better graphics resolution
+#options(shiny.usecairo=T)
 library(tidyverse)
 library(plotly)
 # library(httr) # for accessing latest data; needed this when updates were done within the app but don't need it whilst running "prepping_the_data.R" manually
@@ -24,12 +24,11 @@ for (i in 1:8) {
 }
 
 
-# For March-June Pillar 1 tracker page
+# For "Pillar 1 only"
 load("data/p1_data_R.RData")
 load("data/p1_data_incidence.RData")
 load("data/p1_data_projected.RData")
 
-# censor the final dates because of the back-calculation lag and under-reporting in the final few days
 df.for.plotting.R.p1 <- df.for.plotting.R.p1 %>% filter(Dates < "2020-06-15")
 df.for.plotting.incidence.p1 <- df.for.plotting.incidence.p1 %>% filter(Dates < "2020-06-15")
 projected.cases.p1 <- projected.cases.p1 %>% filter(Dates < "2020-06-15")
@@ -57,6 +56,7 @@ plotP1Incidence <- df.for.plotting.incidence.p1 %>%
     showticklabels = TRUE,
     tickfont = f1,
     exponentformat = "E"#,
+    #range=c(start.date, last.date - 9)
   ), 
   yaxis = list(
     title = "Estimated new infections per day which\nwent on to be confirmed by a positive test result,\nper 100,000 population",
@@ -100,6 +100,7 @@ plotP1R <- df.for.plotting.R.p1 %>%
     showticklabels = TRUE,
     tickfont = f1,
     exponentformat = "E" #,
+    #range=c(start.date, last.date - 12)
   ), 
   yaxis = list(
     title = "Estimated R",
@@ -124,6 +125,7 @@ plotP1Projection <- projected.cases.p1 %>%
     showticklabels = TRUE,
     tickfont = f1,
     exponentformat = "E" #,
+    #range=c(start.date, last.date - 9)
   ), 
   yaxis = list(
     title = "Expected number of infections which will go on\nto be confirmed by a positive test result\nper day in the near future, per 100,000 population\n",
@@ -136,6 +138,13 @@ plotP1Projection <- projected.cases.p1 %>%
 plotP1ROneUTLA <- df.for.plotting.R.p1 %>%
   group_by(Area) %>%
   plot_ly(x=~Dates, y=~R) %>%
+  # add_lines(alpha=0.3, color=~Pillar,
+  #           color = I("#8DA0CB"),
+  #           hovertemplate = paste(
+  #             '<b>',df.for.plotting.R$Area,'</b><br>',
+  #             '<i>%{x|%d %B}</i><br>',
+  #             'R = %{y:.1f}<br>',
+  #             'from Pillar', df.for.plotting.R$Pillar, ' data<extra></extra>'))  %>%
   add_segments(type="line",
                x = start.date, xend = max(df.for.plotting.R.p1$Dates), 
                y = 1, yend = 1,
@@ -161,6 +170,7 @@ plotP1ROneUTLA <- df.for.plotting.R.p1 %>%
     showticklabels = TRUE,
     tickfont = f1,
     exponentformat = "E" #,
+    #range=c(start.date, last.date - 9)
   ), 
   yaxis = list(
     title = "Estimated R with 95% credibility interval",
@@ -199,6 +209,7 @@ SCplotter <- function(scen) {
       showticklabels = TRUE,
       tickfont = f1,
       exponentformat = "E"
+      #range=c(start.date, last.date - 14)
     ), 
     yaxis = list(
       title = "Difference in R between area\nand its synthetic control",

@@ -47,12 +47,12 @@ server <- function(input, output, session) {
   ##################
   
   getLastDatestamp <- reactive({
-    input$update
+    #input$update
     format(file.info("data/latest_df.for.plotting.R.utlas.RData")$mtime, "%d %B %Y")
   })
   
   getLastDateOfData <- reactive({
-    input$update
+    #input$update
     format(last.date, "%d %B %Y")
   })
 
@@ -66,14 +66,14 @@ server <- function(input, output, session) {
     
     plotIncidenceUTLAs %>%
       filter(Area == UTLAToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_lines(color = I("#FC8D62"),
                 line=list(width=4, alpha=1),
                 hovertemplate = paste(
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>'
-                  )) 
+                  '%{y:.1f} infections per 100,000<extra></extra>'))
+      #toWebGL()
   })
   
   output$UTLARPlot <- renderPlotly({
@@ -81,13 +81,14 @@ server <- function(input, output, session) {
     
     plotRUTLAs %>%
       filter(Area == UTLAToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_lines(color = I("#FC8D62"),
                 line=list(width=4, alpha=1),
                 hovertemplate = paste(
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>'))
+                  'R = %{y:.1f}<extra></extra>')) 
+      #toWebGL()
   })
   
   output$UTLAProjectionPlot <- renderPlotly({
@@ -95,13 +96,14 @@ server <- function(input, output, session) {
     
     plotProjectionUTLAs %>%
       filter(Area == UTLAToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_lines(color = I("#FC8D62"),
                 line=list(width=4, alpha=1),
                 hovertemplate = paste(
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   '%{y:.1f} infections per 100,000<extra></extra>')) 
+      #toWebGL()
   })
   
   output$ROneUTLAPlot <- renderPlotly({
@@ -109,7 +111,7 @@ server <- function(input, output, session) {
     
     plotROneUTLA %>%
       filter(Area == UTLAToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
                   color = I("grey"),
                   hovertemplate = paste(
@@ -121,7 +123,8 @@ server <- function(input, output, session) {
                 hovertemplate = paste(
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>'))
+                  'R = %{y:.1f}<extra></extra>')) 
+      #toWebGL()
     
   })
   
@@ -130,14 +133,14 @@ server <- function(input, output, session) {
     
     plotIncidenceregions %>%
       filter(Area == regionToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_lines(color = I("#FC8D62"),
                 line=list(width=4, alpha=1),
                 hovertemplate = paste(
                   '<b>',regionToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>'
-                )) 
+                  '%{y:.1f} infections per 100,000<extra></extra>'))
+      #toWebGL()
   })
   
   output$regionRPlot <- renderPlotly({
@@ -145,13 +148,14 @@ server <- function(input, output, session) {
     
     plotRregions %>%
       filter(Area == regionToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_lines(color = I("#FC8D62"),
                 line=list(width=4, alpha=1),
                 hovertemplate = paste(
                   '<b>',regionToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>'))
+                  'R = %{y:.1f}<extra></extra>')) 
+      #toWebGL()
   })
   
   output$regionProjectionPlot <- renderPlotly({
@@ -159,13 +163,14 @@ server <- function(input, output, session) {
     
     plotProjectionregions %>%
       filter(Area == regionToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_lines(color = I("#FC8D62"),
                 line=list(width=4, alpha=1),
                 hovertemplate = paste(
                   '<b>',regionToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   '%{y:.1f} infections per 100,000<extra></extra>')) 
+      #toWebGL() 
   })
   
   output$ROneRegionPlot <- renderPlotly({
@@ -173,7 +178,7 @@ server <- function(input, output, session) {
     
     plotROneRegion %>%
       filter(Area == regionToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
                   color = I("grey"),
                   hovertemplate = paste(
@@ -185,7 +190,8 @@ server <- function(input, output, session) {
                 hovertemplate = paste(
                   '<b>',regionToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>'))
+                  'R = %{y:.1f}<extra></extra>')) 
+      #toWebGL()
     
   })
   
@@ -195,14 +201,14 @@ server <- function(input, output, session) {
     
     plotIncidenceLTLAs %>%
       filter(Area == LTLAToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_lines(color = I("#FC8D62"),
                 line=list(width=4, alpha=1),
                 hovertemplate = paste(
                   '<b>',LTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>'
-                )) 
+                  '%{y:.1f} infections per 100,000<extra></extra>'))
+      #toWebGL()
   })
   
   output$LTLARPlot <- renderPlotly({
@@ -210,13 +216,14 @@ server <- function(input, output, session) {
     
     plotRLTLAs %>%
       filter(Area == LTLAToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_lines(color = I("#FC8D62"),
                 line=list(width=4, alpha=1),
                 hovertemplate = paste(
                   '<b>',LTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>'))
+                  'R = %{y:.1f}<extra></extra>')) 
+      #toWebGL()
   })
   
   output$LTLAProjectionPlot <- renderPlotly({
@@ -224,13 +231,14 @@ server <- function(input, output, session) {
     
     plotProjectionLTLAs %>%
       filter(Area == LTLAToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_lines(color = I("#FC8D62"),
                 line=list(width=4, alpha=1),
                 hovertemplate = paste(
                   '<b>',LTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>')) 
+                  '%{y:.1f} infections per 100,000<extra></extra>'))
+      #toWebGL()
   })
   
   output$ROneLTLAPlot <- renderPlotly({
@@ -238,7 +246,7 @@ server <- function(input, output, session) {
     
     plotROneLTLA %>%
       filter(Area == LTLAToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
                   color = I("grey"),
                   hovertemplate = paste(
@@ -250,7 +258,8 @@ server <- function(input, output, session) {
                 hovertemplate = paste(
                   '<b>',LTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>'))
+                  'R = %{y:.1f}<extra></extra>')) 
+      #toWebGL()
     
   })
   
@@ -259,14 +268,14 @@ server <- function(input, output, session) {
     
     plotP1Incidence %>%
       filter(Area == UTLAToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_lines(color = I("#FC8D62"),
                 line=list(width=4, alpha=1),
                 hovertemplate = paste(
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>'
-                )) 
+                  '%{y:.1f} infections per 100,000<extra></extra>'))
+      #toWebGL()
   })
   
   output$p1RPlot <- renderPlotly({
@@ -274,13 +283,14 @@ server <- function(input, output, session) {
     
     plotP1R %>%
       filter(Area == UTLAToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_lines(color = I("#FC8D62"),
                 line=list(width=4, alpha=1),
                 hovertemplate = paste(
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>'))
+                  'R = %{y:.1f}<extra></extra>')) 
+      #toWebGL()
   })
   
   output$p1ProjectionPlot <- renderPlotly({
@@ -288,13 +298,14 @@ server <- function(input, output, session) {
     
     plotP1Projection %>%
       filter(Area == UTLAToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_lines(color = I("#FC8D62"),
                 line=list(width=4, alpha=1),
                 hovertemplate = paste(
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>')) 
+                  '%{y:.1f} infections per 100,000<extra></extra>'))
+      #toWebGL()
   })
   
   output$p1ROneUTLAPlot <- renderPlotly({
@@ -302,7 +313,7 @@ server <- function(input, output, session) {
     
     plotP1ROneUTLA %>%
       filter(Area == UTLAToHighlight) %>%
-      group_by(Pillar) %>%
+      #group_by(Pillar) %>%
       add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
                   color = I("grey"),
                   hovertemplate = paste(
@@ -314,7 +325,8 @@ server <- function(input, output, session) {
                 hovertemplate = paste(
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>'))
+                  'R = %{y:.1f}<extra></extra>')) 
+      #toWebGL()
     
   })
   
@@ -330,8 +342,8 @@ server <- function(input, output, session) {
                 hovertemplate = paste(
                   '<b>',areasToHighlight,'</b><br>',
                   '%{y:.1f} difference in R between<br>',
-                  'this area and its synthetic control<extra></extra>')
-                ) 
+                  'this area and its synthetic control<extra></extra>')) 
+      #toWebGL()
   })
   
 

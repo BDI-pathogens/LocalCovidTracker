@@ -2,7 +2,7 @@ ui <- fluidPage(
                  tags$style(type = "text/css",
                             "label { font-size: 16px; }"
                  ),
-                 #tags$head(includeHTML(("google-analytics.html"))), # google analytics token (not shared on GitHub; to use this, create your own token and save in "google-analytics.html" within the main directory)
+                 tags$head(includeHTML(("google-analytics.html"))), # google analytics token
                  
   theme = shinytheme("yeti"), # change the theme here; use "themeSelector()" below for an easy way to pick
   #shinythemes::themeSelector(), # use this to dynamically select a theme
@@ -34,7 +34,7 @@ ui <- fluidPage(
             selectInput("region",
                         h5("Select a region to highlight:"),
                         choices = regions.alphabetical,
-                        selected = "East Midlands")
+                        selected = random.region)
           ),
 
           conditionalPanel(
@@ -42,7 +42,7 @@ ui <- fluidPage(
             selectInput("utla",
                         h5("Select an upper tier local authority to highlight:"),
                         choices = utlas.alphabetical,
-                        selected = "Newham")
+                        selected = random.utla)
           ),
 
           conditionalPanel(
@@ -50,7 +50,7 @@ ui <- fluidPage(
             selectInput("ltla",
                         h5("Select a lower tier local authority to highlight:"),
                         choices = ltlas.alphabetical,
-                        selected = "Isle of Wight")
+                        selected = random.ltla)
           ),
 
           hr(),
@@ -112,6 +112,9 @@ ui <- fluidPage(
         mainPanel(
           style = "overflow-y: auto; max-height: 100vh", 
           
+          #HTML("<h3>Please note: technical issues with the <a href=\"https://coronavirus.data.gov.uk/cases\" target=\"_blank\">PHE and NHSX</a> database unfortunately mean that we have been
+          #     unable to update this daily tracker since Monday 24th August. We hope the service will be restored soon.</h3>"),
+          
           fluidRow(
             column(
               width=9,
@@ -139,6 +142,11 @@ ui <- fluidPage(
             condition = "input.level == 3",
             withSpinner(plotlyOutput("LTLAProjectionPlot", height="60vh"), type=7)
           ),
+          
+          helpText("Please note that we base our estimates solely on positive test results -
+                   we do not adjust for variations in test availability or testing backlogs. 
+                   In particular, decreases in the last few days of the plots may be an artefact of
+                   under-reporting and/or delayed reporting."),
 
           hr(),
           fluidRow(

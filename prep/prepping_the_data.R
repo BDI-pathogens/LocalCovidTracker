@@ -116,7 +116,7 @@ for (utla in utlas.alphabetical) {
     # The API server will automatically reject any
     # requests that take longer than 10 seconds to 
     # process.
-    timeout(10)
+    timeout(100)
   ) -> response
   
   # Handle errors:
@@ -334,7 +334,7 @@ for (region in regions.alphabetical) {
     # The API server will automatically reject any
     # requests that take longer than 10 seconds to 
     # process.
-    timeout(10)
+    timeout(100)
   ) -> response
   
   # Handle errors:
@@ -527,6 +527,9 @@ structure <- list(
 
 dat.UK.ltla <- data.frame("Date"=NA,"Area"=NA,"TotalCases"=NA)
 
+#tmp <- setdiff(ltlas.alphabetical, dat.UK.ltla$Area)
+#for (ltla in tmp) {
+  
 for (ltla in ltlas.alphabetical) {
   print(ltla)
   # Create filters:
@@ -551,7 +554,7 @@ for (ltla in ltlas.alphabetical) {
     # The API server will automatically reject any
     # requests that take longer than 10 seconds to 
     # process.
-    timeout(10)
+    timeout(100)
   ) -> response
   
   # Handle errors:

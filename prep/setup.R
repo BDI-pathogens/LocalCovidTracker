@@ -15,6 +15,11 @@ regions.alphabetical <- sort(unique(df.for.plotting.R.regions$Area))
 utlas.alphabetical <- unique(df.for.plotting.R.utlas$Area)
 ltlas.alphabetical <- sort(unique(df.for.plotting.R.ltlas$Area))
 
+# pick random places to highlight on startup
+random.region <- sample(regions.alphabetical,1)
+random.utla <- sample(utlas.alphabetical,1) 
+random.ltla <- sample(ltlas.alphabetical,1) 
+
 start.date <- as.Date("2020-03-01")
 last.date <- max(df.for.plotting.incidence.ltlas$Dates)
 
@@ -69,7 +74,8 @@ plotIncidenceUTLAs <- df.for.plotting.incidence.utlas %>%
     titlefont = f2,
     showticklabels = TRUE,
     tickfont = f2,
-    exponentformat = "E"
+    exponentformat = "E",
+    range=c(0,signif(max(df.for.plotting.incidence.utlas$scaled_per_capita),1))
   ), showlegend = FALSE)
 
 plotRUTLAs <- df.for.plotting.R.utlas %>%
@@ -113,7 +119,8 @@ plotRUTLAs <- df.for.plotting.R.utlas %>%
     titlefont = f1,
     showticklabels = TRUE,
     tickfont = f1,
-    exponentformat = "E"
+    exponentformat = "E",
+    range=c(0,signif(max(df.for.plotting.R.utlas$R),1))
   ), showlegend = FALSE)
 
 plotProjectionUTLAs <- projected.cases.utlas %>%
@@ -139,7 +146,7 @@ plotProjectionUTLAs <- projected.cases.utlas %>%
     showticklabels = TRUE,
     tickfont = f2,
     exponentformat = "E",
-    range=c(0,30)
+    range=c(0,signif(max(projected.cases.utlas$scaled_per_capita),1))
   ), showlegend = FALSE)
 
 plotROneUTLA <- df.for.plotting.R.utlas %>%
@@ -177,7 +184,8 @@ plotROneUTLA <- df.for.plotting.R.utlas %>%
     titlefont = f1,
     showticklabels = TRUE,
     tickfont = f1,
-    exponentformat = "E"
+    exponentformat = "E",
+    range=c(0,signif(max(df.for.plotting.R.utlas$R),1))
   ), showlegend = FALSE)
 
 
@@ -206,7 +214,8 @@ plotIncidenceregions <- df.for.plotting.incidence.regions %>%
     titlefont = f2,
     showticklabels = TRUE,
     tickfont = f2,
-    exponentformat = "E"
+    exponentformat = "E",
+    range=c(0,signif(max(df.for.plotting.incidence.regions$scaled_per_capita),1))
   ), showlegend = FALSE)
 
 plotRregions <- df.for.plotting.R.regions %>%
@@ -237,7 +246,8 @@ plotRregions <- df.for.plotting.R.regions %>%
     titlefont = f1,
     showticklabels = TRUE,
     tickfont = f1,
-    exponentformat = "E"
+    exponentformat = "E",
+    range=c(0,signif(max(df.for.plotting.R.regions$R),1))
   ), showlegend = FALSE)
 
 plotProjectionregions <- projected.cases.regions %>%
@@ -262,7 +272,8 @@ plotProjectionregions <- projected.cases.regions %>%
     titlefont = f2,
     showticklabels = TRUE,
     tickfont = f2,
-    exponentformat = "E"
+    exponentformat = "E",
+    range=c(0,signif(max(projected.cases.regions$scaled_per_capita),1))
   ), showlegend = FALSE)
 
 plotROneRegion <- df.for.plotting.R.regions %>%
@@ -287,7 +298,8 @@ plotROneRegion <- df.for.plotting.R.regions %>%
     titlefont = f1,
     showticklabels = TRUE,
     tickfont = f1,
-    exponentformat = "E"
+    exponentformat = "E",
+    range=c(0,signif(max(df.for.plotting.R.regions$R),1))
   ), showlegend = FALSE)
 
 
@@ -315,7 +327,8 @@ plotIncidenceLTLAs <- df.for.plotting.incidence.ltlas %>%
     titlefont = f2,
     showticklabels = TRUE,
     tickfont = f2,
-    exponentformat = "E"
+    exponentformat = "E",
+    range=c(0,signif(max(df.for.plotting.incidence.ltlas$scaled_per_capita),1))
   ), showlegend = FALSE)
 
 plotRLTLAs <- df.for.plotting.R.ltlas %>%
@@ -346,7 +359,8 @@ plotRLTLAs <- df.for.plotting.R.ltlas %>%
     titlefont = f1,
     showticklabels = TRUE,
     tickfont = f1,
-    exponentformat = "E"
+    exponentformat = "E",
+    range=c(0,signif(max(df.for.plotting.R.ltlas$R),1))
   ), showlegend = FALSE)
 
 plotProjectionLTLAs <- projected.cases.ltlas %>%
@@ -372,7 +386,7 @@ plotProjectionLTLAs <- projected.cases.ltlas %>%
     showticklabels = TRUE,
     tickfont = f2,
     exponentformat = "E",
-    range=c(0,30)
+    range=c(0,signif(max(projected.cases.ltlas$scaled_per_capita),1))
   ), showlegend = FALSE)
 
 plotROneLTLA <- df.for.plotting.R.ltlas %>%
@@ -397,5 +411,6 @@ plotROneLTLA <- df.for.plotting.R.ltlas %>%
     titlefont = f1,
     showticklabels = TRUE,
     tickfont = f1,
-    exponentformat = "E"
+    exponentformat = "E",
+    range=c(0,signif(max(df.for.plotting.R.ltlas$R),1))
   ), showlegend = FALSE)
