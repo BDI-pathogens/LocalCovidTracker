@@ -8,12 +8,17 @@ library(shinycssloaders) # for "calculating" spinners
 #options(shiny.usecairo=T)
 library(tidyverse)
 library(plotly)
+library(data.table) # for cases by age
+library(stringr) # for cases by age
+library(stringi) # for cases by age
+library(viridis)
 # library(httr) # for accessing latest data; needed this when updates were done within the app but don't need it whilst running "prepping_the_data.R" manually
 # options(shiny.trace = FALSE)
 
 bs <- 24 # base font size for plots
 
-source("prep/setup.R") # load data and plotting scripts for daily tracker page
+source("prep/daily_tracker_setup.R") # load data and plotting scripts for daily tracker tab
+source("prep/cases_by_age_setup.R") # get plotting script for cases by age tab
 
 # load synthetic control analysis
 for (i in 1:8) {

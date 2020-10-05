@@ -74,7 +74,7 @@ ui <- fluidPage(
 
           h4("Interpretation"),
           
-          h5("The last date shown in each graph is 10-13 days earlier than the last date for which
+          h5("The last date shown in each graph is 9-12 days earlier than the last date for which
              we have case numbers. 
              This is to account for reporting lags and the delay between an infection
              starting and a swab being taken. 
@@ -83,8 +83,7 @@ ui <- fluidPage(
           
           HTML("<h5>The <i>nowcast</i> combines the estimated R and number of new infections each week
              to approximate the number of new infections expected shortly after the given date. 
-             It assumes no change in interventions so does not
-             anticipate a lockdown starting or ending.</h5>"),
+             It assumes no change in interventions.</h5>"),
           HTML("<h5>The <i>instantaneous reproduction number R</i>
              is a measure of both the infectivity of the virus
              (expected to be roughly constant over this time frame)
@@ -97,10 +96,13 @@ ui <- fluidPage(
           h5("All estimates of the number of infections are based directly on case counts so we are estimating
              the number of infected individuals who will go on to get a positive test, not the true total number
              of infections, which will almost certainly be higher. 
-            The results here are intended more as a means of comparing between areas than
+             The results here are intended more as a means of comparing between areas than
              as an exact representation of the number of infections.
-             The rapid rise in infections seen in many areas in mid-late April is largely an artefact of 
-             increased testing in April-May because we do not make adjustments to the case numbers for any such effects."),
+             Widespread community testing was launched on May 18th for everyone over the age of 5 with symptoms; 
+             on May 28th the NHS Test and Trace programme was launched, with tests available for everyone with symptoms.
+             Testing capacity has been gradually increasing since then.
+             The rapid rise in infections shown in many areas in mid-late April is largely an artefact of 
+             increased testing in May because we do not make adjustments to the case numbers for any such effects."),
           h5("Similarly, some of our estimates report R increasing through the first half of March.
              This is also an artefact of our method: we are not aware of any reasons to
              suppose that R was actually increasing during this time."),
@@ -229,6 +231,42 @@ ui <- fluidPage(
       ) # end sidebarLayout
 
       ), # end "daily tracker" tabPanel
+    
+    tabPanel(
+      "Cases by age",
+      
+      sidebarLayout(
+        sidebarPanel(
+          h3("Details"),
+          
+          HTML("<h5>Each day
+               <a href=\"https://coronavirus.data.gov.uk/about-data\" target=\"_blank\">PHE and NHSX</a> 
+               report the total (cumulative) number of new cases in each age category. 
+               Since late August we have been logging this data and we present it here as a
+               rough indication of how the epidemic is spreading across age groups.</h5>"),
+
+          HTML("<h5>In the first plot we show the proportion of new cases reported which fall into each age category, each day. 
+Click on dates in the legend (key) to show/hide results 
+                for individual days.
+               The second plot presents the mean age of cases reported that day.</h5>"),
+
+          HTML("<h5>Note that, unlike the other tabs where cases are plotted by their swab date,
+               the age data is not linked to swab dates so we present each case by the date it was first publicly reported.
+               If reporting delays differ across age groups it could bias the trends seen here.
+               
+               </h5>"),
+        width=3),
+        mainPanel(
+          h3("Distribution of cases in England by age"),
+          
+          withSpinner(plotlyOutput("casesByAgePlot", height="60vh"), type=7),
+          
+          h3("Mean age of cases in England by date"),
+          
+          withSpinner(plotlyOutput("meanCasesByAgePlot", height="60vh"), type=7),
+        width=9)
+      )
+    ),
 
     tabPanel(
       "March-June Pillar 1 tracker",

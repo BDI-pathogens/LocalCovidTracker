@@ -73,7 +73,7 @@ server <- function(input, output, session) {
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   '%{y:.1f} infections per 100,000<extra></extra>'))
-      #toWebGL()
+      
   })
   
   output$UTLARPlot <- renderPlotly({
@@ -88,7 +88,7 @@ server <- function(input, output, session) {
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   'R = %{y:.1f}<extra></extra>')) 
-      #toWebGL()
+      
   })
   
   output$UTLAProjectionPlot <- renderPlotly({
@@ -103,7 +103,7 @@ server <- function(input, output, session) {
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   '%{y:.1f} infections per 100,000<extra></extra>')) 
-      #toWebGL()
+      
   })
   
   output$ROneUTLAPlot <- renderPlotly({
@@ -124,7 +124,7 @@ server <- function(input, output, session) {
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   'R = %{y:.1f}<extra></extra>')) 
-      #toWebGL()
+      
     
   })
   
@@ -140,7 +140,7 @@ server <- function(input, output, session) {
                   '<b>',regionToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   '%{y:.1f} infections per 100,000<extra></extra>'))
-      #toWebGL()
+      
   })
   
   output$regionRPlot <- renderPlotly({
@@ -155,7 +155,7 @@ server <- function(input, output, session) {
                   '<b>',regionToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   'R = %{y:.1f}<extra></extra>')) 
-      #toWebGL()
+      
   })
   
   output$regionProjectionPlot <- renderPlotly({
@@ -170,7 +170,7 @@ server <- function(input, output, session) {
                   '<b>',regionToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   '%{y:.1f} infections per 100,000<extra></extra>')) 
-      #toWebGL() 
+       
   })
   
   output$ROneRegionPlot <- renderPlotly({
@@ -191,7 +191,7 @@ server <- function(input, output, session) {
                   '<b>',regionToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   'R = %{y:.1f}<extra></extra>')) 
-      #toWebGL()
+      
     
   })
   
@@ -208,7 +208,7 @@ server <- function(input, output, session) {
                   '<b>',LTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   '%{y:.1f} infections per 100,000<extra></extra>'))
-      #toWebGL()
+      
   })
   
   output$LTLARPlot <- renderPlotly({
@@ -223,7 +223,7 @@ server <- function(input, output, session) {
                   '<b>',LTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   'R = %{y:.1f}<extra></extra>')) 
-      #toWebGL()
+      
   })
   
   output$LTLAProjectionPlot <- renderPlotly({
@@ -238,7 +238,7 @@ server <- function(input, output, session) {
                   '<b>',LTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   '%{y:.1f} infections per 100,000<extra></extra>'))
-      #toWebGL()
+      
   })
   
   output$ROneLTLAPlot <- renderPlotly({
@@ -259,8 +259,16 @@ server <- function(input, output, session) {
                   '<b>',LTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   'R = %{y:.1f}<extra></extra>')) 
-      #toWebGL()
+      
     
+  })
+  
+  output$casesByAgePlot <- renderPlotly({
+    p
+  })
+  
+  output$meanCasesByAgePlot <- renderPlotly({
+    p_age
   })
   
   output$p1IncidencePlot <- renderPlotly({
@@ -275,7 +283,7 @@ server <- function(input, output, session) {
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   '%{y:.1f} infections per 100,000<extra></extra>'))
-      #toWebGL()
+      
   })
   
   output$p1RPlot <- renderPlotly({
@@ -290,7 +298,7 @@ server <- function(input, output, session) {
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   'R = %{y:.1f}<extra></extra>')) 
-      #toWebGL()
+      
   })
   
   output$p1ProjectionPlot <- renderPlotly({
@@ -305,7 +313,7 @@ server <- function(input, output, session) {
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   '%{y:.1f} infections per 100,000<extra></extra>'))
-      #toWebGL()
+      
   })
   
   output$p1ROneUTLAPlot <- renderPlotly({
@@ -326,7 +334,7 @@ server <- function(input, output, session) {
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
                   'R = %{y:.1f}<extra></extra>')) 
-      #toWebGL()
+      
     
   })
   
@@ -343,7 +351,7 @@ server <- function(input, output, session) {
                   '<b>',areasToHighlight,'</b><br>',
                   '%{y:.1f} difference in R between<br>',
                   'this area and its synthetic control<extra></extra>')) 
-      #toWebGL()
+      
   })
   
 
