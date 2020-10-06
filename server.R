@@ -482,7 +482,7 @@ server <- function(input, output, session) {
     HTML(glue("<h5>Last updated {last.datestamp} <br>
               using 
               <a href=\"https://coronavirus.data.gov.uk/about-data\" target=\"_blank\">PHE and NHSX data</a>
-              up to {last.date.of.data}</h5>"))
+              up to {last.date.of.ages.data}</h5>"))
   })
   
   

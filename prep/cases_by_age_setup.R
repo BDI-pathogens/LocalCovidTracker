@@ -287,3 +287,5 @@ mean_age_plot_W = mean_age_plot_W %>%
            tickfont = f1
          )
   )
+
+last.date.of.ages.data <- format( max(dates_E,dates_W),  "%d %B %Y")
