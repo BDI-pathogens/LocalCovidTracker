@@ -240,7 +240,7 @@ ui <- fluidPage(
           
           selectInput(
             "cases.by.age.country",
-            h5("Select country:"),
+            h3("Select country:"),
             choices = c("England", "Wales"),
             selected = random.country
           ),
