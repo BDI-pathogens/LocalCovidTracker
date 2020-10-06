@@ -237,13 +237,23 @@ ui <- fluidPage(
       
       sidebarLayout(
         sidebarPanel(
+          
+          selectInput(
+            "cases.by.age.country",
+            h5("Select country:"),
+            choices = c("England", "Wales"),
+            selected = random.country
+          ),
+          
           h3("Details"),
           
           HTML("<h5>Each day
                <a href=\"https://coronavirus.data.gov.uk/about-data\" target=\"_blank\">PHE and NHSX</a> 
                report the total (cumulative) number of new cases in each age category. 
-               Since late August we have been logging this data and we present it here as a
-               rough indication of how the epidemic is spreading across age groups.</h5>"),
+               We have been logging this data since late August for England and 
+               since late September for Wales, and we present it here as an
+               indication of how the epidemic is spreading across age groups
+               in each country.</h5>"),
 
           HTML("<h5>In the first plot we show the proportion of new cases reported which fall into each age category, each day. 
 Click on dates in the legend (key) to show/hide results 
@@ -257,13 +267,26 @@ Click on dates in the legend (key) to show/hide results
                </h5>"),
         width=3),
         mainPanel(
-          h3("Distribution of cases in England by age"),
+         
+          uiOutput("CaseDistributionTitle"),
           
           withSpinner(plotlyOutput("casesByAgePlot", height="60vh"), type=7),
           
-          h3("Mean age of cases in England by date"),
+          uiOutput("MeanAgeCasesTitle"),
           
           withSpinner(plotlyOutput("meanCasesByAgePlot", height="60vh"), type=7),
+          
+          hr(),
+          
+          # "last updated" info
+          fluidRow(
+            column(
+              width=12,
+              align="right",
+              uiOutput("updatedInfoAges")
+            )
+          ),
+          
         width=9)
       )
     ),

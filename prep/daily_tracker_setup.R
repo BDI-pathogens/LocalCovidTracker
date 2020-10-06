@@ -19,6 +19,7 @@ ltlas.alphabetical <- sort(unique(df.for.plotting.R.ltlas$Area))
 random.region <- sample(regions.alphabetical,1)
 random.utla <- sample(utlas.alphabetical,1) 
 random.ltla <- sample(ltlas.alphabetical,1) 
+random.country <- sample(c("England", "Wales"), 1)
 
 start.date <- as.Date("2020-03-01")
 last.date <- max(df.for.plotting.incidence.ltlas$Dates)

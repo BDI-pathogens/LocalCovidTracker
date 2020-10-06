@@ -18,6 +18,11 @@ server <- function(input, output, session) {
     input$ltla
   })
   
+  # get country on the cases by age page
+  getCountry <- reactive({
+    input$cases.by.age.country
+  })
+  
   # get utla on the pillar 1 tracker page
   getUTLAP1 <- reactive({
     input$utla.pillar1
@@ -41,6 +46,8 @@ server <- function(input, output, session) {
     } else if (setequal(chs, c("e","p"))) { 8
     } else return(7)
   })
+  
+ 
   
   ##################
   # COLLECT INFO
@@ -263,12 +270,26 @@ server <- function(input, output, session) {
     
   })
   
+  output$CaseDistributionTitle <- renderUI({
+    c <- getCountry()
+    h3(glue("Distribution of cases in {c} by age"))
+  })
+  
   output$casesByAgePlot <- renderPlotly({
-    p
+    c <- getCountry()
+    if (c == "England") CBA_plot_E
+    else if (c == "Wales") CBA_plot_W
+  })
+  
+  output$MeanAgeCasesTitle <- renderUI({
+    c <- getCountry()
+    h3(glue("Mean age of cases in {c} by date"))
   })
   
   output$meanCasesByAgePlot <- renderPlotly({
-    p_age
+    c <- getCountry()
+    if (c == "England") mean_age_plot_E
+    else if (c == "Wales") mean_age_plot_W
   })
   
   output$p1IncidencePlot <- renderPlotly({
@@ -454,5 +475,15 @@ server <- function(input, output, session) {
               <a href=\"https://coronavirus.data.gov.uk/about-data\" target=\"_blank\">PHE and NHSX data</a>
               up to {last.date.of.data}</h5>"))
   })
+  
+  output$updatedInfoAges <- renderUI({
+    last.datestamp <- getLastDatestamp()
+    last.date.of.data <- getLastDateOfData()
+    HTML(glue("<h5>Last updated {last.datestamp} <br>
+              using 
+              <a href=\"https://coronavirus.data.gov.uk/about-data\" target=\"_blank\">PHE and NHSX data</a>
+              up to {last.date.of.data}</h5>"))
+  })
+  
   
 } # end server function
