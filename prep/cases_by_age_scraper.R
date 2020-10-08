@@ -1,4 +1,4 @@
-### Code by Robert Hinch for extracting the cases by age data each day
+### Code by Robert Hinch and Michelle Kendall for extracting the cases by age data each day
 
 library( curl )
 library( data.table )
@@ -6,15 +6,20 @@ library( httr )
 library( jsonlite )
 
 updateCasesByAge = function( 
+  nation = "",
   dir     = "",
-  timeout = 20
+  timeout = 20,
+  alwaysUpdate = FALSE
 )
 {
   expRows   = 19
   expCols   = 3
   AREA_TYPE = "nation"
-  AREA_NAME = "england"
+  AREA_NAME = nation # should be "england" or "wales"
 
+  if (nation == "england") nsuffix <- ""
+  if (nation == "wales") nsuffix <- "_W"
+  
   # construct call
   endpoint <- "https://api.coronavirus.data.gov.uk/v1/data"
   filters  <- c(
@@ -50,9 +55,22 @@ updateCasesByAge = function(
   data = jsonlite::fromJSON(data)$data
   
   # get and check date
-  date = data$date;
+  date = as.Date( data$date );
   if( is.null( date ) )
     stop( "Invalid date returned")
+  
+  # check date is not today or later than today's date - sometimes there's an error in the API and we need to catch it
+  if ( date >= Sys.Date() ) stop( glue("Problem with the date: the date label for the {nation} data is {date}.") )
+  
+  # if "alwaysUpdate" is TRUE we carry on and update the data 
+  # if "alwaysUpdate" is FALSE, we check first to see if there is already data stored for this date
+  if (!alwaysUpdate) {
+      # find the last date from the stored files
+      files = system( sprintf( "ls %s*%s", dir, glue("_malecases{nsuffix}.csv") ), intern = TRUE)
+      dates = str_replace_all( str_replace_all( files, dir, "" ), glue("_malecases{nsuffix}.csv"), "" )
+      
+      if ( date <= max(dates) ) stop(glue("The {nation} data is already up to date."))
+  }
   
   # get and check female and male cases
   if( is.null( data$maleCases  ) )
@@ -76,15 +94,14 @@ updateCasesByAge = function(
   if( length( names( femaleCases ) ) != expCols )
     stop( "not the expected number of cols in gemale cases")
   
-  fwrite( maleCases,   file = sprintf( "%s%s_malecases.csv",   dir, date ) )
-  fwrite( femaleCases, file = sprintf( "%s%s_femalecases.csv", dir, date ) )
+  fwrite( maleCases,   file = sprintf( glue("%s%s_malecases{nsuffix}.csv"),   dir, date ) )
+  fwrite( femaleCases, file = sprintf( glue("%s%s_femalecases{nsuffix}.csv"), dir, date ) )
 }
-
-updateCasesByAge( dir = "data/")
 
 updateCasesByAgeWales = function( 
   dir     = "",
-  timeout = 20
+  timeout = 20,
+  alwaysUpdate = FALSE
 )
 {
   expRows   = 19
@@ -127,10 +144,23 @@ updateCasesByAgeWales = function(
   data = jsonlite::fromJSON(data)$data
   
   # get and check date
-  date = data$date;
+  date = as.Date( data$date );
   if( is.null( date ) )
     stop( "Invalid date returned")
   
+  # check date is not today or later than today's date - sometimes there's an error in the API and we need to catch it
+  if ( date >= Sys.Date() ) stop( glue("Problem with the date: the date label for the Welsh data is {date}.") )
+  
+  # if "alwaysUpdate" is TRUE we carry on and update the data 
+  # if "alwaysUpdate" is FALSE, we check first to see if there is already data stored for this date
+  if (!alwaysUpdate) {
+    # find the last date from the stored files
+    files = system( sprintf( "ls %s*%s", dir, "_malecases.csv" ), intern = TRUE)
+    dates = str_replace_all( str_replace_all( files, dir, "" ), "_malecases.csv", "" )
+    latest.date <- max(dates)
+    
+    if ( date <= latest.date ) stop("The Welsh data is already up to date.")
+  }
   # get and check female and male cases
   if( is.null( data$maleCases  ) )
     stop( "Invalid maleCases returned")
@@ -157,4 +187,6 @@ updateCasesByAgeWales = function(
   fwrite( femaleCases, file = sprintf( "%s%s_femalecases_W.csv", dir, date ) )
 }
 
-updateCasesByAgeWales( dir = "data/")
+updateCasesByAge("england", dir = "data/", alwaysUpdate = FALSE)
+
+updateCasesByAge("wales", dir = "data/", alwaysUpdate = FALSE)

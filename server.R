@@ -55,7 +55,7 @@ server <- function(input, output, session) {
   
   getLastDatestamp <- reactive({
     #input$update
-    format(file.info("data/latest_df.for.plotting.R.utlas.RData")$mtime, "%d %B %Y")
+    format(file.info("data/latest_df.for.plotting.R.utlas.RData")$mtime, "%d %B %Y") # any of these files would do, really
   })
   
   getLastDateOfData <- reactive({

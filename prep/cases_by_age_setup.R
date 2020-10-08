@@ -2,7 +2,7 @@
 
 dir           = "data/"
 
-### England 
+### England data
 
 male_suffix_E   = "_malecases.csv"
 female_suffix_E = "_femalecases.csv"
@@ -74,78 +74,12 @@ prop_by_age_E <- cbind.data.frame(
   "pc" = pop_by_age_E / sum(pop_by_age_E) * 100
 )
 
-palette_E <- viridis( length( dates_E ), direction = -1 )
-
-# plot
-CBA_plot_E = plot_ly( type = "bar" ) 
-CBA_plot_E = CBA_plot_E %>% add_trace(
-  data = prop_by_age_E,
-  x = ~age_format,
-  y = ~pc,
-  type = "scatter",  mode = "markers" , showlegend = FALSE,
-  hovertemplate = paste(
-    '%{y:.1f}% of the population<br>',
-    'are %{x} year-olds.<br><extra></extra>'),
-  size = 2
-)
-for( ddx in 2:length( dates_E )) {
-  CBA_plot_E = CBA_plot_E %>% add_bars( 
-      data   = t_E[ date == dates_E[ ddx ] ],
-      x      = ~age_format,
-      y      = ~cases_norm*100, 
-      text   = format( dates_E[ ddx ], "%d %B" ),
-      name   = format( dates_E[ ddx ], "%d %B" ),
-      marker = list( color = palette_E[[ddx]] ),
-      hovertemplate = paste(
-        '%{y:.1f}% of the cases<br>',
-        'reported on %{text} <br>',
-        'were among %{x} year-olds.<br><extra></extra>')
-    )
-}
-CBA_plot_E = CBA_plot_E %>% layout( 
-  barmode = "group",
-  xaxis = list(
-    title = "Age group",
-    titlefont = f1,
-    showticklabels = TRUE,
-    tickfont = f1
-  ),
-  yaxis   = list(
-    title = "Percentage of daily cases",
-    titlefont = f1,
-    showticklabels = TRUE,
-    tickfont = f1
-  )
-)
-
 mean_age_E    = t_E[ , .( mean_age = sum( ( age_num + 2.5 ) * cases ) / sum(cases) ), by = "date"] 
 mean_age_E$date_colour <- as.factor(1:(length(dates_E) - 1))
 
-mean_age_plot_E = plot_ly( mean_age_E, x = ~date, y = ~mean_age, type = "scatter",  mode = "markers" ,
-                 color = ~date_colour, colors = palette_E,
-                 hovertemplate = paste(
-                   '<i>%{x|%d %B}</i><br>',
-                   'Mean age = %{y:.1f}<extra></extra>'),
-                 showlegend = FALSE,
-                 size = 3)
-mean_age_plot_E = mean_age_plot_E %>%
-  layout(showlegend = FALSE,
-  xaxis = list(
-    title = "Date",
-    titlefont = f1,
-    showticklabels = TRUE,
-    tickfont = f1,
-    range=c(min(dates_E), max(dates_E) + 2)
-  ),
-  yaxis = list(
-    title = "Mean age of cases",
-    titlefont = f1,
-    showticklabels = TRUE,
-    tickfont = f1
-  )
-)
 
-### Wales
+
+### Wales data
 
 male_suffix_W   = "_malecases_W.csv"
 female_suffix_W = "_femalecases_W.csv"
@@ -154,19 +88,6 @@ female_suffix_W = "_femalecases_W.csv"
 files_W = system( sprintf( "ls %s*%s", dir, male_suffix_W ), intern = TRUE)
 dates_W = str_replace_all( str_replace_all( files_W, dir, "" ), male_suffix_W, "" )
 dates_W = as.Date( dates_W )
-
-# Use this if and when we re-automate updates
-# see if different to last date stored
-# last_date_file = "data/last_date_plotted"
-# if( file.exists( last_date_file ) )
-# {
-#   load( last_date_file )
-# } else
-#   last_date = as.Date( "2000-01-01")
-# 
-# if( dates[ length( dates ) ] == last_date )
-#   stop( "no new data" )
-# last_date = dates[ length( dates ) ] 
 
 # load the data
 t_W = list()
@@ -217,6 +138,83 @@ prop_by_age_W <- cbind.data.frame(
   "pc" = pop_by_age_W / sum(pop_by_age_W) * 100
 )
 
+mean_age_W    = t_W[ , .( mean_age = sum( ( age_num + 2.5 ) * cases ) / sum(cases) ), by = "date"] 
+mean_age_W$date_colour <- as.factor(1:(length(dates_W) - 1))
+
+
+### England plotting
+
+palette_E <- viridis( length( dates_E ), direction = -1 )
+
+# plot
+CBA_plot_E = plot_ly( type = "bar" ) 
+CBA_plot_E = CBA_plot_E %>% add_trace(
+  data = prop_by_age_E,
+  x = ~age_format,
+  y = ~pc,
+  type = "scatter",  mode = "markers" , showlegend = FALSE,
+  hovertemplate = paste(
+    '%{y:.1f}% of the population<br>',
+    'are %{x} year-olds.<br><extra></extra>'),
+  size = 2
+)
+for( ddx in 2:length( dates_E )) {
+  CBA_plot_E = CBA_plot_E %>% add_bars( 
+      data   = t_E[ date == dates_E[ ddx ] ],
+      x      = ~age_format,
+      y      = ~cases_norm*100, 
+      text   = format( dates_E[ ddx ], "%d %B" ),
+      name   = format( dates_E[ ddx ], "%d %B" ),
+      marker = list( color = palette_E[[ddx]] ),
+      hovertemplate = paste(
+        '%{y:.1f}% of the cases<br>',
+        'reported on %{text} <br>',
+        'were among %{x} year-olds.<br><extra></extra>')
+    )
+}
+CBA_plot_E = CBA_plot_E %>% layout( 
+  barmode = "group",
+  xaxis = list(
+    title = "Age group",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1
+  ),
+  yaxis   = list(
+    title = "Percentage of daily cases",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1
+  )
+)
+
+mean_age_plot_E = plot_ly( mean_age_E, x = ~date, y = ~mean_age, type = "scatter",  mode = "markers" ,
+                 color = ~date_colour, colors = palette_E,
+                 hovertemplate = paste(
+                   '<i>%{x|%d %B}</i><br>',
+                   'Mean age = %{y:.1f}<extra></extra>'),
+                 showlegend = FALSE,
+                 size = 3)
+mean_age_plot_E = mean_age_plot_E %>%
+  layout(showlegend = FALSE,
+  xaxis = list(
+    title = "Date",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    range=c(min(dates_E), max(dates_E) + 2)
+  ),
+  yaxis = list(
+    title = "Mean age of cases",
+    titlefont = f1,
+    showticklabels = TRUE,
+    tickfont = f1,
+    range=c(floor(min(mean_age_W$mean_age, mean_age_E$mean_age)) - 1, ceiling(max(mean_age_W$mean_age, mean_age_E$mean_age)) + 1)
+  )
+)
+
+### Wales plotting
+
 palette_W <- viridis( length( dates_W ), direction = -1 )
 
 # plot
@@ -261,8 +259,6 @@ CBA_plot_W = CBA_plot_W %>% layout(
   )
 )
 
-mean_age_W    = t_W[ , .( mean_age = sum( ( age_num + 2.5 ) * cases ) / sum(cases) ), by = "date"] 
-mean_age_W$date_colour <- as.factor(1:(length(dates_W) - 1))
 
 mean_age_plot_W = plot_ly( mean_age_W, x = ~date, y = ~mean_age, type = "scatter",  mode = "markers" ,
                            color = ~date_colour, colors = palette_W,
@@ -278,13 +274,14 @@ mean_age_plot_W = mean_age_plot_W %>%
            titlefont = f1,
            showticklabels = TRUE,
            tickfont = f1,
-           range=c(min(dates_W), max(dates_W) + 2)
+           range=c(min(dates_W), max(dates_W) + 1)
          ),
          yaxis = list(
            title = "Mean age of cases",
            titlefont = f1,
            showticklabels = TRUE,
-           tickfont = f1
+           tickfont = f1,
+           range=c(floor(min(mean_age_W$mean_age, mean_age_E$mean_age)) - 1, ceiling(max(mean_age_W$mean_age, mean_age_E$mean_age)) + 1)
          )
   )
 
