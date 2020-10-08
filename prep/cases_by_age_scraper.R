@@ -4,6 +4,9 @@ library( curl )
 library( data.table )
 library( httr )
 library( jsonlite )
+library( glue )
+library( stringr ) # for cases by age
+library( stringi ) # for cases by age
 
 updateCasesByAge = function( 
   nation = "",

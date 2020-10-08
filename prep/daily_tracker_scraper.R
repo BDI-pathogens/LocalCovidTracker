@@ -1,7 +1,6 @@
 library(EpiEstim)
 library(incidence)
 library(readr)
-library(icesTAF)
 library(tidyverse)
 library(httr)
 library(glue)
