@@ -63,6 +63,7 @@ updateCasesByAge = function(
     stop( "Invalid date returned")
   
   # check date is not today or later than today's date - sometimes there's an error in the API and we need to catch it
+  # comment this line out to manually over-ride:
   if ( date >= Sys.Date() ) stop( glue("Problem with the date: the date label for the {nation} data is {date}.") )
   
   # if "alwaysUpdate" is TRUE we carry on and update the data 

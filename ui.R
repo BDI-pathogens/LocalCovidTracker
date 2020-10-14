@@ -312,11 +312,11 @@ Click on dates in the legend (key) to show/hide results
 
           h3("Details"),
 
-          h5("In May and June we were analysing the publicly available Public Health England data which
+          HTML("<h5>In May and June we were analysing the publicly available Public Health England data which
               was Pillar 1 (hospital) data only.
               We refined our method to handle the expected delays between onset of infection and having a 
               hospital swab test.
-              This method is described in our pre-print (see 'About' tab) and is used for most of the results in that paper."),
+              The method is published <a href=\"http://www.thelancet.com/journals/landig/article/PIIS2589-7500(20)30241-7/fulltext\" target=\"_blank\">here</a> .</h5>"),
           
           h5("On 2nd July Public Health England changed to publishing the combined pillars 1 and 2 dataset, for which
              our delay functions were no longer appropriate (or as accurate, because the delays are more varied).
@@ -459,6 +459,8 @@ Click on dates in the legend (key) to show/hide results
            assigning weight to characteristics that are unrelated to local epidemic
            severity. Additionally, the possibility of over fitting (better matching the
            pre-treatment data at the expense of the post treatment) increases."),
+        
+        HTML("<h5>Full details of the method are published <a href=\"http://www.thelancet.com/journals/landig/article/PIIS2589-7500(20)30241-7/fulltext\" target=\"_blank\">here</a>.</h5>"),
 
 
         hr(),
