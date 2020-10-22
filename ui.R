@@ -52,6 +52,16 @@ ui <- fluidPage(
                         choices = ltlas.alphabetical,
                         selected = random.ltla)
           ),
+          
+          dateRangeInput("xrange", 
+                         h5("Select date range:"),
+                         start  = last.date-91,
+                         end    = last.date,
+                         min    = start.date,
+                         max    = last.date,
+                         format = "dd M yyyy"),
+
+          helpText("Note that the plots are truncated 9-12 days before the last date of data available - see details below."),
 
           hr(),
 
@@ -74,7 +84,7 @@ ui <- fluidPage(
 
           h4("Interpretation"),
           
-          h5("The last date shown in each graph is 9-12 days earlier than the last date for which
+          h5("The last date which can be shown in each graph is 9-12 days earlier than the last date for which
              we have case numbers. 
              This is to account for reporting lags and the delay between an infection
              starting and a swab being taken. 
@@ -225,7 +235,7 @@ ui <- fluidPage(
               uiOutput("updatedInfo")
             )
           ),
-          
+
         width=9
         ) # end mainPanel
       ) # end sidebarLayout

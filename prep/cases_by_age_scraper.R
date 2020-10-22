@@ -86,6 +86,10 @@ updateCasesByAge = function(
   maleCases   = as.data.table( data$maleCases )
   femaleCases = as.data.table( data$femaleCases )
   
+  # once (on 20th Oct update) the table came back double length for Wales, with each row repeated. Fixed as follows:
+  # maleCases <- maleCases[1:19,]
+  # femaleCases <- femaleCases[1:19,]
+  
   if( maleCases[ ,.N ] != expRows )
     stop( "not the expected number of rows in male cases")
   
