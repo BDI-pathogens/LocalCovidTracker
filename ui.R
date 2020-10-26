@@ -267,9 +267,14 @@ ui <- fluidPage(
 
           HTML("<h5>In the first plot we show the proportion of new cases reported which fall into each age category, each day. 
 Click on dates in the legend (key) to show/hide results 
-                for individual days.
-               The second plot presents the mean age of cases reported that day.</h5>"),
+                for individual days.</h5>"),
+          
+          HTML("<h5>The second plot presents the mean age of cases reported that day.</h5>"),
 
+          HTML("<h5>Finally, the third plot shows the absolute number of cases reported for each age each day.
+               You can show and hide age categories by clicking on the legend; 
+               double-clicking on an individual age category shows that age alone, making it easier to identify any trends.</h5>"),
+          
           HTML("<h5>Note that, unlike the other tabs where cases are plotted by their swab date,
                the age data is not linked to swab dates so we present each case by the date it was first publicly reported.
                If reporting delays differ across age groups it could bias the trends seen here.
@@ -285,6 +290,10 @@ Click on dates in the legend (key) to show/hide results
           uiOutput("MeanAgeCasesTitle"),
           
           withSpinner(plotlyOutput("meanCasesByAgePlot", height="60vh"), type=7),
+          
+          uiOutput("AbsCasesByAgeTitle"),
+          
+          withSpinner(plotlyOutput("AbsCasesByAgePlot", height="60vh"), type=7),
           
           hr(),
           

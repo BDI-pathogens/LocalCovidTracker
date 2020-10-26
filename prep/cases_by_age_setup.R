@@ -188,6 +188,7 @@ CBA_plot_E = CBA_plot_E %>% layout(
   )
 )
 
+
 mean_age_plot_E = plot_ly( mean_age_E, x = ~date, y = ~mean_age, type = "scatter",  mode = "markers" ,
                  color = ~date_colour, colors = palette_E,
                  hovertemplate = paste(
@@ -212,6 +213,19 @@ mean_age_plot_E = mean_age_plot_E %>%
     range=c(floor(min(mean_age_W$mean_age, mean_age_E$mean_age)) - 1, ceiling(max(mean_age_W$mean_age, mean_age_E$mean_age)) + 1)
   )
 )
+
+# plot absolute numbers of cases for each age
+abs_age_palette <- viridis(19, option="plasma", direction=-1)
+
+# age format is plotting in an unhelpful order, with "5-9" following "45-40"
+t_E$age_format <- factor(t_E$age_format, levels=sort(unique(t_E$age_format))[c(1,10,2:9,11:19)])
+
+CBA_absolute_E <- plot_ly(t_E, x= ~date, y= ~cases, color= ~age_format, colors=abs_age_palette) %>%
+  add_lines(text = t_E$age_format,
+            hovertemplate = paste(
+              'On %{x|%b %d} there were %{y} cases<br>among %{text} year-olds.<extra></extra>'))
+
+
 
 ### Wales plotting
 
@@ -284,5 +298,15 @@ mean_age_plot_W = mean_age_plot_W %>%
            range=c(floor(min(mean_age_W$mean_age, mean_age_E$mean_age)) - 1, ceiling(max(mean_age_W$mean_age, mean_age_E$mean_age)) + 1)
          )
   )
+
+# age format is plotting in an unhelpful order, with "5-9" following "45-40"
+t_W$age_format <- factor(t_W$age_format, levels=sort(unique(t_W$age_format))[c(1,10,2:9,11:19)])
+
+CBA_absolute_W <- plot_ly(t_W, x= ~date, y= ~cases, color= ~age_format, colors=abs_age_palette) %>%
+  add_lines(text = t_W$age_format,
+            hovertemplate = paste(
+              'On %{x|%b %d} there were %{y} cases<br>among %{text} year-olds.<extra></extra>'))
+
+
 
 last.date.of.ages.data <- format( max(dates_E,dates_W),  "%d %B %Y")

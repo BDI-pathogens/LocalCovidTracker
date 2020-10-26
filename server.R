@@ -934,6 +934,17 @@ server <- function(input, output, session) {
     else if (c == "Wales") mean_age_plot_W
   })
   
+  output$AbsCasesByAgeTitle <- renderUI({
+    c <- getCountry()
+    h3(glue("Absolute number of cases in {c} by date"))
+  })
+  
+  output$AbsCasesByAgePlot <- renderPlotly({
+    c <- getCountry()
+    if (c == "England") CBA_absolute_E
+    else if (c == "Wales") CBA_absolute_W
+  })
+  
   output$p1IncidencePlot <- renderPlotly({
     UTLAToHighlight <- getUTLAP1()
     
