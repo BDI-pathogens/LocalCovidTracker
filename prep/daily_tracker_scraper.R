@@ -16,6 +16,7 @@ population.data <- read.csv("data/population_by_region.csv", stringsAsFactors = 
 # Get the latest utla data
 
 load("data/utlas.alphabetical.RData")
+utla.codes <- read.csv("data/utla.codes.csv")
 
 AREA_TYPE = "utla"
 
@@ -25,10 +26,11 @@ endpoint <- "https://api.coronavirus.data.gov.uk/v1/data"
 structure <- list(
   Date = "date", 
   Area = "areaName", 
+  AreaCode = "areaCode",
   TotalCases = "cumCasesBySpecimenDate"
 )
 
-dat.UK.utla <- data.frame("Date"=NA,"Area"=NA,"TotalCases"=NA)
+dat.UK.utla <- data.frame("Date"=NA,"Area"=NA,"AreaCode"=NA,"TotalCases"=NA)
 
 for (utla in utlas.alphabetical) {
   print(utla)
@@ -175,6 +177,7 @@ df.for.plotting.R.utlas <- cbind.data.frame(
   "Dates" = unlist(lapply(1:length(utlas.alphabetical), function(area) utlas.R.backcalculated[[area]]$dates[-(1:7)] - 4)), # R estimates are labelled by the end of the week over which they were calculated; shift it to the middle
   "R" = unlist(lapply(1:length(utlas.alphabetical), function(area) utlas.R.backcalculated[[area]]$R$`Mean(R)`)),
   "Area" = unlist(lapply(1:length(utlas.alphabetical), function(area) rep(utlas.alphabetical[[area]], nrow(utlas.R.backcalculated[[area]]$R)))),
+  "AreaCode" = unlist(lapply(1:nrow(utla.codes), function(area) rep(utla.codes$Code[[area]], nrow(utlas.R.backcalculated[[area]]$R)))),
   "lower" = unlist(lapply(1:length(utlas.alphabetical), function(area) utlas.R.backcalculated[[area]]$R$`Quantile.0.025(R)`)),
   "upper" = unlist(lapply(1:length(utlas.alphabetical), function(area) utlas.R.backcalculated[[area]]$R$`Quantile.0.975(R)`))
 )
@@ -188,7 +191,8 @@ save(df.for.plotting.R.utlas, file="data/latest_df.for.plotting.R.utlas.RData")
 df.for.plotting.incidence.utlas <- cbind.data.frame(
   "Dates" = unlist(lapply(1:length(utlas.alphabetical), function(area) utlas.incidence.backcalculation[[area]]$dates)),
   "Incidence" = unlist(lapply(1:length(utlas.alphabetical), function(area) utlas.incidence.backcalculation[[area]]$infections)),
-  "Area"= unlist(lapply(1:length(utlas.alphabetical), function(area) rep(utlas.alphabetical[[area]], length(utlas.incidence.backcalculation[[area]]$dates))))
+  "Area"= unlist(lapply(1:length(utlas.alphabetical), function(area) rep(utlas.alphabetical[[area]], length(utlas.incidence.backcalculation[[area]]$dates)))),
+  "AreaCode" = unlist(lapply(1:nrow(utla.codes), function(area) rep(utla.codes$Code[[area]], length(utlas.incidence.backcalculation[[area]]$dates))))
 )
 
 df.for.plotting.incidence.utlas$scaled_per_capita <- sapply(1:nrow(df.for.plotting.incidence.utlas), function(x) {
@@ -213,7 +217,8 @@ projected.cases.utlas <- cbind.data.frame(
     })
   }
   )),
-  "Area"= unlist(lapply(1:length(utlas.alphabetical), function(area) rep(utlas.alphabetical[[area]], nrow(utlas.R.backcalculated[[area]]$R))))
+  "Area"= unlist(lapply(1:length(utlas.alphabetical), function(area) rep(utlas.alphabetical[[area]], nrow(utlas.R.backcalculated[[area]]$R)))),
+  "AreaCode" = unlist(lapply(1:nrow(utla.codes), function(area) rep(utla.codes$Code[[area]], nrow(utlas.R.backcalculated[[area]]$R))))
 )
 
 projected.cases.utlas$Dates <- as.Date(projected.cases.utlas$Dates,  origin = as.Date("1970-01-01"))
@@ -234,6 +239,7 @@ save(projected.cases.utlas, file="data/latest_projected.cases.utlas.RData")
 # Get the latest regional data
 
 load("data/regions.alphabetical.RData")
+region.codes <- read.csv("data/region.codes.csv")
 
 AREA_TYPE = "region"
 
@@ -243,10 +249,11 @@ endpoint <- "https://api.coronavirus.data.gov.uk/v1/data"
 structure <- list(
   Date = "date", 
   Area = "areaName", 
+  AreaCode = "areaCode",
   TotalCases = "cumCasesBySpecimenDate"
 )
 
-dat.UK.regions <- data.frame("Date"=NA,"Area"=NA,"TotalCases"=NA)
+dat.UK.regions <- data.frame("Date"=NA,"Area"=NA,"AreaCode"=NA,"TotalCases"=NA)
 
 for (region in regions.alphabetical) {
   print(region)
@@ -391,6 +398,7 @@ df.for.plotting.R.regions <- cbind.data.frame(
   "Dates" = unlist(lapply(1:length(regions.alphabetical), function(area) regions.R.backcalculated[[area]]$dates[-(1:7)] - 4)), # R estimates are labelled by the end of the week over which they were calculated; shift it to the middle
   "R" = unlist(lapply(1:length(regions.alphabetical), function(area) regions.R.backcalculated[[area]]$R$`Mean(R)`)),
   "Area" = unlist(lapply(1:length(regions.alphabetical), function(area) rep(regions.alphabetical[[area]], nrow(regions.R.backcalculated[[area]]$R)))),
+  "AreaCode" = unlist(lapply(1:nrow(region.codes), function(area) rep(region.codes$Code[[area]], nrow(regions.R.backcalculated[[area]]$R)))),
   "lower" = unlist(lapply(1:length(regions.alphabetical), function(area) regions.R.backcalculated[[area]]$R$`Quantile.0.025(R)`)),
   "upper" = unlist(lapply(1:length(regions.alphabetical), function(area) regions.R.backcalculated[[area]]$R$`Quantile.0.975(R)`))
 )
@@ -404,7 +412,8 @@ save(df.for.plotting.R.regions, file="data/latest_df.for.plotting.R.regions.RDat
 df.for.plotting.incidence.regions <- cbind.data.frame(
   "Dates" = unlist(lapply(1:length(regions.alphabetical), function(area) regions.incidence.backcalculation[[area]]$dates)),
   "Incidence" = unlist(lapply(1:length(regions.alphabetical), function(area) regions.incidence.backcalculation[[area]]$infections)),
-  "Area"= unlist(lapply(1:length(regions.alphabetical), function(area) rep(regions.alphabetical[[area]], length(regions.incidence.backcalculation[[area]]$dates))))
+  "Area"= unlist(lapply(1:length(regions.alphabetical), function(area) rep(regions.alphabetical[[area]], length(regions.incidence.backcalculation[[area]]$dates)))),
+  "AreaCode" = unlist(lapply(1:nrow(region.codes), function(area) rep(region.codes$Code[[area]], length(regions.incidence.backcalculation[[area]]$dates))))
 )
 
 df.for.plotting.incidence.regions$scaled_per_capita <- sapply(1:nrow(df.for.plotting.incidence.regions), function(x) {
@@ -429,7 +438,8 @@ projected.cases.regions <- cbind.data.frame(
     })
   }
   )),
-  "Area"= unlist(lapply(1:length(regions.alphabetical), function(area) rep(regions.alphabetical[[area]], nrow(regions.R.backcalculated[[area]]$R))))
+  "Area"= unlist(lapply(1:length(regions.alphabetical), function(area) rep(regions.alphabetical[[area]], nrow(regions.R.backcalculated[[area]]$R)))),
+  "AreaCode" = unlist(lapply(1:nrow(region.codes), function(area) rep(region.codes$Code[[area]], nrow(regions.R.backcalculated[[area]]$R))))
 )
 
 projected.cases.regions$Dates <- as.Date(projected.cases.regions$Dates,  origin = as.Date("1970-01-01"))
@@ -451,6 +461,7 @@ save(projected.cases.regions, file="data/latest_projected.cases.regions.RData")
 # Get the latest ltla data
 
 load("data/ltlas.alphabetical.RData")
+ltla.codes <- read.csv("data/ltla.codes.csv")
 
 AREA_TYPE = "ltla"
 
@@ -460,10 +471,11 @@ endpoint <- "https://api.coronavirus.data.gov.uk/v1/data"
 structure <- list(
   Date = "date", 
   Area = "areaName", 
+  AreaCode = "areaCode",
   TotalCases = "cumCasesBySpecimenDate"
 )
 
-dat.UK.ltla <- data.frame("Date"=NA,"Area"=NA,"TotalCases"=NA)
+dat.UK.ltla <- data.frame("Date"=NA,"Area"=NA,"AreaCode"=NA,"TotalCases"=NA)
 
 #tmp <- setdiff(ltlas.alphabetical, dat.UK.ltla$Area)
 #for (ltla in tmp) {
@@ -613,6 +625,7 @@ df.for.plotting.R.ltlas <- cbind.data.frame(
   "Dates" = unlist(lapply(1:length(ltlas.alphabetical), function(area) ltlas.R.backcalculated[[area]]$dates[-(1:7)] - 4)), # R estimates are labelled by the end of the week over which they were calculated; shift it to the middle
   "R" = unlist(lapply(1:length(ltlas.alphabetical), function(area) ltlas.R.backcalculated[[area]]$R$`Mean(R)`)),
   "Area" = unlist(lapply(1:length(ltlas.alphabetical), function(area) rep(ltlas.alphabetical[[area]], nrow(ltlas.R.backcalculated[[area]]$R)))),
+  "AreaCode" = unlist(lapply(1:nrow(ltla.codes), function(area) rep(ltla.codes$Code[[area]], nrow(ltlas.R.backcalculated[[area]]$R)))),
   "lower" = unlist(lapply(1:length(ltlas.alphabetical), function(area) ltlas.R.backcalculated[[area]]$R$`Quantile.0.025(R)`)),
   "upper" = unlist(lapply(1:length(ltlas.alphabetical), function(area) ltlas.R.backcalculated[[area]]$R$`Quantile.0.975(R)`))
 )
@@ -626,7 +639,8 @@ save(df.for.plotting.R.ltlas, file="data/latest_df.for.plotting.R.ltlas.RData")
 df.for.plotting.incidence.ltlas <- cbind.data.frame(
   "Dates" = unlist(lapply(1:length(ltlas.alphabetical), function(area) ltlas.incidence.backcalculation[[area]]$dates)),
   "Incidence" = unlist(lapply(1:length(ltlas.alphabetical), function(area) ltlas.incidence.backcalculation[[area]]$infections)),
-  "Area"= unlist(lapply(1:length(ltlas.alphabetical), function(area) rep(ltlas.alphabetical[[area]], length(ltlas.incidence.backcalculation[[area]]$dates))))
+  "Area"= unlist(lapply(1:length(ltlas.alphabetical), function(area) rep(ltlas.alphabetical[[area]], length(ltlas.incidence.backcalculation[[area]]$dates)))),
+  "AreaCode" = unlist(lapply(1:nrow(ltla.codes), function(area) rep(ltla.codes$Code[[area]], length(ltlas.incidence.backcalculation[[area]]$dates))))
 )
 
 df.for.plotting.incidence.ltlas$scaled_per_capita <- sapply(1:nrow(df.for.plotting.incidence.ltlas), function(x) {
@@ -651,7 +665,8 @@ projected.cases.ltlas <- cbind.data.frame(
     })
   }
   )),
-  "Area"= unlist(lapply(1:length(ltlas.alphabetical), function(area) rep(ltlas.alphabetical[[area]], nrow(ltlas.R.backcalculated[[area]]$R))))
+  "Area"= unlist(lapply(1:length(ltlas.alphabetical), function(area) rep(ltlas.alphabetical[[area]], nrow(ltlas.R.backcalculated[[area]]$R)))),
+  "AreaCode" = unlist(lapply(1:nrow(ltla.codes), function(area) rep(ltla.codes$Code[[area]], nrow(ltlas.R.backcalculated[[area]]$R))))
 )
 
 projected.cases.ltlas$Dates <- as.Date(projected.cases.ltlas$Dates,  origin = as.Date("1970-01-01"))
