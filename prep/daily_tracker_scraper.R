@@ -12,67 +12,6 @@ source("prep/backCalc_functions.R")
 # get population size data
 population.data <- read.csv("data/population_by_region.csv", stringsAsFactors = FALSE)
 
-#### get the latest data from PHE and NHSX
-
-# code to save names of regions, utlas and ltlas: (shouldn't need re-running)
-
-# endpoint <- 'https://api.coronavirus.data.gov.uk/v1/data?filters=areaType=region;date=2020-05-01&structure={"date":"date","Area":"areaName","newCases":"newCasesBySpecimenDate"}'
-# 
-# httr::GET(
-#   url = endpoint,
-#   timeout(10)
-# ) -> response
-# 
-# if (response$status_code >= 400) {
-#   err_msg = httr::http_status(response)
-#   stop(err_msg)
-# }
-# 
-# # Convert response from binary to JSON:
-# json_text <- content(response, "text")
-# data      <- jsonlite::fromJSON(json_text)
-# 
-# regions.alphabetical <- sort(unique(data$data$Area))
-# save(regions.alphabetical, file="data/regions.alphabetical.RData")
-# 
-# endpoint <- 'https://api.coronavirus.data.gov.uk/v1/data?filters=areaType=utla;date=2020-05-01&structure={"date":"date","Area":"areaName","newCases":"newCasesBySpecimenDate"}'
-# 
-# httr::GET(
-#   url = endpoint,
-#   timeout(10)
-# ) -> response
-# 
-# if (response$status_code >= 400) {
-#   err_msg = httr::http_status(response)
-#   stop(err_msg)
-# }
-# 
-# # Convert response from binary to JSON:
-# json_text <- content(response, "text")
-# data      <- jsonlite::fromJSON(json_text)
-# 
-# utlas.alphabetical <- sort(unique(data$data$Area))
-# save(utlas.alphabetical, file="data/utlas.alphabetical.RData")
-# 
-# endpoint <- 'https://api.coronavirus.data.gov.uk/v1/data?filters=areaType=ltla;date=2020-05-01&structure={"date":"date","Area":"areaName","newCases":"newCasesBySpecimenDate"}'
-# 
-# httr::GET(
-#   url = endpoint,
-#   timeout(10)
-# ) -> response
-# 
-# if (response$status_code >= 400) {
-#   err_msg = httr::http_status(response)
-#   stop(err_msg)
-# }
-# 
-# # Convert response from binary to JSON:
-# json_text <- content(response, "text")
-# data      <- jsonlite::fromJSON(json_text)
-# 
-# ltlas.alphabetical <- sort(unique(data$data$Area))
-# save(ltlas.alphabetical, file="data/ltlas.alphabetical.RData")
-
 #################################
 # Get the latest utla data
 
