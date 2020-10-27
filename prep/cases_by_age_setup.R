@@ -223,7 +223,22 @@ t_E$age_format <- factor(t_E$age_format, levels=sort(unique(t_E$age_format))[c(1
 CBA_absolute_E <- plot_ly(t_E, x= ~date, y= ~cases, color= ~age_format, colors=abs_age_palette) %>%
   add_lines(text = t_E$age_format,
             hovertemplate = paste(
-              'On %{x|%b %d} there were %{y} cases<br>among %{text} year-olds.<extra></extra>'))
+              'On %{x|%b %d} there were %{y} cases<br>among %{text} year-olds.<extra></extra>')) %>% 
+  layout(
+    xaxis = list(
+      title = "Date",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1
+    ),
+    yaxis   = list(
+      title = "Daily cases",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1
+    )
+  )
+
 
 
 
@@ -305,7 +320,22 @@ t_W$age_format <- factor(t_W$age_format, levels=sort(unique(t_W$age_format))[c(1
 CBA_absolute_W <- plot_ly(t_W, x= ~date, y= ~cases, color= ~age_format, colors=abs_age_palette) %>%
   add_lines(text = t_W$age_format,
             hovertemplate = paste(
-              'On %{x|%b %d} there were %{y} cases<br>among %{text} year-olds.<extra></extra>'))
+              'On %{x|%b %d} there were %{y} cases<br>among %{text} year-olds.<extra></extra>')) %>% 
+  layout(
+    xaxis = list(
+      title = "Date",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1
+    ),
+    yaxis   = list(
+      title = "Daily cases",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1
+    )
+  )
+               
 
 
 
