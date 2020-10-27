@@ -108,6 +108,6 @@ updateCasesByAge = function(
   fwrite( femaleCases, file = sprintf( glue("%s%s_femalecases{nsuffix}.csv"), dir, date ) )
 }
 
-updateCasesByAge("england", dir = "data/", alwaysUpdate = FALSE)
+updateCasesByAge(nation = "england", dir = "data/", alwaysUpdate = FALSE)
 
-updateCasesByAge("wales", dir = "data/", alwaysUpdate = FALSE)
+updateCasesByAge(nation = "wales", dir = "data/", alwaysUpdate = FALSE)
