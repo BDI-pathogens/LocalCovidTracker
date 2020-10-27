@@ -110,8 +110,6 @@ server <- function(input, output, session) {
                  widespread testing
                  programme",
                      showarrow = F
-                     #ax = 20,
-                     #ay = -40
                    ) %>%
       layout(xaxis = list(
         title = "",
@@ -164,7 +162,8 @@ server <- function(input, output, session) {
                    y = 1, yend = 1,
                    line=list(dash='dash',
                              color="black"),
-                   hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                   hovertemplate = paste('<extra></extra>')) %>% 
+      add_annotations(
                      x= "2020-03-05",
                      y= 1.5,
                      xref = "x",
@@ -175,8 +174,6 @@ server <- function(input, output, session) {
                  R appears to be
                  increasing here",
                      showarrow = F
-                     #ax = 20,
-                     #ay = -40
                    ) %>%
       add_segments(type="line",
                    x = "2020-05-18", xend = "2020-05-18", 
@@ -193,8 +190,6 @@ server <- function(input, output, session) {
                  widespread testing
                  programme",
                      showarrow = F
-                     #ax = 20,
-                     #ay = -40
                    ) %>%
       layout(xaxis = list(
         title = "",
@@ -258,8 +253,6 @@ server <- function(input, output, session) {
                  widespread testing
                  programme",
                      showarrow = F
-                     #ax = 20,
-                     #ay = -40
                    ) %>%
       layout(xaxis = list(
         title = "",
@@ -307,7 +300,8 @@ server <- function(input, output, session) {
                    y = 1, yend = 1,
                    line=list(dash='dash',
                              color="black"),
-                   hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                   hovertemplate = paste('<extra></extra>')) %>% 
+      add_annotations(
                      x= "2020-03-05",
                      y= 1.5,
                      xref = "x",
@@ -318,8 +312,6 @@ server <- function(input, output, session) {
                  R appears to be 
                  increasing here",
                      showarrow = F
-                     #ax = 20,
-                     #ay = -40
                    ) %>%
       add_segments(type="line",
                    x = "2020-05-18", xend = "2020-05-18", 
@@ -336,8 +328,6 @@ server <- function(input, output, session) {
                  widespread testing
                  programme",
                      showarrow = F
-                     #ax = 20,
-                     #ay = -40
                    ) %>%
       layout(xaxis = list(
         title = "",
@@ -406,8 +396,6 @@ server <- function(input, output, session) {
                  widespread testing
                  programme",
                      showarrow = F
-                     #ax = 20,
-                     #ay = -40
                    ) %>%
       layout(xaxis = list(
         title = "",
@@ -476,8 +464,6 @@ server <- function(input, output, session) {
                  widespread testing
                  programme",
                      showarrow = F
-                     #ax = 20,
-                     #ay = -40
                    ) %>%
       layout(xaxis = list(
         title = "",
@@ -540,8 +526,6 @@ server <- function(input, output, session) {
                  widespread testing
                  programme",
                      showarrow = F
-                     #ax = 20,
-                     #ay = -40
                    ) %>%
       layout(xaxis = list(
         title = "",
@@ -604,8 +588,6 @@ server <- function(input, output, session) {
                  widespread testing
                  programme",
                      showarrow = F
-                     #ax = 20,
-                     #ay = -40
                    ) %>%
       layout(xaxis = list(
         title = "",
@@ -676,8 +658,6 @@ server <- function(input, output, session) {
                  widespread testing
                  programme",
                      showarrow = F
-                     #ax = 20,
-                     #ay = -40
                    ) %>%
       layout(xaxis = list(
         title = "",
@@ -731,6 +711,18 @@ server <- function(input, output, session) {
                    line=list(dash='dash',
                              color="black"),
                    hovertemplate = paste('<extra></extra>')) %>% 
+      add_annotations(
+        x= "2020-03-05",
+        y= 1.5,
+        xref = "x",
+        yref = "y",
+        text = "
+                 See 'Details' for
+                 explanation of why
+                 R appears to be
+                 increasing here",
+        showarrow = F
+      ) %>%
       add_segments(type="line",
                    x = "2020-05-18", xend = "2020-05-18", 
                    y = 0, yend = max(df.for.plotting.R.ltlas$R),
@@ -746,8 +738,6 @@ server <- function(input, output, session) {
                  widespread testing
                  programme",
                      showarrow = F
-                     #ax = 20,
-                     #ay = -40
                    ) %>%
       layout(xaxis = list(
         title = "",
@@ -809,8 +799,6 @@ server <- function(input, output, session) {
                  widespread testing
                  programme",
                      showarrow = F
-                     #ax = 20,
-                     #ay = -40
                    ) %>%
       layout(xaxis = list(
         title = "",
@@ -863,7 +851,20 @@ server <- function(input, output, session) {
                    y = 0, yend = max(df.for.plotting.R.ltlas$R),
                    line=list(dash='dash',
                              color="lightgrey"),
-                   hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                   hovertemplate = paste('<extra></extra>')) %>%
+      add_annotations(
+        x= "2020-03-05",
+        y= 1.5,
+        xref = "x",
+        yref = "y",
+        text = "
+                 See 'Details' for
+                 explanation of why
+                 R appears to be
+                 increasing here",
+        showarrow = F
+      ) %>%
+      add_annotations(
                      x= "2020-05-13",
                      y= 3,
                      xref = "x",
@@ -873,8 +874,6 @@ server <- function(input, output, session) {
                  widespread testing
                  programme",
                      showarrow = F
-                     #ax = 20,
-                     #ay = -40
                    ) %>%
       layout(xaxis = list(
         title = "",
