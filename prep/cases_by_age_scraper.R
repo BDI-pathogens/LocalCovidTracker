@@ -57,8 +57,30 @@ updateCasesByAge = function(
   data = content(response, "text", encoding="UTF-8")
   data = jsonlite::fromJSON(data)$data
   
-  # get and check date
-  date = as.Date( data$date );
+  # From 26th Oct the table for England has been including historic cases. These are now saved; extract just the latest
+  if (nation == "england") {
+    maleCases <- as.data.table(data[1,]$maleCases[[1]])
+    femaleCases <- as.data.table(data[1,]$femaleCases[[1]])
+    date <- as.Date(data[1,][[1]])
+  } else {
+    maleCases   = as.data.table( data$maleCases )
+    femaleCases = as.data.table( data$femaleCases )
+    
+    # From 20th Oct update the table has been coming back double length for Wales, with each row repeated. Fixed as follows:
+    maleCases <- maleCases[1:19,]
+    femaleCases <- femaleCases[1:19,]
+    
+    # get and check female and male cases
+    if( is.null( data$maleCases  ) )
+      stop( "Invalid maleCases returned")
+    
+    if( is.null( data$femaleCases  ) )
+      stop( "Invalid femaleCases returned")
+    
+    # get and check date
+    date = as.Date( data$date )
+  }
+  
   if( is.null( date ) )
     stop( "Invalid date returned")
   
@@ -74,22 +96,6 @@ updateCasesByAge = function(
       dates = str_replace_all( str_replace_all( files, dir, "" ), glue("_malecases{nsuffix}.csv"), "" )
       
       if ( date <= max(dates) ) stop(glue("The {nation} data is already up to date."))
-  }
-  
-  # get and check female and male cases
-  if( is.null( data$maleCases  ) )
-    stop( "Invalid maleCases returned")
-  
-  if( is.null( data$femaleCases  ) )
-    stop( "Invalid femaleCases returned")
-  
-  maleCases   = as.data.table( data$maleCases )
-  femaleCases = as.data.table( data$femaleCases )
-  
-  # From 20th Oct update the table has been coming back double length for Wales, with each row repeated. Fixed as follows:
-  if (nation == "wales") {
-    maleCases <- maleCases[1:19,]
-    femaleCases <- femaleCases[1:19,]
   }
   
   if( maleCases[ ,.N ] != expRows )
@@ -108,6 +114,6 @@ updateCasesByAge = function(
   fwrite( femaleCases, file = sprintf( glue("%s%s_femalecases{nsuffix}.csv"), dir, date ) )
 }
 
-updateCasesByAge(nation = "england", dir = "data/", alwaysUpdate = FALSE)
+updateCasesByAge(nation = "england", dir = "data/", alwaysUpdate = TRUE)
 
 updateCasesByAge(nation = "wales", dir = "data/", alwaysUpdate = FALSE)
