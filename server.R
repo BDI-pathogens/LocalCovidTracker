@@ -28,7 +28,16 @@ server <- function(input, output, session) {
   
   # get country on the cases by age page
   getCountry <- reactive({
-    input$cases.by.age.country
+    input$CBA_country
+  })
+  
+  # get date range on the cases by age page
+  getXStartCBA <- reactive({
+    input$xrange_CBA[[1]]
+  })
+  
+  getXEndCBA <- reactive({
+    input$xrange_CBA[[2]]
   })
   
   # get utla on the pillar 1 tracker page
@@ -100,7 +109,8 @@ server <- function(input, output, session) {
                    y = 0, yend = ceiling(max(df.for.plotting.incidence.utlas$scaled_per_capita, na.rm=TRUE)) + 1,
                    line=list(dash='dash',
                              color="lightgrey"),
-                   hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                   hovertemplate = paste('<extra></extra>')) %>% 
+      add_annotations(
                      x= "2020-05-13",
                      y= 35,
                      xref = "x",
@@ -918,7 +928,28 @@ server <- function(input, output, session) {
   
   output$casesByAgePlot <- renderPlotly({
     c <- getCountry()
-    if (c == "England") CBA_plot_E
+    if (c == "England") {
+      x.start <- getXStartCBA()
+      x.end <- getXEndCBA()
+      date.nos <- which(dates_E %in% seq(as.Date(x.start),as.Date(x.end),by=1))
+      palette_E <- viridis( length( date.nos ), direction = -1 )
+      
+      for( ddx in date.nos) {
+        CBA_plot_E = CBA_plot_E %>% add_bars( 
+          data   = t_E[ date == dates_E[ ddx ] ],
+          x      = ~age_format,
+          y      = ~cases_norm*100, 
+          text   = format( dates_E[ ddx ], "%d %B" ),
+          name   = format( dates_E[ ddx ], "%d %B" ),
+          marker = list( color = palette_E[[which(date.nos == ddx)]] ),
+          hovertemplate = paste(
+            '%{y:.1f}% of the cases<br>',
+            'reported on %{text} <br>',
+            'were among %{x} year-olds.<br><extra></extra>')
+        )
+      }
+      CBA_plot_E
+    }
     else if (c == "Wales") CBA_plot_W
   })
   
@@ -1122,7 +1153,7 @@ server <- function(input, output, session) {
   output$updatedInfo <- renderUI({
     last.datestamp <- getLastDatestamp()
     last.date.of.data <- getLastDateOfData()
-    HTML(glue("<h5>Last updated {last.datestamp} using data up to {last.date.of.data}.</h5>"))
+    HTML(glue("<h5>Last updated {last.datestamp} <br>using data up to {last.date.of.data}.</h5>"))
   })
   
   output$updatedInfoAges <- renderUI({

@@ -249,10 +249,21 @@ ui <- fluidPage(
         sidebarPanel(
           
           selectInput(
-            "cases.by.age.country",
+            "CBA_country",
             h3("Select country:"),
             choices = c("England", "Wales"),
             selected = random.country
+          ),
+          
+          conditionalPanel(
+            condition = "input.CBA_country == 'England'",
+            dateRangeInput("xrange_CBA", 
+                           h5("Select date range:"),
+                           start  = last.date-91,
+                           end    = last.date,
+                           min    = "2020-03-15",
+                           max    = last.date,
+                           format = "dd M yyyy")
           ),
           
           h3("Details"),
@@ -260,8 +271,8 @@ ui <- fluidPage(
           HTML("<h5>Each day
                <a href=\"https://coronavirus.data.gov.uk/about-data\" target=\"_blank\">PHE and NHSX</a> 
                report the total (cumulative) number of new cases in each age category. 
-               We have been logging this data since late August for England and 
-               since late September for Wales, and we present it here as an
+               This has been made available for all dates for England, and we have been logging the data for
+               Wales since late September. We present it here as an
                indication of how the epidemic is spreading across age groups
                in each country.</h5>"),
 

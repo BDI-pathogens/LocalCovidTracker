@@ -158,20 +158,6 @@ CBA_plot_E = CBA_plot_E %>% add_trace(
     'are %{x} year-olds.<br><extra></extra>'),
   size = 2
 )
-for( ddx in 2:length( dates_E )) {
-  CBA_plot_E = CBA_plot_E %>% add_bars( 
-      data   = t_E[ date == dates_E[ ddx ] ],
-      x      = ~age_format,
-      y      = ~cases_norm*100, 
-      text   = format( dates_E[ ddx ], "%d %B" ),
-      name   = format( dates_E[ ddx ], "%d %B" ),
-      marker = list( color = palette_E[[ddx]] ),
-      hovertemplate = paste(
-        '%{y:.1f}% of the cases<br>',
-        'reported on %{text} <br>',
-        'were among %{x} year-olds.<br><extra></extra>')
-    )
-}
 CBA_plot_E = CBA_plot_E %>% layout( 
   barmode = "group",
   xaxis = list(
@@ -195,8 +181,24 @@ mean_age_plot_E = plot_ly( mean_age_E, x = ~date, y = ~mean_age, type = "scatter
                    '<i>%{x|%d %B}</i><br>',
                    'Mean age = %{y:.1f}<extra></extra>'),
                  showlegend = FALSE,
-                 size = 3)
-mean_age_plot_E = mean_age_plot_E %>%
+                 size = 3) %>%
+  # add_segments(type="line",
+  #              x = as.Date("2020-05-18"), xend = as.Date("2020-05-18"),
+  #              y = 0, yend = 70,
+  #              line=list(dash='dash',
+  #                        color="lightgrey"),
+  #              hovertemplate = paste('<extra></extra>')) %>%
+  # add_annotations(
+  #   x= "2020-05-18",
+  #   y= 50,
+  #   xref = "x",
+  #   yref = "y",
+  #   text = "
+  #                Launch of 
+  #                widespread testing
+  #                programme",
+  #   showarrow = F
+  # )
   layout(showlegend = FALSE,
   xaxis = list(
     title = "Date",
@@ -212,7 +214,7 @@ mean_age_plot_E = mean_age_plot_E %>%
     tickfont = f1,
     range=c(floor(min(mean_age_W$mean_age, mean_age_E$mean_age)) - 1, ceiling(max(mean_age_W$mean_age, mean_age_E$mean_age)) + 1)
   )
-)
+) 
 
 # plot absolute numbers of cases for each age
 abs_age_palette <- viridis(19, option="plasma", direction=-1)
@@ -237,7 +239,26 @@ CBA_absolute_E <- plot_ly(t_E, x= ~date, y= ~cases, color= ~age_format, colors=a
       showticklabels = TRUE,
       tickfont = f1
     )
+  ) %>%
+  add_segments(type="line",
+               x = "2020-05-18", xend = "2020-05-18", 
+               y = 0, yend = 3000,
+               line=list(dash='dash',
+                         color="lightgrey"),
+               hovertemplate = paste('<extra></extra>'),
+               showlegend = FALSE) %>%
+  add_annotations(
+    x= "2020-05-13",
+    y= 1000,
+    xref = "x",
+    yref = "y",
+    text = "
+                 Launch of 
+                 widespread testing
+                 programme",
+    showarrow = F
   )
+
 
 
 
@@ -310,7 +331,7 @@ mean_age_plot_W = mean_age_plot_W %>%
            titlefont = f1,
            showticklabels = TRUE,
            tickfont = f1,
-           range=c(floor(min(mean_age_W$mean_age, mean_age_E$mean_age)) - 1, ceiling(max(mean_age_W$mean_age, mean_age_E$mean_age)) + 1)
+           range=c(floor(min(mean_age_W$mean_age)) - 1, ceiling(max(mean_age_W$mean_age)) + 1)
          )
   )
 
