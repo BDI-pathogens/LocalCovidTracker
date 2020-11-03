@@ -998,32 +998,40 @@ server <- function(input, output, session) {
     h3(glue("Absolute number of cases in {la} by specimen date"))
   })
   
-  output$LACasesByAgePlot <- renderPlotly({
+  getLAData <- reactive({
     level <- c("","utla","ltla")[[as.numeric(getCBALevel())]] 
     la <- getLA()
     age_breadth <- getAgeBreadth()
-
-    tmp <- CBA_data %>% 
+    
+    la_data <- CBA_data %>% 
       filter(areaType == level) %>% 
       filter(areaName == la) 
     
     if (age_breadth == "narrow") {
-      ages.to.plot <- unique(tmp$age)[1:19]
-      tmp <- tmp %>% filter(age %in% ages.to.plot)
-      tmp$age_format <- str_replace_all( tmp$age, "_", "-")
-      tmp$age_format <- factor(tmp$age_format, levels=sort(unique(tmp$age_format))[c(1,10,2:9,11:19)])
-      tmp.palette <- viridis(19, option="plasma", direction=-1)
+      ages.to.plot <- unique(la_data$age)[1:19]
+      la_data <- la_data %>% filter(age %in% ages.to.plot)
+      la_data$age_format <- str_replace_all( la_data$age, "_", "-")
+      la_data$age_format <- factor(la_data$age_format, levels=sort(unique(la_data$age_format))[c(1,10,2:9,11:19)])
     }
     else {
-      ages.to.plot <- unique(tmp$age)[c(22,21)]
-      tmp <- tmp %>% filter(age %in% ages.to.plot)
-      tmp$age_format <- str_replace_all( tmp$age, "_", "-")
-      tmp.palette <- viridis(19, option="plasma", direction=-1)[c(7, 16)]
+      ages.to.plot <- unique(la_data$age)[c(22,21)]
+      la_data <- la_data %>% filter(age %in% ages.to.plot)
+      la_data$age_format <- str_replace_all( la_data$age, "_", "-")
     }
+    
+    la_data
+  })
+  
+  output$LACasesByAgePlot <- renderPlotly({
+    la_data <- getLAData()
+    age_breadth <- getAgeBreadth()
+    
+    if (age_breadth == "narrow") { la_data.palette <- viridis(19, option="plasma", direction=-1)
+    } else la_data.palette <- viridis(19, option="plasma", direction=-1)[c(7, 16)]
 
-    tmp %>% plot_ly(x = ~date, y= ~newCasesBySpecimenDate, 
-              color = ~age_format, colors=tmp.palette) %>%
-      add_lines(text = tmp$age_format,
+    la_data %>% plot_ly(x = ~date, y= ~newCasesBySpecimenDate, 
+              color = ~age_format, colors=la_data.palette) %>%
+      add_lines(text = la_data$age_format,
                 hovertemplate = paste(
                   'On %{x|%b %d} there were %{y} cases<br>among %{text} year-olds.<extra></extra>')) %>% 
       layout(
@@ -1042,14 +1050,14 @@ server <- function(input, output, session) {
       ) %>%
       add_segments(type="line",
                    x = "2020-05-18", xend = "2020-05-18", 
-                   y = 0, yend = max(tmp$newCasesBySpecimenDate) + 1,
+                   y = 0, yend = max(la_data$newCasesBySpecimenDate) + 1,
                    line=list(dash='dash',
                              color="lightgrey"),
                    hovertemplate = paste('<extra></extra>'),
                    showlegend = FALSE) %>%
       add_annotations(
         x= "2020-05-13",
-        y= 3*max(tmp$newCasesBySpecimenDate)/4,
+        y= 3*max(la_data$newCasesBySpecimenDate)/4,
         xref = "x",
         yref = "y",
         text = "
@@ -1066,31 +1074,15 @@ server <- function(input, output, session) {
   })
   
   output$LACaseRatesByAgePlot <- renderPlotly({
-    level <- c("","utla","ltla")[[as.numeric(getCBALevel())]] 
-    la <- getLA()
+    la_data <- getLAData()
     age_breadth <- getAgeBreadth()
+  
+    if (age_breadth == "narrow") { la_data.palette <- viridis(19, option="plasma", direction=-1)
+    } else la_data.palette <- viridis(19, option="plasma", direction=-1)[c(7, 16)]
     
-    tmp <- CBA_data %>% 
-      filter(areaType == level) %>% 
-      filter(areaName == la) 
-    
-    if (age_breadth == "narrow") {
-      ages.to.plot <- unique(tmp$age)[1:19]
-      tmp <- tmp %>% filter(age %in% ages.to.plot)
-      tmp$age_format <- str_replace_all( tmp$age, "_", "-")
-      tmp$age_format <- factor(tmp$age_format, levels=sort(unique(tmp$age_format))[c(1,10,2:9,11:19)])
-      tmp.palette <- viridis(19, option="plasma", direction=-1)
-    }
-    else {
-      ages.to.plot <- unique(tmp$age)[c(22,21)]
-      tmp <- tmp %>% filter(age %in% ages.to.plot)
-      tmp$age_format <- str_replace_all( tmp$age, "_", "-")
-      tmp.palette <- viridis(19, option="plasma", direction=-1)[c(7, 16)]
-    }
-    
-    tmp %>% plot_ly(x = ~date, y= ~newCasesBySpecimenDateRollingRate, 
-                    color = ~age_format, colors=tmp.palette) %>%
-      add_lines(text = tmp$age_format,
+    la_data %>% plot_ly(x = ~date, y= ~newCasesBySpecimenDateRollingRate, 
+                    color = ~age_format, colors=la_data.palette) %>%
+      add_lines(text = la_data$age_format,
                 hovertemplate = paste(
                   'On %{x|%b %d} the rolling rate was <br>%{y} cases per 100,000 %{text} year-olds.<extra></extra>')) %>% 
       layout(
@@ -1109,14 +1101,14 @@ server <- function(input, output, session) {
       ) %>%
       add_segments(type="line",
                    x = "2020-05-18", xend = "2020-05-18", 
-                   y = 0, yend = max(tmp$newCasesBySpecimenDateRollingRate) + 1,
+                   y = 0, yend = max(la_data$newCasesBySpecimenDateRollingRate) + 1,
                    line=list(dash='dash',
                              color="lightgrey"),
                    hovertemplate = paste('<extra></extra>'),
                    showlegend = FALSE) %>%
       add_annotations(
         x= "2020-05-13",
-        y= 3*max(tmp$newCasesBySpecimenDateRollingRate)/4,
+        y= 3*max(la_data$newCasesBySpecimenDateRollingRate)/4,
         xref = "x",
         yref = "y",
         text = "
@@ -1272,6 +1264,75 @@ server <- function(input, output, session) {
       } else if (input$level == 3) {
         write.csv(df.for.plotting.R.ltlas, file)
       }
+    }
+  )
+  
+  output$CBA_Dist_download <- downloadHandler(
+    filename = function() {
+      if (input$CBA_country == "England") {
+        paste('cases.by.age.England.', Sys.Date(), '.csv', sep='')
+      } else if (input$CBA_country == "Wales") {
+        paste('cases.by.age.Wales.', Sys.Date(), '.csv', sep='')
+      } 
+    },
+    content = function(file) {
+      if (input$CBA_country == "England") {
+        write.csv(t_E, file)
+      } else if (input$CBA_country == "Wales") {
+        write.csv(t_W, file)
+      }
+    }
+  )
+  
+  output$CBA_MeanAge_download <- downloadHandler(
+    filename = function() {
+      if (input$CBA_country == "England") {
+        paste('mean.age.of.cases.England.', Sys.Date(), '.csv', sep='')
+      } else if (input$CBA_country == "Wales") {
+        paste('mean.age.of.cases.Wales.', Sys.Date(), '.csv', sep='')
+      } 
+    },
+    content = function(file) {
+      if (input$CBA_country == "England") {
+        write.csv(mean_age_E, file)
+      } else if (input$CBA_country == "Wales") {
+        write.csv(mean_age_W, file)
+      }
+    }
+  )
+  
+  output$CBA_Abs_download <- downloadHandler(
+    filename = function() {
+      if (input$CBA_country == "England") {
+        paste('cases.by.age.England.', Sys.Date(), '.csv', sep='')
+      } else if (input$CBA_country == "Wales") {
+        paste('cases.by.age.Wales.', Sys.Date(), '.csv', sep='')
+      } 
+    },
+    content = function(file) {
+      if (input$CBA_country == "England") {
+        write.csv(t_E, file)
+      } else if (input$CBA_country == "Wales") {
+        write.csv(t_W, file)
+      }
+    }
+  )
+  
+  output$CBA_LA_download <- downloadHandler(
+    filename = function() {
+      paste('cases.by.age.', getLA(), '.', Sys.Date(), '.csv', sep='')
+    },
+    content = function(file) {
+      write.csv(getLAData(), file)
+    }
+  )
+  
+  output$CBA_LA_rates_download <- downloadHandler(
+    filename = function() {
+      paste('case.rates.by.age.', getLA(), '.', Sys.Date(), '.csv', sep='')
+    },
+    content = function(file) {
+      write.csv(getLAData(), file)
     }
   )
   

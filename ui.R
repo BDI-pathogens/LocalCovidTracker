@@ -357,15 +357,48 @@ Click on dates in the legend (key) to show/hide results
           
           conditionalPanel(
             condition = "input.CBA_level == 1",
-            uiOutput("CaseDistributionTitle"),
             
+            fluidRow(
+              column(
+                width=9,
+                align="left",
+                uiOutput("CaseDistributionTitle")
+              ),
+              column(
+                width=3,
+                align="right",
+                downloadButton("CBA_Dist_download", "Download csv")
+              )
+            ),
             withSpinner(plotlyOutput("casesByAgePlot", height="60vh"), type=7),
             
-            uiOutput("MeanAgeCasesTitle"),
+            fluidRow(
+              column(
+                width=9,
+                align="left",
+                uiOutput("MeanAgeCasesTitle")
+              ),
+              column(
+                width=3,
+                align="right",
+                downloadButton("CBA_MeanAge_download", "Download csv")
+              )
+            ),
             
             withSpinner(plotlyOutput("meanCasesByAgePlot", height="60vh"), type=7),
             
-            uiOutput("AbsCasesByAgeTitle"),
+            fluidRow(
+              column(
+                width=9,
+                align="left",
+                uiOutput("AbsCasesByAgeTitle")
+              ),
+              column(
+                width=3,
+                align="right",
+                downloadButton("CBA_Abs_download", "Download csv")
+              )
+            ),
             
             withSpinner(plotlyOutput("AbsCasesByAgePlot", height="60vh"), type=7)
           ),
@@ -373,11 +406,33 @@ Click on dates in the legend (key) to show/hide results
           conditionalPanel(
             condition = "input.CBA_level == 2 || input.CBA_level == 3",
            
-            uiOutput("LACasesByAgeTitle"),
+            fluidRow(
+              column(
+                width=9,
+                align="left",
+                uiOutput("LACasesByAgeTitle")
+              ),
+              column(
+                width=3,
+                align="right",
+                downloadButton("CBA_LA_download", "Download csv")
+              )
+            ),
             
             withSpinner(plotlyOutput("LACasesByAgePlot", height="60vh"), type=7),
             
-            uiOutput("LACaseRatesByAgeTitle"),
+            fluidRow(
+              column(
+                width=9,
+                align="left",
+                uiOutput("LACaseRatesByAgeTitle")
+              ),
+              column(
+                width=3,
+                align="right",
+                downloadButton("CBA_LA_rates_download", "Download csv")
+              )
+            ),
             
             withSpinner(plotlyOutput("LACaseRatesByAgePlot", height="60vh"), type=7)
           ),
