@@ -57,11 +57,14 @@ updateCasesByAge = function(
   data = content(response, "text", encoding="UTF-8")
   data = jsonlite::fromJSON(data)$data
   
-  # From 26th Oct the table for England has been including historic cases. These are now saved; extract just the latest
+  # From 26th Oct the table for England has been including all historic cases.Since the last few are prone to vary, and it only takes a few seconds, I re-save them all each time here.
   if (nation == "england") {
-    maleCases <- as.data.table(data[1,]$maleCases[[1]])
-    femaleCases <- as.data.table(data[1,]$femaleCases[[1]])
-    date <- as.Date(data[1,][[1]])
+    for (i in 1:nrow(data)) {
+      write.csv( data$maleCases[[i]],   file = glue("data/{data$date[[i]]}_malecases.csv") )
+    }
+    for (i in 1:nrow(data)) {
+      write.csv( data$femaleCases[[i]],   file = glue("data/{data$date[[i]]}_femalecases.csv") )
+    }
   } else {
     maleCases   = as.data.table( data$maleCases )
     femaleCases = as.data.table( data$femaleCases )
@@ -79,41 +82,59 @@ updateCasesByAge = function(
     
     # get and check date
     date = as.Date( data$date )
-  }
-  
-  if( is.null( date ) )
-    stop( "Invalid date returned")
-  
-  # check date is not today or later than today's date - sometimes there's an error in the API and we need to catch it
-  # comment this line out to manually over-ride:
-  if ( date >= Sys.Date() ) stop( glue("Problem with the date: the date label for the {nation} data is {date}.") )
-  
-  # if "alwaysUpdate" is TRUE we carry on and update the data 
-  # if "alwaysUpdate" is FALSE, we check first to see if there is already data stored for this date
-  if (!alwaysUpdate) {
+    
+    if( is.null( date ) )
+      stop( "Invalid date returned")
+    
+    # check date is not today or later than today's date - sometimes there's an error in the API and we need to catch it
+    # comment this line out to manually over-ride:
+    if ( date >= Sys.Date() ) stop( glue("Problem with the date: the date label for the {nation} data is {date}.") )
+    
+    # if "alwaysUpdate" is TRUE we carry on and update the data 
+    # if "alwaysUpdate" is FALSE, we check first to see if there is already data stored for this date
+    if (!alwaysUpdate) {
       # find the last date from the stored files
       files = system( sprintf( "ls %s*%s", dir, glue("_malecases{nsuffix}.csv") ), intern = TRUE)
       dates = str_replace_all( str_replace_all( files, dir, "" ), glue("_malecases{nsuffix}.csv"), "" )
       
       if ( date <= max(dates) ) stop(glue("The {nation} data is already up to date."))
+    }
+    
+    if( maleCases[ ,.N ] != expRows )
+      stop( "not the expected number of rows in male cases")
+    
+    if( femaleCases[ ,.N ] != expRows )
+      stop( "not the expected number of rows in female cases")
+    
+    if( length( names( maleCases ) ) != expCols )
+      stop( "not the expected number of cols in male cases")
+    
+    if( length( names( femaleCases ) ) != expCols )
+      stop( "not the expected number of cols in gemale cases")
+    
+    fwrite( maleCases,   file = sprintf( glue("%s%s_malecases{nsuffix}.csv"),   dir, date ) )
+    fwrite( femaleCases, file = sprintf( glue("%s%s_femalecases{nsuffix}.csv"), dir, date ) )
   }
-  
-  if( maleCases[ ,.N ] != expRows )
-    stop( "not the expected number of rows in male cases")
-  
-  if( femaleCases[ ,.N ] != expRows )
-    stop( "not the expected number of rows in female cases")
-  
-  if( length( names( maleCases ) ) != expCols )
-    stop( "not the expected number of cols in male cases")
-  
-  if( length( names( femaleCases ) ) != expCols )
-    stop( "not the expected number of cols in gemale cases")
-  
-  fwrite( maleCases,   file = sprintf( glue("%s%s_malecases{nsuffix}.csv"),   dir, date ) )
-  fwrite( femaleCases, file = sprintf( glue("%s%s_femalecases{nsuffix}.csv"), dir, date ) )
+
 }
 
 updateCasesByAge(nation = "england", dir = "data/", alwaysUpdate = TRUE)
 
-updateCasesByAge(nation = "wales", dir = "data/", alwaysUpdate = FALSE)
+updateCasesByAge(nation = "wales", dir = "data/", alwaysUpdate = TRUE)
+
+# get cases by age by local authority
+
+# CBA.file <- "https://coronavirus-staging.data.gov.uk/downloads/demographic/cases/specimenDate_ageDemographic-stacked.csv"
+# CBA_data <- read.csv(url(CBA.file))
+
+# should be able to get straight from url but I'm encountering an error; 
+# for now, manually download from https://coronavirus-staging.data.gov.uk/downloads/demographic/cases/specimenDate_ageDemographic-stacked.csv
+CBA_data <- read.csv("data_local/specimenDate_ageDemographic-stacked.csv") 
+CBA_data$date <- as.Date(CBA_data$date)
+save(CBA_data, file=glue("data/CBA_data.RData"))
+
+CBA.utlas.alphabetical <- sort(unique((CBA_data %>% filter(areaType == "utla"))$areaName))
+CBA.ltlas.alphabetical <- sort(unique((CBA_data %>% filter(areaType == "ltla"))$areaName))
+
+save(CBA.utlas.alphabetical, file="data/CBA.utlas.alphabetical.RData")
+save(CBA.ltlas.alphabetical, file="data/CBA.ltlas.alphabetical.RData")

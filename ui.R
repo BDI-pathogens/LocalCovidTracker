@@ -248,15 +248,53 @@ ui <- fluidPage(
       sidebarLayout(
         sidebarPanel(
           
-          selectInput(
-            "CBA_country",
-            h3("Select country:"),
-            choices = c("England", "Wales"),
-            selected = random.country
+          h3("Area to highlight"),
+          
+          selectInput("CBA_level",
+                      h5("Select the area type of interest:"),
+                      choices = c("Country (England or Wales)"=1,
+                                  "Upper tier local authority (England only)" = 2,
+                                  "Lower tier local authority (England only)" = 3),
+                      selected=2
           ),
           
           conditionalPanel(
-            condition = "input.CBA_country == 'England'",
+            condition = "input.CBA_level == 1",
+            selectInput(
+              "CBA_country",
+              h5("Select a country:"),
+              choices = c("England", "Wales"),
+              selected = random.country
+            )
+          ),
+          
+          conditionalPanel(
+            condition = "input.CBA_level == 2",
+            selectInput("CBA_utla",
+                        h5("Select an upper tier local authority to highlight:"),
+                        choices = CBA.utlas.alphabetical,
+                        selected = random.utla)
+          ),
+          
+          conditionalPanel(
+            condition = "input.CBA_level == 3",
+            selectInput("CBA_ltla",
+                        h5("Select a lower tier local authority to highlight:"),
+                        choices = CBA.ltlas.alphabetical,
+                        selected = random.ltla)
+          ),
+          
+          conditionalPanel(
+            condition = "input.CBA_level == 2 || input.CBA_level == 3",
+            selectInput("CBA_age_breadth",
+                        h5("Show broad or narrow age bands:"),
+                        choices = c("Broad"="broad", "Narrow"="narrow"),
+                        selected = "broad")
+          ),
+          
+          
+          conditionalPanel(
+            condition = "input.CBA_level == 1 && input.CBA_country == 'England'",
             dateRangeInput("xrange_CBA", 
                            h5("Select date range:"),
                            start  = last.date-91,
@@ -268,43 +306,81 @@ ui <- fluidPage(
           
           h3("Details"),
           
-          HTML("<h5>Each day
-               <a href=\"https://coronavirus.data.gov.uk/about-data\" target=\"_blank\">PHE and NHSX</a> 
-               report the total (cumulative) number of new cases in each age category. 
-               This has been made available for all dates for England, and we have been logging the data for
-               Wales since late September. We present it here as an
-               indication of how the epidemic is spreading across age groups
-               in each country.</h5>"),
-
-          HTML("<h5>In the first plot we show the proportion of new cases reported which fall into each age category, each day. 
+          HTML("<h5>We present a breakdown of the daily cases by age category, using all the publicly available data from <a href=\"https://coronavirus.data.gov.uk/about-data\" target=\"_blank\">PHE and NHSX</a>.</h5>"),
+          
+          HTML("<h5>For Wales, this is unfortunately only available at the national level: the total (cumulative) 
+          number of new cases in each age category is published each day, and we have been
+               logging this data since late September.</h5>"),
+          
+          HTML("<h5>For England, cases by age are now available for the whole epidemic and can be explored here at the national and local authority levels.</h5>"),
+          
+          conditionalPanel(
+            condition = "input.CBA_level == 1",
+            h4("Country-level plots:"),
+            
+            HTML("<h5>In the first plot we show the proportion of new cases reported which fall into each age category, each day. 
 Click on dates in the legend (key) to show/hide results 
                 for individual days.</h5>"),
-          
-          HTML("<h5>The second plot presents the mean age of cases reported that day.</h5>"),
-
-          HTML("<h5>Finally, the third plot shows the absolute number of cases reported for each age each day.
+            
+            HTML("<h5>The second plot presents the mean age of cases reported that day.</h5>"),
+            
+            HTML("<h5>Finally, the third plot shows the absolute number of cases reported for each age each day.
                You can show and hide age categories by clicking on the legend; 
                double-clicking on an individual age category shows that age alone, making it easier to identify any trends.</h5>"),
-          
-          HTML("<h5>Note that, unlike the other tabs where cases are plotted by their swab date,
-               the age data is not linked to swab dates so we present each case by the date it was first publicly reported.
+            
+            HTML("<h5>Note that, unlike other results on this site where cases are plotted by their swab date,
+               the age data at the country level is presented by the date it was first publicly reported.
                If reporting delays differ across age groups it could bias the trends seen here.
                
-               </h5>"),
+               </h5>")
+            
+          ),
+          
+          conditionalPanel(
+            condition = "input.CBA_level == 2 || input.CBA_level == 3",
+            h4("Local authority plots:"),
+            
+            HTML("<h5>In the first plot we show the absolute number of cases for each age each day, by specimen date.
+            Choose from 'broad' (0-59 and 60+) or 'narrow' (5-year) age bands from the drop-down menu on the left.
+               You can show and hide age categories by clicking on the legend; 
+               double-clicking on an individual age category shows that age alone, making it easier to identify any trends within the 'narrow' band plot.</h5>"),
+            
+            HTML("<h5>The second plot presents the 'rolling rate' of cases by age. 
+            The full definitions are given <a href=\"https://coronavirus.data.gov.uk/about-data#methodologies\" target=\"_blank\">here</a>;
+            in brief, 'rolling' gives a moving weekly average to smooth over day-to-day variation,
+                 and 'rate' is the result per 100,000 population.</h5>")
+            
+          ),
+          
         width=3),
         mainPanel(
+          
+          conditionalPanel(
+            condition = "input.CBA_level == 1",
+            uiOutput("CaseDistributionTitle"),
+            
+            withSpinner(plotlyOutput("casesByAgePlot", height="60vh"), type=7),
+            
+            uiOutput("MeanAgeCasesTitle"),
+            
+            withSpinner(plotlyOutput("meanCasesByAgePlot", height="60vh"), type=7),
+            
+            uiOutput("AbsCasesByAgeTitle"),
+            
+            withSpinner(plotlyOutput("AbsCasesByAgePlot", height="60vh"), type=7)
+          ),
          
-          uiOutput("CaseDistributionTitle"),
-          
-          withSpinner(plotlyOutput("casesByAgePlot", height="60vh"), type=7),
-          
-          uiOutput("MeanAgeCasesTitle"),
-          
-          withSpinner(plotlyOutput("meanCasesByAgePlot", height="60vh"), type=7),
-          
-          uiOutput("AbsCasesByAgeTitle"),
-          
-          withSpinner(plotlyOutput("AbsCasesByAgePlot", height="60vh"), type=7),
+          conditionalPanel(
+            condition = "input.CBA_level == 2 || input.CBA_level == 3",
+           
+            uiOutput("LACasesByAgeTitle"),
+            
+            withSpinner(plotlyOutput("LACasesByAgePlot", height="60vh"), type=7),
+            
+            uiOutput("LACaseRatesByAgeTitle"),
+            
+            withSpinner(plotlyOutput("LACaseRatesByAgePlot", height="60vh"), type=7)
+          ),
           
           hr(),
           

@@ -2,6 +2,18 @@
 
 dir           = "data/"
 
+load(glue("{dir}/CBA_data.RData"))
+
+#tmp <- CBA_data %>% filter(areaType == "utla")
+# CBA.utlas.alphabetical <- sort(unique(tmp$areaName))
+# save(CBA.utlas.alphabetical, file="data/CBA.utlas.alphabetical.RData")
+# tmp <- CBA_data %>% filter(areaType == "ltla")
+# CBA.ltlas.alphabetical <- sort(unique(tmp$areaName))
+# save(CBA.ltlas.alphabetical, file="data/CBA.ltlas.alphabetical.RData")
+
+load("data/CBA.utlas.alphabetical.RData")
+load("data/CBA.ltlas.alphabetical.RData")
+
 ### England data
 
 male_suffix_E   = "_malecases.csv"

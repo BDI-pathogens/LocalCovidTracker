@@ -26,9 +26,27 @@ server <- function(input, output, session) {
     input$xrange[[2]]
   })
   
+  getCBALevel <- reactive({
+    input$CBA_level
+  })
+  
   # get country on the cases by age page
   getCountry <- reactive({
     input$CBA_country
+  })
+  
+  # get country on the cases by age page
+  getLA <- reactive({
+    CBA.level <- getCBALevel()
+    if (CBA.level == 2) {
+      input$CBA_utla
+    } else if (CBA.level == 3) {
+      input$CBA_ltla
+    }
+  })
+  
+  getAgeBreadth <- reactive({
+    input$CBA_age_breadth
   })
   
   # get date range on the cases by age page
@@ -955,7 +973,7 @@ server <- function(input, output, session) {
   
   output$MeanAgeCasesTitle <- renderUI({
     c <- getCountry()
-    h3(glue("Mean age of cases in {c} by date"))
+    h3(glue("Mean age of cases in {c} by reporting date"))
   })
   
   output$meanCasesByAgePlot <- renderPlotly({
@@ -966,13 +984,147 @@ server <- function(input, output, session) {
   
   output$AbsCasesByAgeTitle <- renderUI({
     c <- getCountry()
-    h3(glue("Absolute number of cases in {c} by date"))
+    h3(glue("Absolute number of cases in {c} by reporting date"))
   })
   
   output$AbsCasesByAgePlot <- renderPlotly({
     c <- getCountry()
     if (c == "England") CBA_absolute_E
     else if (c == "Wales") CBA_absolute_W
+  })
+  
+  output$LACasesByAgeTitle <- renderUI({
+    la <- getLA()
+    h3(glue("Absolute number of cases in {la} by specimen date"))
+  })
+  
+  output$LACasesByAgePlot <- renderPlotly({
+    level <- c("","utla","ltla")[[as.numeric(getCBALevel())]] 
+    la <- getLA()
+    age_breadth <- getAgeBreadth()
+
+    tmp <- CBA_data %>% 
+      filter(areaType == level) %>% 
+      filter(areaName == la) 
+    
+    if (age_breadth == "narrow") {
+      ages.to.plot <- unique(tmp$age)[1:19]
+      tmp <- tmp %>% filter(age %in% ages.to.plot)
+      tmp$age_format <- str_replace_all( tmp$age, "_", "-")
+      tmp$age_format <- factor(tmp$age_format, levels=sort(unique(tmp$age_format))[c(1,10,2:9,11:19)])
+      tmp.palette <- viridis(19, option="plasma", direction=-1)
+    }
+    else {
+      ages.to.plot <- unique(tmp$age)[c(22,21)]
+      tmp <- tmp %>% filter(age %in% ages.to.plot)
+      tmp$age_format <- str_replace_all( tmp$age, "_", "-")
+      tmp.palette <- viridis(19, option="plasma", direction=-1)[c(7, 16)]
+    }
+
+    tmp %>% plot_ly(x = ~date, y= ~newCasesBySpecimenDate, 
+              color = ~age_format, colors=tmp.palette) %>%
+      add_lines(text = tmp$age_format,
+                hovertemplate = paste(
+                  'On %{x|%b %d} there were %{y} cases<br>among %{text} year-olds.<extra></extra>')) %>% 
+      layout(
+        xaxis = list(
+          title = "Date",
+          titlefont = f1,
+          showticklabels = TRUE,
+          tickfont = f1
+        ),
+        yaxis   = list(
+          title = "Daily cases",
+          titlefont = f1,
+          showticklabels = TRUE,
+          tickfont = f1
+        )
+      ) %>%
+      add_segments(type="line",
+                   x = "2020-05-18", xend = "2020-05-18", 
+                   y = 0, yend = max(tmp$newCasesBySpecimenDate) + 1,
+                   line=list(dash='dash',
+                             color="lightgrey"),
+                   hovertemplate = paste('<extra></extra>'),
+                   showlegend = FALSE) %>%
+      add_annotations(
+        x= "2020-05-13",
+        y= 3*max(tmp$newCasesBySpecimenDate)/4,
+        xref = "x",
+        yref = "y",
+        text = "
+                 Launch of 
+                 widespread testing
+                 programme",
+        showarrow = F
+      )
+  })
+  
+  output$LACaseRatesByAgeTitle <- renderUI({
+    la <- getLA()
+    h3(glue("Rolling rates of cases in {la} by specimen date"))
+  })
+  
+  output$LACaseRatesByAgePlot <- renderPlotly({
+    level <- c("","utla","ltla")[[as.numeric(getCBALevel())]] 
+    la <- getLA()
+    age_breadth <- getAgeBreadth()
+    
+    tmp <- CBA_data %>% 
+      filter(areaType == level) %>% 
+      filter(areaName == la) 
+    
+    if (age_breadth == "narrow") {
+      ages.to.plot <- unique(tmp$age)[1:19]
+      tmp <- tmp %>% filter(age %in% ages.to.plot)
+      tmp$age_format <- str_replace_all( tmp$age, "_", "-")
+      tmp$age_format <- factor(tmp$age_format, levels=sort(unique(tmp$age_format))[c(1,10,2:9,11:19)])
+      tmp.palette <- viridis(19, option="plasma", direction=-1)
+    }
+    else {
+      ages.to.plot <- unique(tmp$age)[c(22,21)]
+      tmp <- tmp %>% filter(age %in% ages.to.plot)
+      tmp$age_format <- str_replace_all( tmp$age, "_", "-")
+      tmp.palette <- viridis(19, option="plasma", direction=-1)[c(7, 16)]
+    }
+    
+    tmp %>% plot_ly(x = ~date, y= ~newCasesBySpecimenDateRollingRate, 
+                    color = ~age_format, colors=tmp.palette) %>%
+      add_lines(text = tmp$age_format,
+                hovertemplate = paste(
+                  'On %{x|%b %d} the rolling rate was <br>%{y} cases per 100,000 %{text} year-olds.<extra></extra>')) %>% 
+      layout(
+        xaxis = list(
+          title = "Date",
+          titlefont = f1,
+          showticklabels = TRUE,
+          tickfont = f1
+        ),
+        yaxis   = list(
+          title = "Daily cases",
+          titlefont = f1,
+          showticklabels = TRUE,
+          tickfont = f1
+        )
+      ) %>%
+      add_segments(type="line",
+                   x = "2020-05-18", xend = "2020-05-18", 
+                   y = 0, yend = max(tmp$newCasesBySpecimenDateRollingRate) + 1,
+                   line=list(dash='dash',
+                             color="lightgrey"),
+                   hovertemplate = paste('<extra></extra>'),
+                   showlegend = FALSE) %>%
+      add_annotations(
+        x= "2020-05-13",
+        y= 3*max(tmp$newCasesBySpecimenDateRollingRate)/4,
+        xref = "x",
+        yref = "y",
+        text = "
+                 Launch of 
+                 widespread testing
+                 programme",
+        showarrow = F
+      )
   })
   
   output$p1IncidencePlot <- renderPlotly({
