@@ -19,7 +19,7 @@ The tabs "March-June Pillar 1 tracker" and "March-June Pillar 1 synthetic contro
 
 The "Daily tracker" tab which is updated daily builds upon our published analysis, using a shorter waiting time between infection and swab date to reflect shorter times to Pillar 2 testing.
 
-The "Cases by age" tab presents an analysis developed by Robert Hinch and is also updated daily.
+The "Cases by age" tab presents an analysis developed by Robert Hinch and Michelle Kendall and is also updated daily.
 
 The source code is available on [GitHub](https://github.com/BDI-pathogens/LocalCovidTracker). 
 Please let us know of any issues or requests via the [Issues](https://github.com/BDI-pathogens/LocalCovidTracker/issues) page.
