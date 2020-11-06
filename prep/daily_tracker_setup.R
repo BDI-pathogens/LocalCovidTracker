@@ -11,13 +11,13 @@ load("data/latest_df.for.plotting.R.ltlas.RData")
 load("data/latest_projected.cases.ltlas.RData")
 
 # could load these direct from the saved data but this will cope if an area is missing
-regions.alphabetical <- sort(unique(df.for.plotting.R.regions$Area))
-utlas.alphabetical <- unique(df.for.plotting.R.utlas$Area)
+utlas.alphabetical <- sort(unique(df.for.plotting.R.utlas$Area))
+regions.alphabetical <- unique(df.for.plotting.R.regions$Area)
 ltlas.alphabetical <- sort(unique(df.for.plotting.R.ltlas$Area))
 
 # pick random places to highlight on startup
-random.region <- sample(regions.alphabetical,1)
-random.utla <- sample(utlas.alphabetical,1) 
+random.utla <- sample(utlas.alphabetical,1)
+random.region <- sample(regions.alphabetical,1) 
 random.ltla <- sample(ltlas.alphabetical,1) 
 random.country <- sample(c("England", "Wales"), 1)
 
@@ -53,3 +53,681 @@ f2 <- list(
   size = 14,
   color = "darkgrey"
 )
+
+nowcast.utla.plot <- projected.cases.utlas %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~scaled_per_capita) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',projected.cases.utlas$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>')) %>%
+  add_segments(type="line",
+               x = "2020-05-18", xend = "2020-05-18", 
+               y = 0, yend = ceiling(max(projected.cases.utlas$scaled_per_capita, na.rm=TRUE)) + 1,
+               line=list(dash='dash',
+                         color="lightgrey"),
+               hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                 x= "2020-05-13",
+                 y= 62,
+                 xref = "x",
+                 yref = "y",
+                 text = "
+                 Launch of 
+                 widespread testing
+                 programme",
+                 showarrow = F
+               ) %>%
+  layout(
+    xaxis = list(
+      title = "",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range=c(last.date-91, last.date-R.trim)
+    ),
+    yaxis = list(
+      title = "Expected number of infections which will go on\nto be confirmed by a positive test result\nper day in the near future, per 100,000 population\n",
+      titlefont = f2,
+      showticklabels = TRUE,
+      tickfont = f2,
+      exponentformat = "E",
+      range=c(0,ceiling(max(projected.cases.utlas$scaled_per_capita, na.rm=TRUE)) + 1)
+    ), showlegend = FALSE) %>%
+  filter(Area == random.utla) %>%
+  add_lines(color = I("#FC8D62"),
+            line=list(width=4, alpha=1),
+            hovertemplate = paste(
+              '<b>',random.utla,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>'))
+
+incidence.utla.plot <- df.for.plotting.incidence.utlas %>% group_by(Area) %>%
+  plot_ly(x=~Dates, y=~scaled_per_capita) %>%
+  add_trace(alpha=0.3, type="scatter", mode="lines",
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',df.for.plotting.incidence.utlas$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>')) %>%
+  add_segments(type="line",
+               x = "2020-05-18", xend = "2020-05-18",
+               y = 0, yend = ceiling(max(df.for.plotting.incidence.utlas$scaled_per_capita, na.rm=TRUE)) + 1,
+               line=list(dash='dash',
+                         color="lightgrey"),
+               hovertemplate = paste('<extra></extra>')) %>%
+  add_annotations(
+    x= "2020-05-13",
+    y= 35,
+    xref = "x",
+    yref = "y",
+    text = "
+      Launch of
+      widespread testing
+      programme",
+    showarrow = F
+  ) %>%
+  layout(
+    xaxis = list(
+      title = "",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range=c(last.date-91, last.date-incidence.trim)
+    ),
+    yaxis = list(
+      title = "Estimated new infections per day which\nwent on to be confirmed by a positive test result,\nper 100,000 population",
+      titlefont = f2,
+      showticklabels = TRUE,
+      tickfont = f2,
+      exponentformat = "E",
+      range=c(0,ceiling(max(df.for.plotting.incidence.utlas$scaled_per_capita, na.rm=TRUE)) + 1)
+    ), 
+    showlegend = FALSE) %>%
+  filter(Area == random.utla) %>%
+  add_lines(color = I("#FC8D62"),
+            line=list(width=4, alpha=1),
+            hovertemplate = paste(
+              '<b>',random.utla,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>'))
+
+r.utla.plot <- df.for.plotting.R.utlas %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~R) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',df.for.plotting.R.utlas$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              'R = %{y:.1f}<extra></extra>'))  %>%
+  add_segments(type="line",
+               x = min(df.for.plotting.R.utlas$Dates), xend = max(df.for.plotting.R.utlas$Dates),
+               y = 1, yend = 1,
+               line=list(dash='dash',
+                         color="black"),
+               hovertemplate = paste('<extra></extra>')) %>% 
+  add_annotations(
+    x= "2020-03-05",
+    y= 1.5,
+    xref = "x",
+    yref = "y",
+    text = "
+                 See 'Details' for
+                 explanation of why
+                 R appears to be
+                 increasing here",
+    showarrow = F
+  ) %>%
+  add_segments(type="line",
+               x = "2020-05-18", xend = "2020-05-18", 
+               y = 0, yend = ceiling(max(df.for.plotting.R.utlas$R)),
+               line=list(dash='dash',
+                         color="lightgrey"),
+               hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                 x= "2020-05-13",
+                 y= 3,
+                 xref = "x",
+                 yref = "y",
+                 text = "
+                 Launch of 
+                 widespread testing
+                 programme",
+                 showarrow = F
+               ) %>%
+  layout(
+    xaxis = list(
+      title = "",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range = c(last.date-91, last.date-R.trim)
+    ),
+    yaxis = list(
+      title = "Estimated R",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range=c(0,max(df.for.plotting.R.utlas$R))
+    ), showlegend = FALSE) %>%
+  filter(Area == random.utla) %>%
+  add_lines(color = I("#FC8D62"),
+            line=list(width=4, alpha=1),
+            hovertemplate = paste(
+              '<b>',random.utla,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              'R = %{y:.1f}<extra></extra>')) 
+
+
+ROneUTLA.plot <- df.for.plotting.R.utlas %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~R) %>%
+  add_segments(type="line",
+               x = min(df.for.plotting.R.utlas$Dates), xend = max(df.for.plotting.R.utlas$Dates),
+               y = 1, yend = 1,
+               line=list(dash='dash',
+                         color="black"),
+               hovertemplate = paste('<extra></extra>')) %>% 
+  add_annotations(
+    x= "2020-03-05",
+    y= 1.5,
+    xref = "x",
+    yref = "y",
+    text = "
+                 See 'Details' for
+                 explanation of why
+                 R appears to be 
+                 increasing here",
+    showarrow = F
+  ) %>%
+  add_segments(type="line",
+               x = "2020-05-18", xend = "2020-05-18", 
+               y = 0, yend = max(df.for.plotting.R.utlas$R),
+               line=list(dash='dash',
+                         color="lightgrey"),
+               hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                 x= "2020-05-13",
+                 y= 3,
+                 xref = "x",
+                 yref = "y",
+                 text = "
+                 Launch of 
+                 widespread testing
+                 programme",
+                 showarrow = F
+               ) %>%
+  layout(
+      xaxis = list(
+      title = "",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range=c(last.date-91, last.date-R.trim)
+    ),
+    yaxis = list(
+      title = "Estimated R with 95% credibility interval",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E"
+    ), showlegend = FALSE)
+
+
+####### Regions
+
+nowcast.region.plot <- projected.cases.regions %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~scaled_per_capita) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',projected.cases.regions$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>')) %>%
+  add_segments(type="line",
+               x = "2020-05-18", xend = "2020-05-18", 
+               y = 0, yend = ceiling(max(projected.cases.regions$scaled_per_capita, na.rm=TRUE)) + 1,
+               line=list(dash='dash',
+                         color="lightgrey"),
+               hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                 x= "2020-05-13",
+                 y= 62,
+                 xref = "x",
+                 yref = "y",
+                 text = "
+                 Launch of 
+                 widespread testing
+                 programme",
+                 showarrow = F
+               ) %>%
+  layout(
+    xaxis = list(
+      title = "",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range=c(last.date-91, last.date-R.trim)
+    ),
+    yaxis = list(
+      title = "Expected number of infections which will go on\nto be confirmed by a positive test result\nper day in the near future, per 100,000 population\n",
+      titlefont = f2,
+      showticklabels = TRUE,
+      tickfont = f2,
+      exponentformat = "E",
+      range=c(0,ceiling(max(projected.cases.regions$scaled_per_capita, na.rm=TRUE)) + 1)
+    ), showlegend = FALSE) %>%
+  filter(Area == random.region) %>%
+  add_lines(color = I("#FC8D62"),
+            line=list(width=4, alpha=1),
+            hovertemplate = paste(
+              '<b>',random.region,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>'))
+
+incidence.region.plot <- df.for.plotting.incidence.regions %>% group_by(Area) %>%
+  plot_ly(x=~Dates, y=~scaled_per_capita) %>%
+  add_trace(alpha=0.3, type="scatter", mode="lines",
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',df.for.plotting.incidence.regions$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>')) %>%
+  add_segments(type="line",
+               x = "2020-05-18", xend = "2020-05-18",
+               y = 0, yend = ceiling(max(df.for.plotting.incidence.regions$scaled_per_capita, na.rm=TRUE)) + 1,
+               line=list(dash='dash',
+                         color="lightgrey"),
+               hovertemplate = paste('<extra></extra>')) %>%
+  add_annotations(
+    x= "2020-05-13",
+    y= 35,
+    xref = "x",
+    yref = "y",
+    text = "
+      Launch of
+      widespread testing
+      programme",
+    showarrow = F
+  ) %>%
+  layout(
+    xaxis = list(
+      title = "",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range=c(last.date-91, last.date-incidence.trim)
+    ),
+    yaxis = list(
+      title = "Estimated new infections per day which\nwent on to be confirmed by a positive test result,\nper 100,000 population",
+      titlefont = f2,
+      showticklabels = TRUE,
+      tickfont = f2,
+      exponentformat = "E",
+      range=c(0,ceiling(max(df.for.plotting.incidence.regions$scaled_per_capita, na.rm=TRUE)) + 1)
+    ), 
+    showlegend = FALSE) %>%
+  filter(Area == random.region) %>%
+  add_lines(color = I("#FC8D62"),
+            line=list(width=4, alpha=1),
+            hovertemplate = paste(
+              '<b>',random.region,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>'))
+
+r.region.plot <- df.for.plotting.R.regions %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~R) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',df.for.plotting.R.regions$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              'R = %{y:.1f}<extra></extra>'))  %>%
+  add_segments(type="line",
+               x = min(df.for.plotting.R.regions$Dates), xend = max(df.for.plotting.R.regions$Dates),
+               y = 1, yend = 1,
+               line=list(dash='dash',
+                         color="black"),
+               hovertemplate = paste('<extra></extra>')) %>% 
+  add_annotations(
+    x= "2020-03-05",
+    y= 1.5,
+    xref = "x",
+    yref = "y",
+    text = "
+                 See 'Details' for
+                 explanation of why
+                 R appears to be
+                 increasing here",
+    showarrow = F
+  ) %>%
+  add_segments(type="line",
+               x = "2020-05-18", xend = "2020-05-18", 
+               y = 0, yend = ceiling(max(df.for.plotting.R.regions$R)),
+               line=list(dash='dash',
+                         color="lightgrey"),
+               hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                 x= "2020-05-13",
+                 y= 3,
+                 xref = "x",
+                 yref = "y",
+                 text = "
+                 Launch of 
+                 widespread testing
+                 programme",
+                 showarrow = F
+               ) %>%
+  layout(
+    xaxis = list(
+      title = "",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range = c(last.date-91, last.date-R.trim)
+    ),
+    yaxis = list(
+      title = "Estimated R",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range=c(0,max(df.for.plotting.R.regions$R))
+    ), showlegend = FALSE) %>%
+  filter(Area == random.region) %>%
+  add_lines(color = I("#FC8D62"),
+            line=list(width=4, alpha=1),
+            hovertemplate = paste(
+              '<b>',random.region,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              'R = %{y:.1f}<extra></extra>')) 
+
+
+ROneregion.plot <- df.for.plotting.R.regions %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~R) %>%
+  add_segments(type="line",
+               x = min(df.for.plotting.R.regions$Dates), xend = max(df.for.plotting.R.regions$Dates),
+               y = 1, yend = 1,
+               line=list(dash='dash',
+                         color="black"),
+               hovertemplate = paste('<extra></extra>')) %>% 
+  add_annotations(
+    x= "2020-03-05",
+    y= 1.5,
+    xref = "x",
+    yref = "y",
+    text = "
+                 See 'Details' for
+                 explanation of why
+                 R appears to be 
+                 increasing here",
+    showarrow = F
+  ) %>%
+  add_segments(type="line",
+               x = "2020-05-18", xend = "2020-05-18", 
+               y = 0, yend = max(df.for.plotting.R.regions$R),
+               line=list(dash='dash',
+                         color="lightgrey"),
+               hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                 x= "2020-05-13",
+                 y= 3,
+                 xref = "x",
+                 yref = "y",
+                 text = "
+                 Launch of 
+                 widespread testing
+                 programme",
+                 showarrow = F
+               ) %>%
+  layout(
+      xaxis = list(
+      title = "",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range=c(last.date-91, last.date-R.trim)
+    ),
+    yaxis = list(
+      title = "Estimated R with 95% credibility interval",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E"
+    ), showlegend = FALSE)
+
+
+### LTLAs
+
+nowcast.ltla.plot <- projected.cases.ltlas %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~scaled_per_capita) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',projected.cases.ltlas$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>')) %>%
+  add_segments(type="line",
+               x = "2020-05-18", xend = "2020-05-18", 
+               y = 0, yend = ceiling(max(projected.cases.ltlas$scaled_per_capita, na.rm=TRUE)) + 1,
+               line=list(dash='dash',
+                         color="lightgrey"),
+               hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                 x= "2020-05-13",
+                 y= 62,
+                 xref = "x",
+                 yref = "y",
+                 text = "
+                 Launch of 
+                 widespread testing
+                 programme",
+                 showarrow = F
+               ) %>%
+  layout(
+    xaxis = list(
+      title = "",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range=c(last.date-91, last.date-R.trim)
+    ),
+    yaxis = list(
+      title = "Expected number of infections which will go on\nto be confirmed by a positive test result\nper day in the near future, per 100,000 population\n",
+      titlefont = f2,
+      showticklabels = TRUE,
+      tickfont = f2,
+      exponentformat = "E",
+      range=c(0,ceiling(max(projected.cases.ltlas$scaled_per_capita, na.rm=TRUE)) + 1)
+    ), showlegend = FALSE) %>%
+  filter(Area == random.ltla) %>%
+  add_lines(color = I("#FC8D62"),
+            line=list(width=4, alpha=1),
+            hovertemplate = paste(
+              '<b>',random.ltla,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>'))
+
+incidence.ltla.plot <- df.for.plotting.incidence.ltlas %>% group_by(Area) %>%
+  plot_ly(x=~Dates, y=~scaled_per_capita) %>%
+  add_trace(alpha=0.3, type="scatter", mode="lines",
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',df.for.plotting.incidence.ltlas$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>')) %>%
+  add_segments(type="line",
+               x = "2020-05-18", xend = "2020-05-18",
+               y = 0, yend = ceiling(max(df.for.plotting.incidence.ltlas$scaled_per_capita, na.rm=TRUE)) + 1,
+               line=list(dash='dash',
+                         color="lightgrey"),
+               hovertemplate = paste('<extra></extra>')) %>%
+  add_annotations(
+    x= "2020-05-13",
+    y= 35,
+    xref = "x",
+    yref = "y",
+    text = "
+      Launch of
+      widespread testing
+      programme",
+    showarrow = F
+  ) %>%
+  layout(
+    xaxis = list(
+      title = "",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range=c(last.date-91, last.date-incidence.trim)
+    ),
+    yaxis = list(
+      title = "Estimated new infections per day which\nwent on to be confirmed by a positive test result,\nper 100,000 population",
+      titlefont = f2,
+      showticklabels = TRUE,
+      tickfont = f2,
+      exponentformat = "E",
+      range=c(0,ceiling(max(df.for.plotting.incidence.ltlas$scaled_per_capita, na.rm=TRUE)) + 1)
+    ), 
+    showlegend = FALSE) %>%
+  filter(Area == random.ltla) %>%
+  add_lines(color = I("#FC8D62"),
+            line=list(width=4, alpha=1),
+            hovertemplate = paste(
+              '<b>',random.ltla,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              '%{y:.1f} infections per 100,000<extra></extra>'))
+
+r.ltla.plot <- df.for.plotting.R.ltlas %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~R) %>%
+  add_lines(alpha=0.3, #color=~Pillar,
+            color = I("#8DA0CB"),
+            hovertemplate = paste(
+              '<b>',df.for.plotting.R.ltlas$Area,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              'R = %{y:.1f}<extra></extra>'))  %>%
+  add_segments(type="line",
+               x = min(df.for.plotting.R.ltlas$Dates), xend = max(df.for.plotting.R.ltlas$Dates),
+               y = 1, yend = 1,
+               line=list(dash='dash',
+                         color="black"),
+               hovertemplate = paste('<extra></extra>')) %>% 
+  add_annotations(
+    x= "2020-03-05",
+    y= 1.5,
+    xref = "x",
+    yref = "y",
+    text = "
+                 See 'Details' for
+                 explanation of why
+                 R appears to be
+                 increasing here",
+    showarrow = F
+  ) %>%
+  add_segments(type="line",
+               x = "2020-05-18", xend = "2020-05-18", 
+               y = 0, yend = ceiling(max(df.for.plotting.R.ltlas$R)),
+               line=list(dash='dash',
+                         color="lightgrey"),
+               hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                 x= "2020-05-13",
+                 y= 3,
+                 xref = "x",
+                 yref = "y",
+                 text = "
+                 Launch of 
+                 widespread testing
+                 programme",
+                 showarrow = F
+               ) %>%
+  layout(
+    xaxis = list(
+      title = "",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range = c(last.date-91, last.date-R.trim)
+    ),
+    yaxis = list(
+      title = "Estimated R",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range=c(0,max(df.for.plotting.R.ltlas$R))
+    ), showlegend = FALSE) %>%
+  filter(Area == random.ltla) %>%
+  add_lines(color = I("#FC8D62"),
+            line=list(width=4, alpha=1),
+            hovertemplate = paste(
+              '<b>',random.ltla,'</b><br>',
+              '<i>%{x|%d %B}</i><br>',
+              'R = %{y:.1f}<extra></extra>')) 
+
+
+ROneLTLA.plot <- df.for.plotting.R.ltlas %>%
+  group_by(Area) %>%
+  plot_ly(x=~Dates, y=~R) %>%
+  add_segments(type="line",
+               x = min(df.for.plotting.R.ltlas$Dates), xend = max(df.for.plotting.R.ltlas$Dates),
+               y = 1, yend = 1,
+               line=list(dash='dash',
+                         color="black"),
+               hovertemplate = paste('<extra></extra>')) %>% 
+  add_annotations(
+    x= "2020-03-05",
+    y= 1.5,
+    xref = "x",
+    yref = "y",
+    text = "
+                 See 'Details' for
+                 explanation of why
+                 R appears to be 
+                 increasing here",
+    showarrow = F
+  ) %>%
+  add_segments(type="line",
+               x = "2020-05-18", xend = "2020-05-18", 
+               y = 0, yend = max(df.for.plotting.R.ltlas$R),
+               line=list(dash='dash',
+                         color="lightgrey"),
+               hovertemplate = paste('<extra></extra>')) %>% add_annotations(
+                 x= "2020-05-13",
+                 y= 3,
+                 xref = "x",
+                 yref = "y",
+                 text = "
+                 Launch of 
+                 widespread testing
+                 programme",
+                 showarrow = F
+               ) %>%
+  layout(
+      xaxis = list(
+      title = "",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E",
+      range=c(last.date-91, last.date-R.trim)
+    ),
+    yaxis = list(
+      title = "Estimated R with 95% credibility interval",
+      titlefont = f1,
+      showticklabels = TRUE,
+      tickfont = f1,
+      exponentformat = "E"
+    ), showlegend = FALSE)

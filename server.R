@@ -103,277 +103,117 @@ server <- function(input, output, session) {
   # OUTPUTS
   ###################
 
+  output$UTLAProjectionPlot <- renderPlotly({
+    nowcast.utla.plot
+  })
+  
   output$UTLAIncidencePlot <- renderPlotly({
-    
-    UTLAToHighlight <- getUTLA()
-    x.start <- getXStart()
-    x.end <- min(getXEnd(), last.date - incidence.trim) # plot no later than "last date of data - 9"
-    
-    # reduce to only the dates specified (for speed)
-    data.utla.incidence <- df.for.plotting.incidence.utlas %>%
-      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end),by=1))
- 
-    plotIncidenceUTLAs <- data.utla.incidence %>%
-      group_by(Area) %>%
-      plot_ly(x=~Dates, y=~scaled_per_capita) %>%
-      add_lines(alpha=0.3, #color=~Pillar,
-                color = I("#8DA0CB"),
-                hovertemplate = paste(
-                  '<b>',data.utla.incidence$Area,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>')) %>%
-      add_segments(type="line",
-                   x = "2020-05-18", xend = "2020-05-18", 
-                   y = 0, yend = ceiling(max(df.for.plotting.incidence.utlas$scaled_per_capita, na.rm=TRUE)) + 1,
-                   line=list(dash='dash',
-                             color="lightgrey"),
-                   hovertemplate = paste('<extra></extra>')) %>% 
-      add_annotations(
-                     x= "2020-05-13",
-                     y= 35,
-                     xref = "x",
-                     yref = "y",
-                     text = "
-                 Launch of 
-                 widespread testing
-                 programme",
-                     showarrow = F
-                   ) %>%
-      layout(xaxis = list(
-        title = "",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range=c(x.start, x.end)
-      ),
-      yaxis = list(
-        title = "Estimated new infections per day which\nwent on to be confirmed by a positive test result,\nper 100,000 population",
-        titlefont = f2,
-        showticklabels = TRUE,
-        tickfont = f2,
-        exponentformat = "E",
-        range=c(0,ceiling(max(df.for.plotting.incidence.utlas$scaled_per_capita, na.rm=TRUE)) + 1)
-      ), showlegend = FALSE)
-    
-    plotIncidenceUTLAs %>%
-      filter(Area == UTLAToHighlight) %>%
-      add_lines(color = I("#FC8D62"),
-                line=list(width=4, alpha=1),
-                hovertemplate = paste(
-                  '<b>',UTLAToHighlight,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>')) 
-      
+    incidence.utla.plot
   })
   
   output$UTLARPlot <- renderPlotly({
-    UTLAToHighlight <- getUTLA()
-    x.start <- getXStart()
-    x.end <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
-    
-    # reduce to only the dates specified (for speed)
-    data.utla.R <- df.for.plotting.R.utlas %>%
-      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end),by=1))
-    
-    plotRUTLAs <- data.utla.R %>%
-      group_by(Area) %>%
-      plot_ly(x=~Dates, y=~R) %>%
-      add_lines(alpha=0.3, #color=~Pillar,
-                color = I("#8DA0CB"),
-                hovertemplate = paste(
-                  '<b>',data.utla.R$Area,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>'))  %>%
-      add_segments(type="line",
-                   x = x.start, xend = x.end,
-                   y = 1, yend = 1,
-                   line=list(dash='dash',
-                             color="black"),
-                   hovertemplate = paste('<extra></extra>')) %>% 
-      add_annotations(
-                     x= "2020-03-05",
-                     y= 1.5,
-                     xref = "x",
-                     yref = "y",
-                     text = "
-                 See 'Details' for
-                 explanation of why
-                 R appears to be
-                 increasing here",
-                     showarrow = F
-                   ) %>%
-      add_segments(type="line",
-                   x = "2020-05-18", xend = "2020-05-18", 
-                   y = 0, yend = ceiling(max(df.for.plotting.R.utlas$R)),
-                   line=list(dash='dash',
-                             color="lightgrey"),
-                   hovertemplate = paste('<extra></extra>')) %>% add_annotations(
-                     x= "2020-05-13",
-                     y= 3,
-                     xref = "x",
-                     yref = "y",
-                     text = "
-                 Launch of 
-                 widespread testing
-                 programme",
-                     showarrow = F
-                   ) %>%
-      layout(xaxis = list(
-        title = "",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range = c(x.start, x.end)
-      ), 
-      yaxis = list(
-        title = "Estimated R",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range=c(0,max(df.for.plotting.R.utlas$R))
-      ), showlegend = FALSE)
-    
-    
-    plotRUTLAs %>%
-      filter(Area == UTLAToHighlight) %>%
-      add_lines(color = I("#FC8D62"),
-                line=list(width=4, alpha=1),
-                hovertemplate = paste(
-                  '<b>',UTLAToHighlight,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>')) 
-      
+    r.utla.plot
   })
   
-  output$UTLAProjectionPlot <- renderPlotly({
-    UTLAToHighlight <- getUTLA()
-    x.start <- getXStart()
-    x.end <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
-    
-    # reduce to only the dates specified (for speed)
-    data.utla.nowcast <- projected.cases.utlas %>%
-      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end),by=1))
-    
-    plotProjectionUTLAs <- data.utla.nowcast %>%
-      group_by(Area) %>%
-      plot_ly(x=~Dates, y=~scaled_per_capita) %>%
-      add_lines(alpha=0.3, #color=~Pillar,
-                color = I("#8DA0CB"),
-                hovertemplate = paste(
-                  '<b>',data.utla.nowcast$Area,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>')) %>%
-      add_segments(type="line",
-                   x = "2020-05-18", xend = "2020-05-18", 
-                   y = 0, yend = ceiling(max(projected.cases.utlas$scaled_per_capita, na.rm=TRUE)) + 1,
-                   line=list(dash='dash',
-                             color="lightgrey"),
-                   hovertemplate = paste('<extra></extra>')) %>% add_annotations(
-                     x= "2020-05-13",
-                     y= 62,
-                     xref = "x",
-                     yref = "y",
-                     text = "
-                 Launch of 
-                 widespread testing
-                 programme",
-                     showarrow = F
-                   ) %>%
-      layout(xaxis = list(
-        title = "",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range=c(x.start, x.end)
-      ),
-      yaxis = list(
-        title = "Expected number of infections which will go on\nto be confirmed by a positive test result\nper day in the near future, per 100,000 population\n",
-        titlefont = f2,
-        showticklabels = TRUE,
-        tickfont = f2,
-        exponentformat = "E",
-        range=c(0,ceiling(max(projected.cases.utlas$scaled_per_capita, na.rm=TRUE)) + 1)
-      ), showlegend = FALSE)
-    
-    
-    plotProjectionUTLAs %>%
-      filter(Area == UTLAToHighlight) %>%
-      add_lines(color = I("#FC8D62"),
-                line=list(width=4, alpha=1),
-                hovertemplate = paste(
-                  '<b>',UTLAToHighlight,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>')) 
+  observeEvent(
+    {getUTLA()
+      getXStart()
+      getXEnd()
+    }, 
+    {
+      x.start <- getXStart()
+      x.end.incidence <- min(getXEnd(), last.date - incidence.trim) # plot no later than "last date of data - 9"
+      x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
       
-  })
+      UTLAToHighlight <- getUTLA()
+      
+      nowcast.data <- projected.cases.utlas %>%
+        filter(Area == UTLAToHighlight)
+      
+      plotlyProxy("UTLAProjectionPlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.r)
+                          )
+                          )
+        ) %>% 
+        plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line, trace 2 is the (old) highlighted area
+        plotlyProxyInvoke("addTraces",
+                          x=nowcast.data$Dates,
+                          y=nowcast.data$scaled_per_capita,
+                          line=list(width=4, alpha=1, color = "#FC8D62"),
+                          hovertemplate = paste(
+                            '<b>',UTLAToHighlight,'</b><br>',
+                            '<i>%{x|%d %B}</i><br>',
+                            '%{y:.1f} infections per 100,000<extra></extra>'))
+      
+      incidence.data <- df.for.plotting.incidence.utlas %>%
+        filter(Area == UTLAToHighlight)
+      
+      plotlyProxy("UTLAIncidencePlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.incidence)
+                          ))
+        ) %>%
+        plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line
+        plotlyProxyInvoke("addTraces",
+                          x=incidence.data$Dates,
+                          y=incidence.data$scaled_per_capita,
+                          line=list(width=4, alpha=1, color = "#FC8D62"),
+                          hovertemplate = paste(
+                            '<b>',UTLAToHighlight,'</b><br>',
+                            '<i>%{x|%d %B}</i><br>',
+                            '%{y:.1f} infections per 100,000<extra></extra>'))
+      
+      r.data <- df.for.plotting.R.utlas %>%
+        filter(Area == UTLAToHighlight)
+      
+      plotlyProxy("UTLARPlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.r)
+                          ))
+        ) %>% 
+        plotlyProxyInvoke("deleteTraces", list(as.integer(3))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line, trace 2 is the R=1 line
+        plotlyProxyInvoke("addTraces",
+                          x=r.data$Dates,
+                          y=r.data$R,
+                          line=list(width=4, alpha=1, color = "#FC8D62"),
+                          hovertemplate = paste(
+                            '<b>',UTLAToHighlight,'</b><br>',
+                            '<i>%{x|%d %B}</i><br>',
+                            'R = %{y:.1f}<extra></extra>'))
+      
+      
+      
+      
+      
+    }
+  )
   
   output$ROneUTLAPlot <- renderPlotly({
     UTLAToHighlight <- getUTLA()
     x.start <- getXStart()
-    x.end <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
+    x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
     
-    # reduce to only the dates specified (for speed)
-    data.utla.R <- df.for.plotting.R.utlas %>%
-      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end),by=1))
-    
-    plotROneUTLA <- data.utla.R %>%
-      group_by(Area) %>%
-      plot_ly(x=~Dates, y=~R) %>%
-      add_segments(type="line",
-                   x = x.start, xend = x.end, 
-                   y = 1, yend = 1,
-                   line=list(dash='dash',
-                             color="black"),
-                   hovertemplate = paste('<extra></extra>')) %>% 
-      add_annotations(
-                     x= "2020-03-05",
-                     y= 1.5,
-                     xref = "x",
-                     yref = "y",
-                     text = "
-                 See 'Details' for
-                 explanation of why
-                 R appears to be 
-                 increasing here",
-                     showarrow = F
-                   ) %>%
-      add_segments(type="line",
-                   x = "2020-05-18", xend = "2020-05-18", 
-                   y = 0, yend = max(df.for.plotting.R.utlas$R),
-                   line=list(dash='dash',
-                             color="lightgrey"),
-                   hovertemplate = paste('<extra></extra>')) %>% add_annotations(
-                     x= "2020-05-13",
-                     y= 3,
-                     xref = "x",
-                     yref = "y",
-                     text = "
-                 Launch of 
-                 widespread testing
-                 programme",
-                     showarrow = F
-                   ) %>%
-      layout(xaxis = list(
-        title = "",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range=c(x.start, x.end)
-      ), 
-      yaxis = list(
-        title = "Estimated R with 95% credibility interval",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E"
-      ), showlegend = FALSE)
-    
-    plotROneUTLA %>%
+    ROneUTLA.plot %>%
+      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end.r),by=1)) %>%
       filter(Area == UTLAToHighlight) %>%
       add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
                   color = I("grey"),
@@ -386,255 +226,132 @@ server <- function(input, output, session) {
                 hovertemplate = paste(
                   '<b>',UTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>'))
-      
-    
+                  'R = %{y:.1f}<extra></extra>')) %>%
+      layout(
+        xaxis = list(
+          title = "",
+          titlefont = f1,
+          showticklabels = TRUE,
+          tickfont = f1,
+          exponentformat = "E",
+          range=c(x.start, x.end.r)
+        )
+      )
+  })
+  
+  ### Regions
+  
+  output$regionProjectionPlot <- renderPlotly({
+    nowcast.region.plot
   })
   
   output$regionIncidencePlot <- renderPlotly({
-    regionToHighlight <- getRegion()
-    x.start <- getXStart()
-    x.end <- min(getXEnd(), last.date - incidence.trim) # plot no later than "last date of data - 9"
-    
-    # reduce to only the dates specified (for speed)
-    data.region.incidence <- df.for.plotting.incidence.regions %>%
-      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end),by=1))
-    
-    plotIncidenceregions <- data.region.incidence %>%
-      group_by(Area) %>%
-      plot_ly(x=~Dates, y=~scaled_per_capita) %>%
-      add_lines(alpha=0.3, #color=~Pillar,
-                color = I("#8DA0CB"),
-                hovertemplate = paste(
-                  '<b>',data.region.incidence$Area,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>')) %>%
-      add_segments(type="line",
-                   x = "2020-05-18", xend = "2020-05-18",
-                   y = 0, yend = ceiling(max(df.for.plotting.incidence.regions$scaled_per_capita, na.rm=TRUE)) + 1,
-                   line=list(dash='dash',
-                             color="lightgrey"),
-                   hovertemplate = paste('<extra></extra>')) %>% add_annotations(
-                     x= "2020-05-13",
-                     y= 17,
-                     xref = "x",
-                     yref = "y",
-                     text = "
-                 Launch of
-                 widespread testing
-                 programme",
-                     showarrow = F
-                   ) %>%
-      layout(xaxis = list(
-        title = "",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range=c(x.start, x.end)
-      ),
-      yaxis = list(
-        title = "Estimated new infections per day which\nwent on to be confirmed by a positive test result,\nper 100,000 population",
-        titlefont = f2,
-        showticklabels = TRUE,
-        tickfont = f2,
-        exponentformat = "E",
-        range=c(0,ceiling(max(df.for.plotting.incidence.regions$scaled_per_capita, na.rm=TRUE)) + 1)
-      ), showlegend = FALSE)
-    
-    plotIncidenceregions %>%
-      filter(Area == regionToHighlight) %>%
-      add_lines(color = I("#FC8D62"),
-                line=list(width=4, alpha=1),
-                hovertemplate = paste(
-                  '<b>',regionToHighlight,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>'))
-      
+    incidence.region.plot
   })
   
   output$regionRPlot <- renderPlotly({
-    regionToHighlight <- getRegion()
-    x.start <- getXStart()
-    x.end <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
-    
-    # reduce to only the dates specified (for speed)
-    data.region.R <- df.for.plotting.R.regions %>%
-      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end),by=1))
-    
-    plotRregions <- data.region.R %>%
-      group_by(Area) %>%
-      plot_ly(x=~Dates, y=~R) %>%
-      add_lines(alpha=0.3, #color=~Pillar,
-                color = I("#8DA0CB"),
-                hovertemplate = paste(
-                  '<b>',data.region.R$Area,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>'))  %>%
-      add_segments(type="line",
-                   x = start.date, xend = max(df.for.plotting.R.regions$Dates), 
-                   y = 1, yend = 1,
-                   line=list(dash='dash',
-                             color="black"),
-                   hovertemplate = paste('<extra></extra>')) %>% 
-      add_segments(type="line",
-                   x = "2020-05-18", xend = "2020-05-18", 
-                   y = 0, yend = max(df.for.plotting.R.regions$R),
-                   line=list(dash='dash',
-                             color="lightgrey"),
-                   hovertemplate = paste('<extra></extra>')) %>% add_annotations(
-                     x= "2020-05-13",
-                     y= 3,
-                     xref = "x",
-                     yref = "y",
-                     text = "
-                 Launch of 
-                 widespread testing
-                 programme",
-                     showarrow = F
-                   ) %>%
-      layout(xaxis = list(
-        title = "",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range = c(x.start, x.end)
-      ), 
-      yaxis = list(
-        title = "Estimated R",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range=c(0,max(df.for.plotting.R.regions$R))
-      ), showlegend = FALSE)
-    
-    plotRregions %>%
-      filter(Area == regionToHighlight) %>%
-      add_lines(color = I("#FC8D62"),
-                line=list(width=4, alpha=1),
-                hovertemplate = paste(
-                  '<b>',regionToHighlight,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>')) 
-      
+    r.region.plot
   })
   
-  output$regionProjectionPlot <- renderPlotly({
-    regionToHighlight <- getRegion()
-    x.start <- getXStart()
-    x.end <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
-    
-    # reduce to only the dates specified (for speed)
-    data.region.nowcast <- projected.cases.regions %>%
-      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end),by=1))
-    
-    plotProjectionregions <- data.region.nowcast %>%
-      group_by(Area) %>%
-      plot_ly(x=~Dates, y=~scaled_per_capita) %>%
-      add_lines(alpha=0.3, #color=~Pillar,
-                color = I("#8DA0CB"),
-                hovertemplate = paste(
-                  '<b>',data.region.nowcast$Area,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>')) %>%
-      add_segments(type="line",
-                   x = "2020-05-18", xend = "2020-05-18", 
-                   y = 0, yend = ceiling(max(projected.cases.regions$scaled_per_capita, na.rm=TRUE)) + 1,
-                   line=list(dash='dash',
-                             color="lightgrey"),
-                   hovertemplate = paste('<extra></extra>')) %>% add_annotations(
-                     x= "2020-05-13",
-                     y= 22,
-                     xref = "x",
-                     yref = "y",
-                     text = "
-                 Launch of 
-                 widespread testing
-                 programme",
-                     showarrow = F
-                   ) %>%
-      layout(xaxis = list(
-        title = "",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range = c(x.start, x.end)
-      ), 
-      yaxis = list(
-        title = "Expected number of infections which will go on\nto be confirmed by a positive test result\nper day in the near future, per 100,000 population\n",
-        titlefont = f2,
-        showticklabels = TRUE,
-        tickfont = f2,
-        exponentformat = "E",
-        range=c(0,ceiling(max(projected.cases.regions$scaled_per_capita, na.rm=TRUE)) + 1)
-      ), showlegend = FALSE)
-    
-    plotProjectionregions %>%
-      filter(Area == regionToHighlight) %>%
-      add_lines(color = I("#FC8D62"),
-                line=list(width=4, alpha=1),
-                hovertemplate = paste(
-                  '<b>',regionToHighlight,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>'))
-       
-  })
+  observeEvent(
+    {getRegion()
+      getXStart()
+      getXEnd()
+    }, 
+    {
+      x.start <- getXStart()
+      x.end.incidence <- min(getXEnd(), last.date - incidence.trim) # plot no later than "last date of data - 9"
+      x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
+      
+      regionToHighlight <- getRegion()
+      
+      nowcast.data <- projected.cases.regions %>%
+        filter(Area == regionToHighlight)
+      
+      plotlyProxy("regionProjectionPlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.r)
+                          )
+                          )
+        ) %>% 
+        plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line, trace 2 is the (old) highlighted area
+        plotlyProxyInvoke("addTraces",
+                          x=nowcast.data$Dates,
+                          y=nowcast.data$scaled_per_capita,
+                          line=list(width=4, alpha=1, color = "#FC8D62"),
+                          hovertemplate = paste(
+                            '<b>',regionToHighlight,'</b><br>',
+                            '<i>%{x|%d %B}</i><br>',
+                            '%{y:.1f} infections per 100,000<extra></extra>'))
+      
+      incidence.data <- df.for.plotting.incidence.regions %>%
+        filter(Area == regionToHighlight)
+      
+      plotlyProxy("regionIncidencePlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.incidence)
+                          ))
+        ) %>%
+        plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line
+        plotlyProxyInvoke("addTraces",
+                          x=incidence.data$Dates,
+                          y=incidence.data$scaled_per_capita,
+                          line=list(width=4, alpha=1, color = "#FC8D62"),
+                          hovertemplate = paste(
+                            '<b>',regionToHighlight,'</b><br>',
+                            '<i>%{x|%d %B}</i><br>',
+                            '%{y:.1f} infections per 100,000<extra></extra>'))
+      
+      r.data <- df.for.plotting.R.regions %>%
+        filter(Area == regionToHighlight)
+      
+      plotlyProxy("regionRPlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.r)
+                          ))
+        ) %>% 
+        plotlyProxyInvoke("deleteTraces", list(as.integer(3))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line, trace 2 is the R=1 line
+        plotlyProxyInvoke("addTraces",
+                          x=r.data$Dates,
+                          y=r.data$R,
+                          line=list(width=4, alpha=1, color = "#FC8D62"),
+                          hovertemplate = paste(
+                            '<b>',regionToHighlight,'</b><br>',
+                            '<i>%{x|%d %B}</i><br>',
+                            'R = %{y:.1f}<extra></extra>'))
+      
+      
+      
+      
+      
+    }
+  )
   
   output$ROneRegionPlot <- renderPlotly({
     regionToHighlight <- getRegion()
     x.start <- getXStart()
-    x.end <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
+    x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
     
-    # reduce to only the dates specified (for speed)
-    data.region.R <- df.for.plotting.R.regions %>%
-      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end),by=1))
-    
-    plotROneRegion <- data.region.R %>%
-      group_by(Area) %>%
-      plot_ly(x=~Dates, y=~R) %>%
-      add_segments(type="line",
-                   x = x.start, xend = x.end, 
-                   y = 1, yend = 1,
-                   line=list(dash='dash',
-                             color="black"),
-                   hovertemplate = paste('<extra></extra>')) %>% 
-      add_segments(type="line",
-                   x = "2020-05-18", xend = "2020-05-18", 
-                   y = 0, yend = max(df.for.plotting.R.regions$R),
-                   line=list(dash='dash',
-                             color="lightgrey"),
-                   hovertemplate = paste('<extra></extra>')) %>% add_annotations(
-                     x= "2020-05-13",
-                     y= 3,
-                     xref = "x",
-                     yref = "y",
-                     text = "
-                 Launch of 
-                 widespread testing
-                 programme",
-                     showarrow = F
-                   ) %>%
-      layout(xaxis = list(
-        title = "",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range = c(x.start, x.end)
-      ), 
-      yaxis = list(
-        title = "Estimated R with 95% credibility interval",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range=c(0,max(df.for.plotting.R.regions$R))
-      ), showlegend = FALSE)
-    
-    plotROneRegion %>%
+    ROneregion.plot %>%
+      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end.r),by=1)) %>%
       filter(Area == regionToHighlight) %>%
       add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
                   color = I("grey"),
@@ -647,281 +364,132 @@ server <- function(input, output, session) {
                 hovertemplate = paste(
                   '<b>',regionToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>')) 
-      
-    
+                  'R = %{y:.1f}<extra></extra>')) %>%
+      layout(
+        xaxis = list(
+          title = "",
+          titlefont = f1,
+          showticklabels = TRUE,
+          tickfont = f1,
+          exponentformat = "E",
+          range=c(x.start, x.end.r)
+        )
+      )
   })
   
+  ### LTLAs
+  
+  output$LTLAProjectionPlot <- renderPlotly({
+    nowcast.ltla.plot
+  })
   
   output$LTLAIncidencePlot <- renderPlotly({
-    LTLAToHighlight <- getLTLA()
-    x.start <- getXStart()
-    x.end <- min(getXEnd(), last.date - incidence.trim) # plot no later than "last date of data - 9"
-    
-    # reduce to only the dates specified (for speed)
-    data.ltla.incidence <- df.for.plotting.incidence.ltlas %>%
-      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end),by=1))
-    
-    plotIncidenceLTLAs <- data.ltla.incidence %>%
-      group_by(Area) %>%
-      plot_ly(x=~Dates, y=~scaled_per_capita) %>%
-      add_lines(alpha=0.3, #color=~Pillar,
-                color = I("#8DA0CB"),
-                hovertemplate = paste(
-                  '<b>',data.ltla.incidence$Area,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>')) %>%
-      add_segments(type="line",
-                   x = "2020-05-18", xend = "2020-05-18", 
-                   y = 0, yend = ceiling(max(df.for.plotting.incidence.ltlas$scaled_per_capita, na.rm=TRUE)) + 1,
-                   line=list(dash='dash',
-                             color="lightgrey"),
-                   hovertemplate = paste('<extra></extra>')) %>% add_annotations(
-                     x= "2020-05-13",
-                     y= 35,
-                     xref = "x",
-                     yref = "y",
-                     text = "
-                 Launch of 
-                 widespread testing
-                 programme",
-                     showarrow = F
-                   ) %>%
-      layout(xaxis = list(
-        title = "",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range=c(x.start, x.end)
-      ), 
-      yaxis = list(
-        title = "Estimated new infections per day which\nwent on to be confirmed by a positive test result,\nper 100,000 population",
-        titlefont = f2,
-        showticklabels = TRUE,
-        tickfont = f2,
-        exponentformat = "E",
-        range=c(0, ceiling(max(df.for.plotting.incidence.ltlas$scaled_per_capita, na.rm=TRUE)) + 1)
-      ), showlegend = FALSE)
-    
-    plotIncidenceLTLAs %>%
-      filter(Area == LTLAToHighlight) %>%
-      add_lines(color = I("#FC8D62"),
-                line=list(width=4, alpha=1),
-                hovertemplate = paste(
-                  '<b>',LTLAToHighlight,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>'))
-      
+    incidence.ltla.plot
   })
   
   output$LTLARPlot <- renderPlotly({
-    LTLAToHighlight <- getLTLA()
-    x.start <- getXStart()
-    x.end <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
-    
-    # reduce to only the dates specified (for speed)
-    data.ltla.R <- df.for.plotting.R.ltlas %>%
-      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end),by=1))
-    
-    plotRLTLAs <- data.ltla.R %>%
-      group_by(Area) %>%
-      plot_ly(x=~Dates, y=~R) %>%
-      add_lines(alpha=0.3, #color=~Pillar,
-                color = I("#8DA0CB"),
-                hovertemplate = paste(
-                  '<b>',data.ltla.R$Area,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>'))  %>%
-      add_segments(type="line",
-                   x = x.start, xend = x.end, 
-                   y = 1, yend = 1,
-                   line=list(dash='dash',
-                             color="black"),
-                   hovertemplate = paste('<extra></extra>')) %>% 
-      add_annotations(
-        x= "2020-03-05",
-        y= 1.5,
-        xref = "x",
-        yref = "y",
-        text = "
-                 See 'Details' for
-                 explanation of why
-                 R appears to be
-                 increasing here",
-        showarrow = F
-      ) %>%
-      add_segments(type="line",
-                   x = "2020-05-18", xend = "2020-05-18", 
-                   y = 0, yend = max(df.for.plotting.R.ltlas$R),
-                   line=list(dash='dash',
-                             color="lightgrey"),
-                   hovertemplate = paste('<extra></extra>')) %>% add_annotations(
-                     x= "2020-05-13",
-                     y= 3,
-                     xref = "x",
-                     yref = "y",
-                     text = "
-                 Launch of 
-                 widespread testing
-                 programme",
-                     showarrow = F
-                   ) %>%
-      layout(xaxis = list(
-        title = "",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range = c(x.start, x.end)
-      ), 
-      yaxis = list(
-        title = "Estimated R",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range=c(0,max(df.for.plotting.R.ltlas$R))
-      ), showlegend = FALSE)
-    
-    plotRLTLAs %>%
-      filter(Area == LTLAToHighlight) %>%
-      add_lines(color = I("#FC8D62"),
-                line=list(width=4, alpha=1),
-                hovertemplate = paste(
-                  '<b>',LTLAToHighlight,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>')) 
+    r.ltla.plot
   })
   
-  output$LTLAProjectionPlot <- renderPlotly({
-    LTLAToHighlight <- getLTLA()
-    x.start <- getXStart()
-    x.end <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
-    
-    # reduce to only the dates specified (for speed)
-    data.ltla.nowcast <- projected.cases.ltlas %>%
-      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end),by=1))
-    
-    plotProjectionLTLAs <- data.ltla.nowcast %>%
-      group_by(Area) %>%
-      plot_ly(x=~Dates, y=~scaled_per_capita) %>%
-      add_lines(alpha=0.3, #color=~Pillar,
-                color = I("#8DA0CB"),
-                hovertemplate = paste(
-                  '<b>',data.ltla.nowcast$Area,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>')) %>%
-      add_segments(type="line",
-                   x = "2020-05-18", xend = "2020-05-18", 
-                   y = 0, yend = ceiling(max(projected.cases.ltlas$scaled_per_capita, na.rm=TRUE)) + 1,
-                   line=list(dash='dash',
-                             color="lightgrey"),
-                   hovertemplate = paste('<extra></extra>')) %>% add_annotations(
-                     x= "2020-05-13",
-                     y= 62,
-                     xref = "x",
-                     yref = "y",
-                     text = "
-                 Launch of 
-                 widespread testing
-                 programme",
-                     showarrow = F
-                   ) %>%
-      layout(xaxis = list(
-        title = "",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range = c(x.start, x.end)
-      ), 
-      yaxis = list(
-        title = "Expected number of infections which will go on\nto be confirmed by a positive test result\nper day in the near future, per 100,000 population\n",
-        titlefont = f2,
-        showticklabels = TRUE,
-        tickfont = f2,
-        exponentformat = "E",
-        range=c(0,ceiling(max(projected.cases.ltlas$scaled_per_capita, na.rm=TRUE)) + 1)
-      ), showlegend = FALSE)
-    
-    plotProjectionLTLAs %>%
-      filter(Area == LTLAToHighlight) %>%
-      add_lines(color = I("#FC8D62"),
-                line=list(width=4, alpha=1),
-                hovertemplate = paste(
-                  '<b>',LTLAToHighlight,'</b><br>',
-                  '<i>%{x|%d %B}</i><br>',
-                  '%{y:.1f} infections per 100,000<extra></extra>')) 
+  observeEvent(
+    {getLTLA()
+      getXStart()
+      getXEnd()
+    }, 
+    {
+      x.start <- getXStart()
+      x.end.incidence <- min(getXEnd(), last.date - incidence.trim) # plot no later than "last date of data - 9"
+      x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
       
-  })
+      LTLAToHighlight <- getLTLA()
+      
+      nowcast.data <- projected.cases.ltlas %>%
+        filter(Area == LTLAToHighlight)
+      
+      plotlyProxy("LTLAProjectionPlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.r)
+                          )
+                          )
+        ) %>% 
+        plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line, trace 2 is the (old) highlighted area
+        plotlyProxyInvoke("addTraces",
+                          x=nowcast.data$Dates,
+                          y=nowcast.data$scaled_per_capita,
+                          line=list(width=4, alpha=1, color = "#FC8D62"),
+                          hovertemplate = paste(
+                            '<b>',LTLAToHighlight,'</b><br>',
+                            '<i>%{x|%d %B}</i><br>',
+                            '%{y:.1f} infections per 100,000<extra></extra>'))
+      
+      incidence.data <- df.for.plotting.incidence.ltlas %>%
+        filter(Area == LTLAToHighlight)
+      
+      plotlyProxy("LTLAIncidencePlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.incidence)
+                          ))
+        ) %>%
+        plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line
+        plotlyProxyInvoke("addTraces",
+                          x=incidence.data$Dates,
+                          y=incidence.data$scaled_per_capita,
+                          line=list(width=4, alpha=1, color = "#FC8D62"),
+                          hovertemplate = paste(
+                            '<b>',LTLAToHighlight,'</b><br>',
+                            '<i>%{x|%d %B}</i><br>',
+                            '%{y:.1f} infections per 100,000<extra></extra>'))
+      
+      r.data <- df.for.plotting.R.ltlas %>%
+        filter(Area == LTLAToHighlight)
+      
+      plotlyProxy("LTLARPlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.r)
+                          ))
+        ) %>% 
+        plotlyProxyInvoke("deleteTraces", list(as.integer(3))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line, trace 2 is the R=1 line
+        plotlyProxyInvoke("addTraces",
+                          x=r.data$Dates,
+                          y=r.data$R,
+                          line=list(width=4, alpha=1, color = "#FC8D62"),
+                          hovertemplate = paste(
+                            '<b>',LTLAToHighlight,'</b><br>',
+                            '<i>%{x|%d %B}</i><br>',
+                            'R = %{y:.1f}<extra></extra>'))
+      
+      
+      
+      
+      
+    }
+  )
   
   output$ROneLTLAPlot <- renderPlotly({
     LTLAToHighlight <- getLTLA()
     x.start <- getXStart()
-    x.end <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
+    x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
     
-    # reduce to only the dates specified (for speed)
-    data.ltla.R <- df.for.plotting.R.ltlas %>%
-      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end),by=1))
-    
-    plotROneLTLA <- data.ltla.R %>%
-      group_by(Area) %>%
-      plot_ly(x=~Dates, y=~R) %>%
-      add_segments(type="line",
-                   x = x.start, xend = x.end, 
-                   y = 1, yend = 1,
-                   line=list(dash='dash',
-                             color="black"),
-                   hovertemplate = paste('<extra></extra>')) %>% 
-      add_segments(type="line",
-                   x = "2020-05-18", xend = "2020-05-18", 
-                   y = 0, yend = max(df.for.plotting.R.ltlas$R),
-                   line=list(dash='dash',
-                             color="lightgrey"),
-                   hovertemplate = paste('<extra></extra>')) %>%
-      add_annotations(
-        x= "2020-03-05",
-        y= 1.5,
-        xref = "x",
-        yref = "y",
-        text = "
-                 See 'Details' for
-                 explanation of why
-                 R appears to be
-                 increasing here",
-        showarrow = F
-      ) %>%
-      add_annotations(
-                     x= "2020-05-13",
-                     y= 3,
-                     xref = "x",
-                     yref = "y",
-                     text = "
-                 Launch of 
-                 widespread testing
-                 programme",
-                     showarrow = F
-                   ) %>%
-      layout(xaxis = list(
-        title = "",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range = c(x.start, x.end)
-      ), 
-      yaxis = list(
-        title = "Estimated R with 95% credibility interval",
-        titlefont = f1,
-        showticklabels = TRUE,
-        tickfont = f1,
-        exponentformat = "E",
-        range=c(0,max(df.for.plotting.R.ltlas$R))
-      ), showlegend = FALSE)
-    
-    
-    plotROneLTLA %>%
+    ROneLTLA.plot %>%
+      filter(Dates %in% seq(as.Date(x.start),as.Date(x.end.r),by=1)) %>%
       filter(Area == LTLAToHighlight) %>%
       add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
                   color = I("grey"),
@@ -934,10 +502,20 @@ server <- function(input, output, session) {
                 hovertemplate = paste(
                   '<b>',LTLAToHighlight,'</b><br>',
                   '<i>%{x|%d %B}</i><br>',
-                  'R = %{y:.1f}<extra></extra>'))
-      
-    
+                  'R = %{y:.1f}<extra></extra>')) %>%
+      layout(
+        xaxis = list(
+          title = "",
+          titlefont = f1,
+          showticklabels = TRUE,
+          tickfont = f1,
+          exponentformat = "E",
+          range=c(x.start, x.end.r)
+        )
+      )
   })
+  
+  ### Cases by age
   
   output$CaseDistributionTitle <- renderUI({
     c <- getCountry()

@@ -13,6 +13,7 @@ library(stringr) # for cases by age
 library(stringi) # for cases by age
 library(viridis)
 # library(httr) # for accessing latest data; needed this when updates were done within the app but don't need it whilst running "prepping_the_data.R" manually
+# options(shiny.trace = TRUE)
 # options(shiny.trace = FALSE)
 
 bs <- 24 # base font size for plots
