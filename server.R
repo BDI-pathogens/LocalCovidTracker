@@ -115,10 +115,9 @@ server <- function(input, output, session) {
     r.utla.plot
   })
   
+  # highlight selected UTLA
   observeEvent(
     {getUTLA()
-      getXStart()
-      getXEnd()
     }, 
     {
       x.start <- getXStart()
@@ -131,17 +130,6 @@ server <- function(input, output, session) {
         filter(Area == UTLAToHighlight)
       
       plotlyProxy("UTLAProjectionPlot", deferUntilFlush = FALSE) %>%
-        plotlyProxyInvoke("relayout",
-                          list(xaxis = list(
-                            title = "",
-                            titlefont = f1,
-                            showticklabels = TRUE,
-                            tickfont = f1,
-                            exponentformat = "E",
-                            range=c(x.start,x.end.r)
-                          )
-                          )
-        ) %>% 
         plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line, trace 2 is the (old) highlighted area
         plotlyProxyInvoke("addTraces",
                           x=nowcast.data$Dates,
@@ -156,16 +144,6 @@ server <- function(input, output, session) {
         filter(Area == UTLAToHighlight)
       
       plotlyProxy("UTLAIncidencePlot", deferUntilFlush = FALSE) %>%
-        plotlyProxyInvoke("relayout",
-                          list(xaxis = list(
-                            title = "",
-                            titlefont = f1,
-                            showticklabels = TRUE,
-                            tickfont = f1,
-                            exponentformat = "E",
-                            range=c(x.start,x.end.incidence)
-                          ))
-        ) %>%
         plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line
         plotlyProxyInvoke("addTraces",
                           x=incidence.data$Dates,
@@ -180,16 +158,6 @@ server <- function(input, output, session) {
         filter(Area == UTLAToHighlight)
       
       plotlyProxy("UTLARPlot", deferUntilFlush = FALSE) %>%
-        plotlyProxyInvoke("relayout",
-                          list(xaxis = list(
-                            title = "",
-                            titlefont = f1,
-                            showticklabels = TRUE,
-                            tickfont = f1,
-                            exponentformat = "E",
-                            range=c(x.start,x.end.r)
-                          ))
-        ) %>% 
         plotlyProxyInvoke("deleteTraces", list(as.integer(3))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line, trace 2 is the R=1 line
         plotlyProxyInvoke("addTraces",
                           x=r.data$Dates,
@@ -199,13 +167,58 @@ server <- function(input, output, session) {
                             '<b>',UTLAToHighlight,'</b><br>',
                             '<i>%{x|%d %B}</i><br>',
                             'R = %{y:.1f}<extra></extra>'))
-      
-      
-      
-      
-      
     }
   )
+  
+  # adjust x range to show selected dates
+  observeEvent(
+    {getXStart()
+     getXEnd()
+    }, 
+    {
+      x.start <- getXStart()
+      x.end.incidence <- min(getXEnd(), last.date - incidence.trim) # plot no later than "last date of data - 9"
+      x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
+      
+      plotlyProxy("UTLAProjectionPlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.r)
+                          )
+                          )
+        ) 
+      
+      plotlyProxy("UTLAIncidencePlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.incidence)
+                          ))
+        ) 
+      
+      plotlyProxy("UTLARPlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.r)
+                          ))
+        ) 
+    }
+  )
+  
   
   output$ROneUTLAPlot <- renderPlotly({
     UTLAToHighlight <- getUTLA()
@@ -253,10 +266,9 @@ server <- function(input, output, session) {
     r.region.plot
   })
   
+  # highlight selected region
   observeEvent(
     {getRegion()
-      getXStart()
-      getXEnd()
     }, 
     {
       x.start <- getXStart()
@@ -269,17 +281,6 @@ server <- function(input, output, session) {
         filter(Area == regionToHighlight)
       
       plotlyProxy("regionProjectionPlot", deferUntilFlush = FALSE) %>%
-        plotlyProxyInvoke("relayout",
-                          list(xaxis = list(
-                            title = "",
-                            titlefont = f1,
-                            showticklabels = TRUE,
-                            tickfont = f1,
-                            exponentformat = "E",
-                            range=c(x.start,x.end.r)
-                          )
-                          )
-        ) %>% 
         plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line, trace 2 is the (old) highlighted area
         plotlyProxyInvoke("addTraces",
                           x=nowcast.data$Dates,
@@ -294,16 +295,6 @@ server <- function(input, output, session) {
         filter(Area == regionToHighlight)
       
       plotlyProxy("regionIncidencePlot", deferUntilFlush = FALSE) %>%
-        plotlyProxyInvoke("relayout",
-                          list(xaxis = list(
-                            title = "",
-                            titlefont = f1,
-                            showticklabels = TRUE,
-                            tickfont = f1,
-                            exponentformat = "E",
-                            range=c(x.start,x.end.incidence)
-                          ))
-        ) %>%
         plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line
         plotlyProxyInvoke("addTraces",
                           x=incidence.data$Dates,
@@ -318,16 +309,6 @@ server <- function(input, output, session) {
         filter(Area == regionToHighlight)
       
       plotlyProxy("regionRPlot", deferUntilFlush = FALSE) %>%
-        plotlyProxyInvoke("relayout",
-                          list(xaxis = list(
-                            title = "",
-                            titlefont = f1,
-                            showticklabels = TRUE,
-                            tickfont = f1,
-                            exponentformat = "E",
-                            range=c(x.start,x.end.r)
-                          ))
-        ) %>% 
         plotlyProxyInvoke("deleteTraces", list(as.integer(3))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line, trace 2 is the R=1 line
         plotlyProxyInvoke("addTraces",
                           x=r.data$Dates,
@@ -337,11 +318,55 @@ server <- function(input, output, session) {
                             '<b>',regionToHighlight,'</b><br>',
                             '<i>%{x|%d %B}</i><br>',
                             'R = %{y:.1f}<extra></extra>'))
+    }
+  )
+  
+  # adjust x range to show selected dates
+  observeEvent(
+    {getXStart()
+      getXEnd()
+    }, 
+    {
+      x.start <- getXStart()
+      x.end.incidence <- min(getXEnd(), last.date - incidence.trim) # plot no later than "last date of data - 9"
+      x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
       
+      plotlyProxy("regionProjectionPlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.r)
+                          )
+                          )
+        ) 
       
+      plotlyProxy("regionIncidencePlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.incidence)
+                          ))
+        ) 
       
-      
-      
+      plotlyProxy("regionRPlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.r)
+                          ))
+        ) 
     }
   )
   
@@ -391,10 +416,9 @@ server <- function(input, output, session) {
     r.ltla.plot
   })
   
+  # highlight selected LTLA
   observeEvent(
     {getLTLA()
-      getXStart()
-      getXEnd()
     }, 
     {
       x.start <- getXStart()
@@ -407,17 +431,6 @@ server <- function(input, output, session) {
         filter(Area == LTLAToHighlight)
       
       plotlyProxy("LTLAProjectionPlot", deferUntilFlush = FALSE) %>%
-        plotlyProxyInvoke("relayout",
-                          list(xaxis = list(
-                            title = "",
-                            titlefont = f1,
-                            showticklabels = TRUE,
-                            tickfont = f1,
-                            exponentformat = "E",
-                            range=c(x.start,x.end.r)
-                          )
-                          )
-        ) %>% 
         plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line, trace 2 is the (old) highlighted area
         plotlyProxyInvoke("addTraces",
                           x=nowcast.data$Dates,
@@ -432,16 +445,6 @@ server <- function(input, output, session) {
         filter(Area == LTLAToHighlight)
       
       plotlyProxy("LTLAIncidencePlot", deferUntilFlush = FALSE) %>%
-        plotlyProxyInvoke("relayout",
-                          list(xaxis = list(
-                            title = "",
-                            titlefont = f1,
-                            showticklabels = TRUE,
-                            tickfont = f1,
-                            exponentformat = "E",
-                            range=c(x.start,x.end.incidence)
-                          ))
-        ) %>%
         plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line
         plotlyProxyInvoke("addTraces",
                           x=incidence.data$Dates,
@@ -456,16 +459,6 @@ server <- function(input, output, session) {
         filter(Area == LTLAToHighlight)
       
       plotlyProxy("LTLARPlot", deferUntilFlush = FALSE) %>%
-        plotlyProxyInvoke("relayout",
-                          list(xaxis = list(
-                            title = "",
-                            titlefont = f1,
-                            showticklabels = TRUE,
-                            tickfont = f1,
-                            exponentformat = "E",
-                            range=c(x.start,x.end.r)
-                          ))
-        ) %>% 
         plotlyProxyInvoke("deleteTraces", list(as.integer(3))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line, trace 2 is the R=1 line
         plotlyProxyInvoke("addTraces",
                           x=r.data$Dates,
@@ -475,11 +468,55 @@ server <- function(input, output, session) {
                             '<b>',LTLAToHighlight,'</b><br>',
                             '<i>%{x|%d %B}</i><br>',
                             'R = %{y:.1f}<extra></extra>'))
+    }
+  )
+  
+  # adjust x range to show selected dates
+  observeEvent(
+    {getXStart()
+      getXEnd()
+    }, 
+    {
+      x.start <- getXStart()
+      x.end.incidence <- min(getXEnd(), last.date - incidence.trim) # plot no later than "last date of data - 9"
+      x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
       
+      plotlyProxy("LTLAProjectionPlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.r)
+                          )
+                          )
+        ) 
       
+      plotlyProxy("LTLAIncidencePlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.incidence)
+                          ))
+        ) 
       
-      
-      
+      plotlyProxy("LTLARPlot", deferUntilFlush = FALSE) %>%
+        plotlyProxyInvoke("relayout",
+                          list(xaxis = list(
+                            title = "",
+                            titlefont = f1,
+                            showticklabels = TRUE,
+                            tickfont = f1,
+                            exponentformat = "E",
+                            range=c(x.start,x.end.r)
+                          ))
+        ) 
     }
   )
   
@@ -514,6 +551,7 @@ server <- function(input, output, session) {
         )
       )
   })
+  
   
   ### Cases by age
   

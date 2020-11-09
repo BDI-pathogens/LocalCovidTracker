@@ -370,7 +370,16 @@ Click on dates in the legend (key) to show/hide results
                 downloadButton("CBA_Dist_download", "Download csv")
               )
             ),
+            
             withSpinner(plotlyOutput("casesByAgePlot", height="60vh"), type=7),
+            
+            conditionalPanel(
+              condition = "input.CBA_level == 1 && input.CBA_country == 'England'",
+              helpText("We note that since late October the data for England has contained a surge of cases which
+                     consistently moves to the final reporting date with each daily update and 
+                       therefore seems likely to be a data handling error.")
+              
+            ),
             
             fluidRow(
               column(

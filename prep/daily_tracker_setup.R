@@ -55,8 +55,8 @@ f2 <- list(
 )
 
 nowcast.utla.plot <- projected.cases.utlas %>%
-  group_by(Area) %>%
   plot_ly(x=~Dates, y=~scaled_per_capita) %>%
+  group_by(Area) %>%
   add_lines(alpha=0.3, #color=~Pillar,
             color = I("#8DA0CB"),
             hovertemplate = paste(
