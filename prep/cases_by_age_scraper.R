@@ -138,3 +138,4 @@ CBA.ltlas.alphabetical <- sort(unique((CBA_data %>% filter(areaType == "ltla"))$
 
 save(CBA.utlas.alphabetical, file="data/CBA.utlas.alphabetical.RData")
 save(CBA.ltlas.alphabetical, file="data/CBA.ltlas.alphabetical.RData")
+
