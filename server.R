@@ -552,6 +552,252 @@ server <- function(input, output, session) {
       )
   })
   
+  ### MAPS
+  
+  getDateMaps <- reactive({
+    as.Date(input$date.slider.maps, format="%d %b %y")
+  })
+  
+  output$mapDate <- renderUI({
+    nice.date <- format(getDateMaps(), format="%d %B %Y")
+    HTML(glue("<h2><b>{nice.date}</b></h2>"))
+  })
+  
+  output$NowcastMap <- renderLeaflet({
+    this.date.nowcast <- projected.cases.ltlas %>% filter(Dates == last.date - 31 - R.trim) 
+    this.date.nowcast$lad19cd <- this.date.nowcast$AreaCode
+    this.date.nowcast$fill <- num2col(this.date.nowcast$scaled_per_capita, col.pal=colorRampPalette(c('#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d')), x.max=60)
+
+    # combine shape and epi data
+    # using "right_join" removes the places for which we don't have data (Scotland etc.)
+    engwales <- right_join(engwalesmap, subset(this.date.nowcast, select = c("scaled_per_capita","lad19cd","fill")), by = "lad19cd")
+
+    engwales <- engwales %>% st_transform('+proj=longlat +datum=WGS84') # convert the shapefile coordinates into longitudes and latitudes, ready for the leaflet package
+
+    NowcastHoverInfo <- sprintf(
+      "<strong>%s</strong><br/>Projected %g new<br/>infections per 100,000<br/>in the near future",
+      engwales$lad19nm, round(engwales$scaled_per_capita,1)
+    ) %>% lapply(htmltools::HTML)
+    
+    leaflet(engwales) %>%
+      addPolygons(layerId =  paste0("nowcast.",mapcounter,".",1:337),
+                  fillColor = ~fill,
+                  weight = 1,
+                  opacity = 1,
+                  color = "white",
+                  dashArray = "3",
+                  fillOpacity = 1,
+                  highlight = highlightOptions(
+                    weight = 5,
+                    color = "#666",
+                    dashArray = "",
+                    fillOpacity = 0.7,
+                    bringToFront = TRUE),
+                  label = NowcastHoverInfo,
+                  labelOptions = labelOptions(
+                    style = list("font-weight" = "normal", padding = "3px 8px"),
+                    textsize = "15px",
+                    direction = "auto")) %>%
+      addLegend("topright",
+                colors = colorRampPalette(c('#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d'))(7),
+                labels = c(seq(0,50,by=10),"60+"),
+                title = "per 100,000")
+
+  })
+
+  output$InfectionsMap <- renderLeaflet({
+    this.date.inf <- df.for.plotting.incidence.ltlas %>% filter(Dates == last.date - 31 - R.trim)
+    this.date.inf$lad19cd <- this.date.inf$AreaCode
+    this.date.inf$fill <- num2col(this.date.inf$scaled_per_capita, col.pal=colorRampPalette(c('#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d')), x.max=60)
+    
+    # combine shape and epi data
+    # using "right_join" removes the places for which we don't have data (Scotland etc.)
+    engwales <- right_join(engwalesmap, subset(this.date.inf, select = c("scaled_per_capita","lad19cd", "fill")), by = "lad19cd")
+    
+    engwales <- engwales %>% st_transform('+proj=longlat +datum=WGS84') # convert the shapefile coordinates into longitudes and latitudes, ready for the leaflet package 
+    
+    InfHoverInfo <- sprintf(
+      "<strong>%s</strong><br/>%g new infections per 100,000",
+      engwales$lad19nm, round(engwales$scaled_per_capita,1)
+    ) %>% lapply(htmltools::HTML)
+    
+    leaflet(engwales) %>%
+      addPolygons(layerId = paste0("infections.",mapcounter,".",1:337),
+                  fillColor = ~fill,
+                  weight = 1,
+                  opacity = 1,
+                  color = "white",
+                  dashArray = "3",
+                  fillOpacity = 1,
+                  highlight = highlightOptions(
+                    weight = 5,
+                    color = "#666",
+                    dashArray = "",
+                    fillOpacity = 0.7,
+                    bringToFront = TRUE),
+                  label = InfHoverInfo,
+                  labelOptions = labelOptions(
+                    style = list("font-weight" = "normal", padding = "3px 8px"),
+                    textsize = "15px",
+                    direction = "auto")) %>%
+      addLegend("topright",
+                colors = colorRampPalette(c('#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d'))(7),
+                labels = c(seq(0,50,by=10),"60+"),
+                title = "per 100,000")
+  })
+  
+  output$RMap <- renderLeaflet({
+    this.date.R <- df.for.plotting.R.ltlas %>% filter(Dates == last.date - 31 - R.trim)
+    this.date.R$lad19cd <- this.date.R$AreaCode
+    this.date.R$fill <- num2col(this.date.R$R, col.pal=colorRampPalette(c('#313695','#4575b4','#74add1','#abd9e9','#e0f3f8','#ffffbf','#fee090','#fdae61','#f46d43','#d73027','#a50026')), x.min=0, x.max=2)
+    
+    # combine shape and epi data
+    # using "right_join" removes the places for which we don't have data (Scotland etc.)
+    engwales <- right_join(engwalesmap, subset(this.date.R, select = c("R", "lad19cd", "fill")), by = "lad19cd")
+ 
+    engwales <- engwales %>% st_transform('+proj=longlat +datum=WGS84') # convert the shapefile coordinates into longitudes and latitudes, ready for the leaflet package 
+    
+    RHoverInfo <- sprintf(
+      "<strong>%s</strong><br/>R = %g",
+      engwales$lad19nm, round(engwales$R,2)
+    ) %>% lapply(htmltools::HTML)
+    
+    leaflet(engwales) %>%
+      addPolygons(layerId = paste0("R.",mapcounter,".",1:337),
+                  fillColor = ~fill,
+                  weight = 1,
+                  opacity = 1,
+                  color = "white",
+                  dashArray = "3",
+                  fillOpacity = 1,
+                  highlight = highlightOptions(
+                    weight = 5,
+                    color = "#666",
+                    dashArray = "",
+                    fillOpacity = 0.7,
+                    bringToFront = TRUE),
+                  label = RHoverInfo,
+                  labelOptions = labelOptions(
+                    style = list("font-weight" = "normal", padding = "3px 8px"),
+                    textsize = "15px",
+                    direction = "auto")) %>%
+      addLegend("topright",
+                colors = colorRampPalette(c('#313695','#4575b4','#74add1','#abd9e9','#e0f3f8','#ffffbf','#fee090','#fdae61','#f46d43','#d73027','#a50026'))(5),
+                labels = c("0.0","0.5","1.0","1.5","2.0+"),
+                title = "R")
+    
+  })
+  
+  observeEvent(input$date.slider.maps, {
+    this.date <-  getDateMaps()
+    
+    this.date.nowcast <- projected.cases.ltlas %>% filter(Dates == this.date)
+    this.date.nowcast$lad19cd <- this.date.nowcast$AreaCode
+    this.date.nowcast$fill <- num2col(this.date.nowcast$scaled_per_capita, col.pal=colorRampPalette(c('#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d')), x.max=60)
+    
+    this.date.inf <- df.for.plotting.incidence.ltlas %>% filter(Dates == this.date)
+    this.date.inf$lad19cd <- this.date.inf$AreaCode
+    this.date.inf$fill <- num2col(this.date.inf$scaled_per_capita, col.pal=colorRampPalette(c('#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d')), x.max=60)
+    
+    this.date.R <- df.for.plotting.R.ltlas %>% filter(Dates == this.date)
+    this.date.R$lad19cd <- this.date.R$AreaCode
+    this.date.R$fill <- num2col(this.date.R$R, col.pal=colorRampPalette(c('#313695','#4575b4','#74add1','#abd9e9','#e0f3f8','#ffffbf','#fee090','#fdae61','#f46d43','#d73027','#a50026')), x.min=0, x.max=2)
+    
+    # combine shape and epi data
+    # using "right_join" removes the places for which we don't have data (Scotland etc.)
+    this.date.nowcast <- right_join(engwalesmap, subset(this.date.nowcast, select = c("scaled_per_capita","lad19cd","fill")), by = "lad19cd")
+    this.date.nowcast <- this.date.nowcast %>% st_transform('+proj=longlat +datum=WGS84') # convert the shapefile coordinates into longitudes and latitudes, ready for the leaflet package
+    
+    this.date.inf <- right_join(engwalesmap, subset(this.date.inf, select = c("scaled_per_capita","lad19cd", "fill")), by = "lad19cd")
+    this.date.inf <- this.date.inf %>% st_transform('+proj=longlat +datum=WGS84') # convert the shapefile coordinates into longitudes and latitudes, ready for the leaflet package 
+    
+    this.date.R <- right_join(engwalesmap, subset(this.date.R, select = c("R", "lad19cd", "fill")), by = "lad19cd")
+    this.date.R <- this.date.R %>% st_transform('+proj=longlat +datum=WGS84') # convert the shapefile coordinates into longitudes and latitudes, ready for the leaflet package 
+    
+    NowcastHoverInfo <- sprintf(
+      "<strong>%s</strong><br/>Projected %g new<br/>infections per 100,000<br/>in the near future",
+      this.date.nowcast$lad19nm, round(this.date.nowcast$scaled_per_capita,1)
+    ) %>% lapply(htmltools::HTML)
+    
+    InfHoverInfo <- sprintf(
+      "<strong>%s</strong><br/>%g new infections per 100,000",
+      this.date.inf$lad19nm, round(this.date.inf$scaled_per_capita,1)
+    ) %>% lapply(htmltools::HTML)
+    
+    RHoverInfo <- sprintf(
+      "<strong>%s</strong><br/>R = %g",
+      this.date.R$lad19nm, round(this.date.R$R,2)
+    ) %>% lapply(htmltools::HTML)
+    
+    leafletProxy("NowcastMap", data=this.date.nowcast) %>%
+      addPolygons(layerId = paste0("nowcast.",mapcounter+1,".",1:337), # assigning layerIds is supposed to mean that the previous ones get deleted (otherwise there's a big slow-down as more dates are viewed)
+        fillColor = ~fill,
+                  weight = 1,
+                  opacity = 1,
+                  color = "white",
+                  dashArray = "3",
+                  fillOpacity = 1,
+                  highlight = highlightOptions(
+                    weight = 5,
+                    color = "#666",
+                    dashArray = "",
+                    fillOpacity = 0.7,
+                    bringToFront = TRUE),
+                  label = NowcastHoverInfo,
+                  labelOptions = labelOptions(
+                    style = list("font-weight" = "normal", padding = "3px 8px"),
+                    textsize = "15px",
+                    direction = "auto")) %>%
+      removeShape(layerId = paste0("nowcast.",mapcounter,".",1:337)) # remove the _underneath_ layer so that we don't get jumpiness or slowdown
+    
+    leafletProxy("InfectionsMap", data=this.date.inf) %>%
+      addPolygons(layerId = paste0("infections.",mapcounter+1,".",1:337),
+                  fillColor = ~fill,
+                  weight = 1,
+                  opacity = 1,
+                  color = "white",
+                  dashArray = "3",
+                  fillOpacity = 1,
+                  highlight = highlightOptions(
+                    weight = 5,
+                    color = "#666",
+                    dashArray = "",
+                    fillOpacity = 0.7,
+                    bringToFront = TRUE),
+                  label = InfHoverInfo,
+                  labelOptions = labelOptions(
+                    style = list("font-weight" = "normal", padding = "3px 8px"),
+                    textsize = "15px",
+                    direction = "auto")) %>%
+      removeShape(layerId = paste0("infections.",mapcounter,".",1:337))
+    
+    leafletProxy("RMap", data=this.date.R) %>%
+      addPolygons(layerId = paste0("R.",mapcounter+1,".",1:337),
+                  fillColor = ~fill,
+                  weight = 1,
+                  opacity = 1,
+                  color = "white",
+                  dashArray = "3",
+                  fillOpacity = 1,
+                  highlight = highlightOptions(
+                    weight = 5,
+                    color = "#666",
+                    dashArray = "",
+                    fillOpacity = 0.7,
+                    bringToFront = TRUE),
+                  label = RHoverInfo,
+                  labelOptions = labelOptions(
+                    style = list("font-weight" = "normal", padding = "3px 8px"),
+                    textsize = "15px",
+                    direction = "auto")) %>%
+      removeShape(layerId = paste0("R.",mapcounter,".",1:337))
+    
+    mapcounter <- mapcounter + 1
+  })
+  
+  # output$MapTitle <- renderUI({
+  #   h3(format(getDateMaps(), "%d %B %Y"))
+  # })
   
   ### Cases by age
   
@@ -980,6 +1226,13 @@ server <- function(input, output, session) {
   )
   
   output$updatedInfo <- renderUI({
+    last.datestamp <- getLastDatestamp()
+    last.date.of.data <- getLastDateOfData()
+    HTML(glue("<h5>Last updated {last.datestamp} <br>using data up to {last.date.of.data}.</h5>"))
+  })
+  
+  
+  output$updatedInfoMaps <- renderUI({
     last.datestamp <- getLastDatestamp()
     last.date.of.data <- getLastDateOfData()
     HTML(glue("<h5>Last updated {last.datestamp} <br>using data up to {last.date.of.data}.</h5>"))

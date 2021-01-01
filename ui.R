@@ -3,6 +3,10 @@ ui <- fluidPage(
                             "label { font-size: 16px; }"
                  ),
                  tags$head(includeHTML(("google-analytics.html"))), # google analytics token
+                 tags$head(
+                   tags$style(HTML(".leaflet-container { background: #FFFFFF; }"))
+                 ), # make map backgrounds white
+                 tags$head(tags$style(type='text/css', ".slider-animate-button { font-size: 26pt !important; }")), # make 'play' button nicer on slider
                  
   theme = shinytheme("yeti"), # change the theme here; use "themeSelector()" below for an easy way to pick
   #shinythemes::themeSelector(), # use this to dynamically select a theme
@@ -241,6 +245,63 @@ ui <- fluidPage(
       ) # end sidebarLayout
 
       ), # end "daily tracker" tabPanel
+    tabPanel(
+      "Map tracker",
+      
+      h5("Select a date of interest or press 'play' (right) to watch the progression of the epidemic so far:"),
+    
+      sliderTextInput(
+        inputId = "date.slider.maps", 
+        label = NULL, 
+        choices = format(seq(from=as.Date("2020-03-01"), to = last.date - R.trim - 1, by=1), "%d %b %y"),
+        selected = format(last.date - 31 - R.trim, "%d %b %y"),
+        animate = animationOptions(
+          interval = 1000,
+          loop = FALSE,
+          playButton = NULL,
+          pauseButton = NULL
+        ),
+        grid = TRUE,
+        width = "100%"
+      ),
+      
+      div(style = "padding: 0px 0px; margin-top:-2em", 
+          fluidRow(
+            column(
+              width=4,
+              h3("Nowcast"),
+              withSpinner(leafletOutput("NowcastMap", height="60vh"), type = 7)
+            ),
+            column(
+              width=4,
+              h3("New infections"),
+              withSpinner(leafletOutput("InfectionsMap", height="60vh"), type = 7)
+            ),
+            column(
+              width=4,
+              h3("Instantaneous reproduction number R"),
+              withSpinner(leafletOutput("RMap", height="60vh"), type = 7)
+            )
+          )                                       
+      ),
+      
+      
+      
+      uiOutput("mapDate"),
+      
+      h5("For details of the data presented here please see the 'Daily tracker' tab."),
+      
+      
+      # "last updated" info
+      fluidRow(
+        column(
+          width=12,
+          align="right",
+          uiOutput("updatedInfoMaps")
+        )
+      )
+      
+    ), # end "map tracker" tabPanel
     
     tabPanel(
       "Cases by age",
