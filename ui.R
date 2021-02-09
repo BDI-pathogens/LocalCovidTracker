@@ -67,6 +67,12 @@ ui <- fluidPage(
 
           helpText("Note that the plots are truncated 9-12 days before the last date of data available - see details below."),
 
+          # checkboxInput(
+          #   inputId = "ytype",
+          #   label = "Use log scale for y axis?", 
+          #   value = FALSE
+          # ),
+          
           hr(),
 
           h3("Details"),

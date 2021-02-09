@@ -26,6 +26,10 @@ server <- function(input, output, session) {
     input$xrange[[2]]
   })
   
+  # getYType <- reactive({
+  #   ifelse(input$ytype, "log", "normal")
+  # })
+  
   getCBALevel <- reactive({
     input$CBA_level
   })
@@ -219,6 +223,24 @@ server <- function(input, output, session) {
     }
   )
   
+  # # toggle y axis between normal and log scales
+  # observeEvent(
+  #   {getYType()
+  #   }, 
+  #   {
+  #     y.type <- getYType()
+  #     
+  #     plotlyProxy("UTLAIncidencePlot", deferUntilFlush = FALSE) %>%
+  #       plotlyProxyInvoke("relayout",
+  #                         list(yaxis = list(
+  #                           type = y.type
+  #                         )
+  #                         )
+  #       ) 
+  #     
+  #   
+  #   }
+  # )
   
   output$ROneUTLAPlot <- renderPlotly({
     UTLAToHighlight <- getUTLA()
@@ -579,7 +601,7 @@ server <- function(input, output, session) {
       engwales$lad19nm, round(engwales$scaled_per_capita,1)
     ) %>% lapply(htmltools::HTML)
     
-    leaflet(engwales) %>%
+    leaflet(engwales, options = leafletOptions(zoomSnap = 0.25, zoomDelta=0.25)) %>%
       addPolygons(layerId =  paste0("nowcast.",mapcounter,".",1:337),
                   fillColor = ~fill,
                   weight = 1,
@@ -601,7 +623,8 @@ server <- function(input, output, session) {
       addLegend("topright",
                 colors = colorRampPalette(c('#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d'))(7),
                 labels = c(seq(0,50,by=10),"60+"),
-                title = "per 100,000")
+                title = "per 100,000") %>%
+      setView(lng=-1.3, lat=53, zoom=6.5) 
 
   })
 
@@ -621,7 +644,7 @@ server <- function(input, output, session) {
       engwales$lad19nm, round(engwales$scaled_per_capita,1)
     ) %>% lapply(htmltools::HTML)
     
-    leaflet(engwales) %>%
+    leaflet(engwales, options = leafletOptions(zoomSnap = 0.25, zoomDelta=0.25)) %>%
       addPolygons(layerId = paste0("infections.",mapcounter,".",1:337),
                   fillColor = ~fill,
                   weight = 1,
@@ -643,7 +666,8 @@ server <- function(input, output, session) {
       addLegend("topright",
                 colors = colorRampPalette(c('#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d'))(7),
                 labels = c(seq(0,50,by=10),"60+"),
-                title = "per 100,000")
+                title = "per 100,000") %>%
+      setView(lng=-1.3, lat=53, zoom=6.5) 
   })
   
   output$RMap <- renderLeaflet({
@@ -662,7 +686,7 @@ server <- function(input, output, session) {
       engwales$lad19nm, round(engwales$R,2)
     ) %>% lapply(htmltools::HTML)
     
-    leaflet(engwales) %>%
+    leaflet(engwales, options = leafletOptions(zoomSnap = 0.25, zoomDelta=0.25)) %>%
       addPolygons(layerId = paste0("R.",mapcounter,".",1:337),
                   fillColor = ~fill,
                   weight = 1,
@@ -684,7 +708,8 @@ server <- function(input, output, session) {
       addLegend("topright",
                 colors = colorRampPalette(c('#313695','#4575b4','#74add1','#abd9e9','#e0f3f8','#ffffbf','#fee090','#fdae61','#f46d43','#d73027','#a50026'))(5),
                 labels = c("0.0","0.5","1.0","1.5","2.0+"),
-                title = "R")
+                title = "R") %>%
+      setView(lng=-1.3, lat=53, zoom=6.5) 
     
   })
   

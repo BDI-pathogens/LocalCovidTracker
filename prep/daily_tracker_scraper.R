@@ -1,8 +1,8 @@
 library(EpiEstim)
-library(incidence)
-library(readr)
+# library(incidence)
+# library(readr)
 library(tidyverse)
-library(httr)
+# library(httr)
 library(glue)
 
 # get functions for backcalculating incidence ON THE COMBINED DATA:
@@ -18,95 +18,107 @@ population.data <- read.csv("data/population_by_region.csv", stringsAsFactors = 
 load("data/utlas.alphabetical.RData")
 utla.codes <- read.csv("data/utla.codes.csv")
 
-AREA_TYPE = "utla"
+# AREA_TYPE = "utla"
+# 
+# endpoint <- "https://api.coronavirus.data.gov.uk/v1/data"
+# 
+# # Create the structure as a list or a list of lists:
+# structure <- list(
+#   Date = "date", 
+#   Area = "areaName", 
+#   AreaCode = "areaCode",
+#   TotalCases = "cumCasesBySpecimenDate"
+# )
+# 
+# dat.UK.utla <- data.frame("Date"=NA,"Area"=NA,"AreaCode"=NA,"TotalCases"=NA)
+# 
+# for (utla in utlas.alphabetical) {
+#   print(utla)
+#   # Create filters:
+#   filters <- c(
+#     sprintf("areaType=%s", AREA_TYPE),
+#     sprintf("areaName=%s", utla)
+#   )
+#   
+#   # The "httr::GET" method automatically encodes 
+#   # the URL and its parameters:
+#   httr::GET(
+#     # Concatenate the filters vector using a semicolon.
+#     url = endpoint,
+#     
+#     # Convert the structure to JSON (ensure 
+#     # that "auto_unbox" is set to TRUE).
+#     query = list(
+#       filters = paste(filters, collapse = ";"),
+#       structure = jsonlite::toJSON(structure, auto_unbox = TRUE)
+#     ),
+#     
+#     # The API server will automatically reject any
+#     # requests that take longer than 10 seconds to 
+#     # process.
+#     timeout(100)
+#   ) -> response
+#   
+#   # Handle errors:
+#   if (response$status_code >= 400) {
+#     err_msg = httr::http_status(response)
+#     stop(err_msg)
+#   }
+#   
+#   # Convert response from binary to JSON:
+#   json_text <- content(response, "text")
+#   data = jsonlite::fromJSON(json_text)
+#   dat.UK.utla <- rbind(dat.UK.utla, data$data)
+# }
 
-endpoint <- "https://api.coronavirus.data.gov.uk/v1/data"
-
-# Create the structure as a list or a list of lists:
-structure <- list(
-  Date = "date", 
-  Area = "areaName", 
-  AreaCode = "areaCode",
-  TotalCases = "cumCasesBySpecimenDate"
-)
-
-dat.UK.utla <- data.frame("Date"=NA,"Area"=NA,"AreaCode"=NA,"TotalCases"=NA)
-
-for (utla in utlas.alphabetical) {
-  print(utla)
-  # Create filters:
-  filters <- c(
-    sprintf("areaType=%s", AREA_TYPE),
-    sprintf("areaName=%s", utla)
-  )
-  
-  # The "httr::GET" method automatically encodes 
-  # the URL and its parameters:
-  httr::GET(
-    # Concatenate the filters vector using a semicolon.
-    url = endpoint,
-    
-    # Convert the structure to JSON (ensure 
-    # that "auto_unbox" is set to TRUE).
-    query = list(
-      filters = paste(filters, collapse = ";"),
-      structure = jsonlite::toJSON(structure, auto_unbox = TRUE)
-    ),
-    
-    # The API server will automatically reject any
-    # requests that take longer than 10 seconds to 
-    # process.
-    timeout(100)
-  ) -> response
-  
-  # Handle errors:
-  if (response$status_code >= 400) {
-    err_msg = httr::http_status(response)
-    stop(err_msg)
-  }
-  
-  # Convert response from binary to JSON:
-  json_text <- content(response, "text")
-  data = jsonlite::fromJSON(json_text)
-  dat.UK.utla <- rbind(dat.UK.utla, data$data)
-}
+dat.UK.utla <- read_csv("https://api.coronavirus.data.gov.uk/v2/data?areaType=utla&metric=cumCasesBySpecimenDate&format=csv")
 
 # remove the initial "NA" row
-dat.UK.utla <- dat.UK.utla[-1,]
+# dat.UK.utla <- dat.UK.utla[-1,]
 
-dat.UK.utla <- dat.UK.utla %>% arrange(Date)    # sort into ascending date order                          
+dat.UK.utla <- dat.UK.utla %>% arrange(date)    # sort into ascending date order                          
 
 start.date <- as.Date("2020-02-14")
-last.date <- as.Date(max(dat.UK.utla$Date))
+last.date <- as.Date(max(dat.UK.utla$date))
+all.dates <- seq(start.date, last.date, by="day")
 
-dat.UK.utla <- dat.UK.utla %>% filter(Date > start.date)
+# filter to dates after censoring, and only England and Wales:
+dat.UK.utla <- dat.UK.utla %>% filter(date > start.date) %>%
+  filter(areaName %in% utlas.alphabetical)
 
 ### compute
 utlas.incidence <- lapply(utlas.alphabetical, function(area) {
   print(area)
-  dat.area <- dat.UK.utla %>% filter(Area == area)
+  dat.area <- dat.UK.utla %>% 
+    filter(areaName == area)
+  
+  stopifnot(!any(setdiff(all.dates,dat.area$date) > min(dat.area$date)) ) # check that missing dates are all at the start, so we are safe to fill in cumulative cases as zeroes
+  
+  dat.area <- dat.area %>%
+    complete(date = all.dates, fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=0))
   
   # remove any rows where "total cases" is NaN
-  if (any(is.na(dat.area$TotalCases))) dat.area <- dat.area[-which(is.na(dat.area$TotalCases)),]
+  # if (any(is.na(dat.area$cumCasesBySpecimenDate))) dat.area <- dat.area[-which(is.na(dat.area$cumCasesBySpecimenDate)),]
   
   dat.area$Incidence <- rep(0,nrow(dat.area))
-  dat.area$Incidence[1] <- dat.area$TotalCases[1]
-  for(row in 2:nrow(dat.area)) dat.area$Incidence[row] <- dat.area$TotalCases[row] - dat.area$TotalCases[row-1]
+  dat.area$Incidence[1] <- dat.area$cumCasesBySpecimenDate[1]
+  for(row in 2:nrow(dat.area)) dat.area$Incidence[row] <- dat.area$cumCasesBySpecimenDate[row] - dat.area$cumCasesBySpecimenDate[row-1]
   
-  area.linelist <- dat.area$Date[1]
-  for(row in 1:nrow(dat.area)){
-    if(dat.area$Incidence[row]>0){
-      for(case in 1:dat.area$Incidence[row]){
-        area.linelist <- c(area.linelist, dat.area$Date[row])
-      }
-    }
-  }
-  area.linelist <- area.linelist[-1]
-  
-  incidence(area.linelist,
-            first_date = start.date,
-            last_date = last.date,
-            standard = FALSE)
+  dat.area
+  # area.linelist <- dat.area$Date[1]
+  # for(row in 1:nrow(dat.area)){
+  #   if(dat.area$Incidence[row]>0){
+  #     for(case in 1:dat.area$Incidence[row]){
+  #       area.linelist <- c(area.linelist, dat.area$Date[row])
+  #     }
+  #   }
+  # }
+  # area.linelist <- area.linelist[-1]
+  # 
+  # incidence(area.linelist,
+  #           first_date = start.date,
+  #           last_date = last.date,
+  #           standard = FALSE)
 })
 
 
@@ -115,8 +127,8 @@ utlas.incidence.backcalculation <- lapply(1:length(utlas.alphabetical), function
   # beforehand reaching back to the maximum possible delay (which induces NAs,
   # all of which we set to zero).
   df <- cbind.data.frame(
-    "dates" = utlas.incidence[[x]]$dates,
-    "counts" = utlas.incidence[[x]]$counts
+    "dates" = utlas.incidence[[x]]$date,
+    "counts" = utlas.incidence[[x]]$Incidence
   )
   df <- df %>%
     complete(dates = seq.Date(min(dates) - zeta.max, max(dates), by="day")) %>%
@@ -167,11 +179,16 @@ utlas.R.backcalculated <- lapply(1:length(utlas.alphabetical), function(i) {
 
 utlas.analysis <- utlas.R.backcalculated
 
-population.by.area <- sapply(utlas.alphabetical, function(x) {
-  print(x)
-  tmp <- population.data %>% filter(Name == x)
-  tmp$All.ages
-})
+# population.by.area <- sapply(utlas.alphabetical, function(x) {
+#   print(x)
+#   tmp <- population.data %>% filter(Name == x)
+#   tmp$All.ages
+# })
+
+population.by.utla <- population.data %>% 
+  select(c("Area"=Name, "population"=All.ages)) %>% 
+  filter(Area %in% utlas.alphabetical) %>%
+  arrange(Area)
 
 df.for.plotting.R.utlas <- cbind.data.frame(
   "Dates" = unlist(lapply(1:length(utlas.alphabetical), function(area) utlas.R.backcalculated[[area]]$dates[-(1:7)] - 4)), # R estimates are labelled by the end of the week over which they were calculated; shift it to the middle
@@ -195,12 +212,18 @@ df.for.plotting.incidence.utlas <- cbind.data.frame(
   "AreaCode" = unlist(lapply(1:nrow(utla.codes), function(area) rep(utla.codes$Code[[area]], length(utlas.incidence.backcalculation[[area]]$dates))))
 )
 
-df.for.plotting.incidence.utlas$scaled_per_capita <- sapply(1:nrow(df.for.plotting.incidence.utlas), function(x) {
-  area <- df.for.plotting.incidence.utlas[x,]$Area
-  pop.this.area <- population.by.area[which(utlas.alphabetical == area)][[1]]
-  if(length(pop.this.area)==0) NA
-  else df.for.plotting.incidence.utlas$Incidence[[x]] / pop.this.area * 100000
-})
+df.for.plotting.incidence.utlas <- left_join(df.for.plotting.incidence.utlas, population.by.utla)
+
+df.for.plotting.incidence.utlas <- df.for.plotting.incidence.utlas %>%
+  mutate("scaled_per_capita" = Incidence / population * 100000)
+
+
+# df.for.plotting.incidence.utlas$scaled_per_capita <- sapply(1:nrow(df.for.plotting.incidence.utlas), function(x) {
+#   area <- df.for.plotting.incidence.utlas[x,]$Area
+#   pop.this.area <- population.by.area[which(utlas.alphabetical == area)][[1]]
+#   if(length(pop.this.area)==0) NA
+#   else df.for.plotting.incidence.utlas$Incidence[[x]] / pop.this.area * 100000
+# })
 
 df.for.plotting.incidence.utlas$Dates <- as.Date(df.for.plotting.incidence.utlas$Dates,  origin = "1970-01-01")
 
@@ -223,12 +246,17 @@ projected.cases.utlas <- cbind.data.frame(
 
 projected.cases.utlas$Dates <- as.Date(projected.cases.utlas$Dates,  origin = as.Date("1970-01-01"))
 
-projected.cases.utlas$scaled_per_capita <- sapply(1:nrow(projected.cases.utlas), function(x) {
-  area <- projected.cases.utlas[x,]$Area
-  pop.this.area <- population.by.area[which(utlas.alphabetical == area)][[1]]
-  if(length(pop.this.area)==0) NA
-  else projected.cases.utlas$Projection[[x]] / pop.this.area * 100000
-})
+projected.cases.utlas <- left_join(projected.cases.utlas, population.by.utla)
+
+projected.cases.utlas <- projected.cases.utlas %>%
+  mutate("scaled_per_capita" = Projection / population * 100000)
+
+# projected.cases.utlas$scaled_per_capita <- sapply(1:nrow(projected.cases.utlas), function(x) {
+#   area <- projected.cases.utlas[x,]$Area
+#   pop.this.area <- population.by.area[which(utlas.alphabetical == area)][[1]]
+#   if(length(pop.this.area)==0) NA
+#   else projected.cases.utlas$Projection[[x]] / pop.this.area * 100000
+# })
 
 projected.cases.utlas$Pillar <- "1+2"
 
@@ -241,98 +269,88 @@ save(projected.cases.utlas, file="data/latest_projected.cases.utlas.RData")
 load("data/regions.alphabetical.RData")
 region.codes <- read.csv("data/region.codes.csv")
 
-AREA_TYPE = "region"
+# AREA_TYPE = "region"
+# 
+# endpoint <- "https://api.coronavirus.data.gov.uk/v1/data"
+# 
+# # Create the structure as a list or a list of lists:
+# structure <- list(
+#   Date = "date", 
+#   Area = "areaName", 
+#   AreaCode = "areaCode",
+#   TotalCases = "cumCasesBySpecimenDate"
+# )
+# 
+# dat.UK.regions <- data.frame("Date"=NA,"Area"=NA,"AreaCode"=NA,"TotalCases"=NA)
+# 
+# for (region in regions.alphabetical) {
+#   print(region)
+#   # Create filters:
+#   filters <- c(
+#     sprintf("areaType=%s", AREA_TYPE),
+#     sprintf("areaName=%s", region)
+#   )
+#   
+#   # The "httr::GET" method automatically encodes 
+#   # the URL and its parameters:
+#   httr::GET(
+#     # Concatenate the filters vector using a semicolon.
+#     url = endpoint,
+#     
+#     # Convert the structure to JSON (ensure 
+#     # that "auto_unbox" is set to TRUE).
+#     query = list(
+#       filters = paste(filters, collapse = ";"),
+#       structure = jsonlite::toJSON(structure, auto_unbox = TRUE)
+#     ),
+#     
+#     # The API server will automatically reject any
+#     # requests that take longer than 10 seconds to 
+#     # process.
+#     timeout(100)
+#   ) -> response
+#   
+#   # Handle errors:
+#   if (response$status_code >= 400) {
+#     err_msg = httr::http_status(response)
+#     stop(err_msg)
+#   }
+#   
+#   # Convert response from binary to JSON:
+#   json_text <- content(response, "text")
+#   data = jsonlite::fromJSON(json_text)
+#   dat.UK.regions <- rbind(dat.UK.regions, data$data)
+# }
+# 
+# # remove the initial "NA" row
+# dat.UK.regions <- dat.UK.regions[-1,]
 
-endpoint <- "https://api.coronavirus.data.gov.uk/v1/data"
+dat.UK.regions <- read_csv("https://api.coronavirus.data.gov.uk/v2/data?areaType=region&metric=cumCasesBySpecimenDate&format=csv")
 
-# Create the structure as a list or a list of lists:
-structure <- list(
-  Date = "date", 
-  Area = "areaName", 
-  AreaCode = "areaCode",
-  TotalCases = "cumCasesBySpecimenDate"
-)
+dat.UK.regions <- dat.UK.regions %>% arrange(date)    # sort into ascending date order                          
 
-dat.UK.regions <- data.frame("Date"=NA,"Area"=NA,"AreaCode"=NA,"TotalCases"=NA)
+# start.date <- as.Date("2020-02-14")
+# last.date <- as.Date(max(dat.UK.regions$date))
 
-for (region in regions.alphabetical) {
-  print(region)
-  # Create filters:
-  filters <- c(
-    sprintf("areaType=%s", AREA_TYPE),
-    sprintf("areaName=%s", region)
-  )
-  
-  # The "httr::GET" method automatically encodes 
-  # the URL and its parameters:
-  httr::GET(
-    # Concatenate the filters vector using a semicolon.
-    url = endpoint,
-    
-    # Convert the structure to JSON (ensure 
-    # that "auto_unbox" is set to TRUE).
-    query = list(
-      filters = paste(filters, collapse = ";"),
-      structure = jsonlite::toJSON(structure, auto_unbox = TRUE)
-    ),
-    
-    # The API server will automatically reject any
-    # requests that take longer than 10 seconds to 
-    # process.
-    timeout(100)
-  ) -> response
-  
-  # Handle errors:
-  if (response$status_code >= 400) {
-    err_msg = httr::http_status(response)
-    stop(err_msg)
-  }
-  
-  # Convert response from binary to JSON:
-  json_text <- content(response, "text")
-  data = jsonlite::fromJSON(json_text)
-  dat.UK.regions <- rbind(dat.UK.regions, data$data)
-}
+dat.UK.regions <- dat.UK.regions %>% filter(date > start.date)
 
-# remove the initial "NA" row
-dat.UK.regions <- dat.UK.regions[-1,]
-
-dat.UK.regions <- dat.UK.regions %>% arrange(Date)    # sort into ascending date order                          
-
-start.date <- as.Date("2020-02-14")
-last.date <- as.Date(max(dat.UK.regions$Date))
-
-dat.UK.regions <- dat.UK.regions %>% filter(Date > start.date)
-
-regions.alphabetical <- sort(unique(dat.UK.regions$Area)) # put areas in alphabetical order, for saving together
+regions.alphabetical <- sort(unique(dat.UK.regions$areaName)) # put areas in alphabetical order, for saving together
 
 ### compute
 regions.incidence <- lapply(regions.alphabetical, function(area) {
   print(area)
-  dat.area <- dat.UK.regions %>% filter(Area == area)
+  dat.area <- dat.UK.regions %>% filter(areaName == area)
   
-  # remove any rows where "total cases" is NaN
-  if (any(is.na(dat.area$TotalCases))) dat.area <- dat.area[-which(is.na(dat.area$TotalCases)),]
+  stopifnot(!any(setdiff(all.dates,dat.area$date) > min(dat.area$date)) ) # check that missing dates are all at the start, so we are safe to fill in cumulative cases as zeroes
   
-  #dat.area$Date <- as.Date(as.character(dat.area$Date))
+  dat.area <- dat.area %>%
+    complete(date = all.dates, fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=0))
+  
   dat.area$Incidence <- rep(0,nrow(dat.area))
-  dat.area$Incidence[1] <- dat.area$TotalCases[1]
-  for(row in 2:nrow(dat.area)) dat.area$Incidence[row] <- dat.area$TotalCases[row] - dat.area$TotalCases[row-1]
+  dat.area$Incidence[1] <- dat.area$cumCasesBySpecimenDate[1]
+  for(row in 2:nrow(dat.area)) dat.area$Incidence[row] <- dat.area$cumCasesBySpecimenDate[row] - dat.area$cumCasesBySpecimenDate[row-1]
   
-  area.linelist <- dat.area$Date[1]
-  for(row in 1:nrow(dat.area)){
-    if(dat.area$Incidence[row]>0){
-      for(case in 1:dat.area$Incidence[row]){
-        area.linelist <- c(area.linelist, dat.area$Date[row])
-      }
-    }
-  }
-  area.linelist <- area.linelist[-1]
-  
-  incidence(area.linelist,
-            first_date = start.date,
-            last_date = last.date,
-            standard = FALSE)
+  dat.area
 })
 
 
@@ -341,8 +359,8 @@ regions.incidence.backcalculation <- lapply(1:length(regions.alphabetical), func
   # beforehand reaching back to the maximum possible delay (which induces NAs,
   # all of which we set to zero).
   df <- cbind.data.frame(
-    "dates" = regions.incidence[[x]]$dates,
-    "counts" = regions.incidence[[x]]$counts
+    "dates" = regions.incidence[[x]]$date,
+    "counts" = regions.incidence[[x]]$Incidence
   )
   df <- df %>%
     complete(dates = seq.Date(min(dates) - zeta.max, max(dates), by="day")) %>%
@@ -463,100 +481,29 @@ save(projected.cases.regions, file="data/latest_projected.cases.regions.RData")
 load("data/ltlas.alphabetical.RData")
 ltla.codes <- read.csv("data/ltla.codes.csv")
 
-AREA_TYPE = "ltla"
+dat.UK.ltla <- read_csv("https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=cumCasesBySpecimenDate&format=csv")
 
-endpoint <- "https://api.coronavirus.data.gov.uk/v1/data"
+dat.UK.ltla <- dat.UK.ltla %>% arrange(date)    # sort into ascending date order                          
 
-# Create the structure as a list or a list of lists:
-structure <- list(
-  Date = "date", 
-  Area = "areaName", 
-  AreaCode = "areaCode",
-  TotalCases = "cumCasesBySpecimenDate"
-)
-
-dat.UK.ltla <- data.frame("Date"=NA,"Area"=NA,"AreaCode"=NA,"TotalCases"=NA)
-
-#tmp <- setdiff(ltlas.alphabetical, dat.UK.ltla$Area)
-#for (ltla in tmp) {
-  
-for (ltla in ltlas.alphabetical) {
-  print(ltla)
-  # Create filters:
-  filters <- c(
-    sprintf("areaType=%s", AREA_TYPE),
-    sprintf("areaName=%s", ltla)
-  )
-  
-  # The "httr::GET" method automatically encodes 
-  # the URL and its parameters:
-  httr::GET(
-    # Concatenate the filters vector using a semicolon.
-    url = endpoint,
-    
-    # Convert the structure to JSON (ensure 
-    # that "auto_unbox" is set to TRUE).
-    query = list(
-      filters = paste(filters, collapse = ";"),
-      structure = jsonlite::toJSON(structure, auto_unbox = TRUE)
-    ),
-    
-    # The API server will automatically reject any
-    # requests that take longer than 10 seconds to 
-    # process.
-    timeout(100)
-  ) -> response
-  
-  # Handle errors:
-  if (response$status_code >= 400) {
-    err_msg = httr::http_status(response)
-    stop(err_msg)
-  }
-  
-  # Convert response from binary to JSON:
-  json_text <- content(response, "text")
-  data = jsonlite::fromJSON(json_text)
-  dat.UK.ltla <- rbind(dat.UK.ltla, data$data)
-}
-
-# remove the initial "NA" row
-dat.UK.ltla <- dat.UK.ltla[-1,]
-
-dat.UK.ltla <- dat.UK.ltla %>% arrange(Date)    # sort into ascending date order                          
-
-start.date <- as.Date("2020-02-14")
-last.date <- as.Date(max(dat.UK.ltla$Date))
-
-dat.UK.ltla <- dat.UK.ltla %>% filter(Date > start.date)
-
-ltlas.alphabetical <- sort(unique(dat.UK.ltla$Area)) # put areas in alphabetical order, for saving together
+# filter to dates after censoring, and only England and Wales:
+dat.UK.ltla <- dat.UK.ltla %>% filter(date > start.date) %>%
+  filter(areaName %in% ltlas.alphabetical)
 
 ### compute
 ltlas.incidence <- lapply(ltlas.alphabetical, function(area) {
   print(area)
-  dat.area <- dat.UK.ltla %>% filter(Area == area)
+  dat.area <- dat.UK.ltla %>% filter(areaName == area)
   
-  # remove any rows where "total cases" is NaN
-  if (any(is.na(dat.area$TotalCases))) dat.area <- dat.area[-which(is.na(dat.area$TotalCases)),]
+  stopifnot(!any(setdiff(all.dates,dat.area$date) > min(dat.area$date)) ) # check that missing dates are all at the start, so we are safe to fill in cumulative cases as zeroes
+  
+  dat.area <- dat.area %>%
+    complete(date = all.dates, fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=0))
   
   dat.area$Incidence <- rep(0,nrow(dat.area))
-  dat.area$Incidence[1] <- dat.area$TotalCases[1]
-  for(row in 2:nrow(dat.area)) dat.area$Incidence[row] <- dat.area$TotalCases[row] - dat.area$TotalCases[row-1]
+  dat.area$Incidence[1] <- dat.area$cumCasesBySpecimenDate[1]
+  for(row in 2:nrow(dat.area)) dat.area$Incidence[row] <- dat.area$cumCasesBySpecimenDate[row] - dat.area$cumCasesBySpecimenDate[row-1]
   
-  area.linelist <- dat.area$Date[1]
-  for(row in 1:nrow(dat.area)){
-    if(dat.area$Incidence[row]>0){
-      for(case in 1:dat.area$Incidence[row]){
-        area.linelist <- c(area.linelist, dat.area$Date[row])
-      }
-    }
-  }
-  area.linelist <- area.linelist[-1]
-  
-  incidence(area.linelist,
-            first_date = start.date,
-            last_date = last.date,
-            standard = FALSE)
+  dat.area
 })
 
 
@@ -565,8 +512,8 @@ ltlas.incidence.backcalculation <- lapply(1:length(ltlas.alphabetical), function
   # beforehand reaching back to the maximum possible delay (which induces NAs,
   # all of which we set to zero).
   df <- cbind.data.frame(
-    "dates" = ltlas.incidence[[x]]$dates,
-    "counts" = ltlas.incidence[[x]]$counts
+    "dates" = ltlas.incidence[[x]]$date,
+    "counts" = ltlas.incidence[[x]]$Incidence
   )
   df <- df %>%
     complete(dates = seq.Date(min(dates) - zeta.max, max(dates), by="day")) %>%
@@ -615,11 +562,10 @@ ltlas.R.backcalculated <- lapply(1:length(ltlas.alphabetical), function(i) {
   ltla.R.backcalculated
 })
 
-population.by.ltla <- sapply(ltlas.alphabetical, function(x) {
-  print(x)
-  tmp <- population.data %>% filter(Name == x)
-  tmp$All.ages
-})
+population.by.ltla <- population.data %>% 
+  select(c("Area"=Name, "population"=All.ages)) %>% 
+  filter(Area %in% ltlas.alphabetical) %>%
+  arrange(Area)
 
 df.for.plotting.R.ltlas <- cbind.data.frame(
   "Dates" = unlist(lapply(1:length(ltlas.alphabetical), function(area) ltlas.R.backcalculated[[area]]$dates[-(1:7)] - 4)), # R estimates are labelled by the end of the week over which they were calculated; shift it to the middle
@@ -643,12 +589,10 @@ df.for.plotting.incidence.ltlas <- cbind.data.frame(
   "AreaCode" = unlist(lapply(1:nrow(ltla.codes), function(area) rep(ltla.codes$Code[[area]], length(ltlas.incidence.backcalculation[[area]]$dates))))
 )
 
-df.for.plotting.incidence.ltlas$scaled_per_capita <- sapply(1:nrow(df.for.plotting.incidence.ltlas), function(x) {
-  area <- df.for.plotting.incidence.ltlas[x,]$Area
-  pop.this.area <- population.by.ltla[which(ltlas.alphabetical == area)][[1]]
-  if(length(pop.this.area)==0) NA
-  else df.for.plotting.incidence.ltlas$Incidence[[x]] / pop.this.area * 100000
-})
+df.for.plotting.incidence.ltlas <- left_join(df.for.plotting.incidence.ltlas, population.by.ltla)
+
+df.for.plotting.incidence.ltlas <- df.for.plotting.incidence.ltlas %>%
+  mutate("scaled_per_capita" = Incidence / population * 100000)
 
 df.for.plotting.incidence.ltlas$Dates <- as.Date(df.for.plotting.incidence.ltlas$Dates,  origin = "1970-01-01")
 
@@ -671,12 +615,11 @@ projected.cases.ltlas <- cbind.data.frame(
 
 projected.cases.ltlas$Dates <- as.Date(projected.cases.ltlas$Dates,  origin = as.Date("1970-01-01"))
 
-projected.cases.ltlas$scaled_per_capita <- sapply(1:nrow(projected.cases.ltlas), function(x) {
-  area <- projected.cases.ltlas[x,]$Area
-  pop.this.area <- population.by.ltla[which(ltlas.alphabetical == area)][[1]]
-  if(length(pop.this.area)==0) NA
-  else projected.cases.ltlas$Projection[[x]] / pop.this.area * 100000
-})
+projected.cases.ltlas <- left_join(projected.cases.ltlas, population.by.ltla)
+
+projected.cases.ltlas <- projected.cases.ltlas %>%
+  mutate("scaled_per_capita" = Projection / population * 100000)
+
 
 projected.cases.ltlas$Pillar <- "1+2"
 
