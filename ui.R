@@ -14,8 +14,71 @@ ui <- fluidPage(
   titlePanel("Local Covid Tracker: epidemic surveillance and nowcasting for England and Wales"),
   
   tabsetPanel(
+    id="tabs",
+    
+    tabPanel(
+      "Map tracker",
+      value="tab_map_tracker",
+      
+      h5("Select a date of interest or press 'play' (right) to watch the progression of the epidemic so far:"),
+      
+      sliderTextInput(
+        inputId = "date.slider.maps", 
+        label = NULL, 
+        choices = format(seq(from=as.Date("2020-03-01"), to = last.date - R.trim - 1, by=1), "%d %b %y"),
+        selected = format(last.date - R.trim - 1, "%d %b %y"),
+        animate = animationOptions(
+          interval = 1000,
+          loop = FALSE,
+          playButton = NULL,
+          pauseButton = NULL
+        ),
+        grid = TRUE,
+        width = "100%"
+      ),
+      
+      div(style = "padding: 0px 0px; margin-top:-2em", 
+          fluidRow(
+            column(
+              width=4,
+              h3("Nowcast"),
+              withSpinner(leafletOutput("NowcastMap", height="60vh"), type = 7)
+            ),
+            column(
+              width=4,
+              h3("New infections"),
+              withSpinner(leafletOutput("InfectionsMap", height="60vh"), type = 7)
+            ),
+            column(
+              width=4,
+              h3("Instantaneous reproduction number R"),
+              withSpinner(leafletOutput("RMap", height="60vh"), type = 7)
+            )
+          )                                       
+      ),
+      
+      
+      
+      uiOutput("mapDate"),
+      
+      h5("For details of the data presented here please see the 'Daily tracker' tab."),
+      
+      
+      # "last updated" info
+      fluidRow(
+        column(
+          width=12,
+          align="right",
+          uiOutput("updatedInfoMaps")
+        )
+      )
+      
+    ), # end "map tracker" tabPanel
+    
+    
     tabPanel(
       "Daily tracker",
+      value="tab_daily_tracker",
       
       # Sidebar with a slider inputs etc
       sidebarLayout(
@@ -252,65 +315,8 @@ ui <- fluidPage(
 
       ), # end "daily tracker" tabPanel
     tabPanel(
-      "Map tracker",
-      
-      h5("Select a date of interest or press 'play' (right) to watch the progression of the epidemic so far:"),
-    
-      sliderTextInput(
-        inputId = "date.slider.maps", 
-        label = NULL, 
-        choices = format(seq(from=as.Date("2020-03-01"), to = last.date - R.trim - 1, by=1), "%d %b %y"),
-        selected = format(last.date - 31 - R.trim, "%d %b %y"),
-        animate = animationOptions(
-          interval = 1000,
-          loop = FALSE,
-          playButton = NULL,
-          pauseButton = NULL
-        ),
-        grid = TRUE,
-        width = "100%"
-      ),
-      
-      div(style = "padding: 0px 0px; margin-top:-2em", 
-          fluidRow(
-            column(
-              width=4,
-              h3("Nowcast"),
-              withSpinner(leafletOutput("NowcastMap", height="60vh"), type = 7)
-            ),
-            column(
-              width=4,
-              h3("New infections"),
-              withSpinner(leafletOutput("InfectionsMap", height="60vh"), type = 7)
-            ),
-            column(
-              width=4,
-              h3("Instantaneous reproduction number R"),
-              withSpinner(leafletOutput("RMap", height="60vh"), type = 7)
-            )
-          )                                       
-      ),
-      
-      
-      
-      uiOutput("mapDate"),
-      
-      h5("For details of the data presented here please see the 'Daily tracker' tab."),
-      
-      
-      # "last updated" info
-      fluidRow(
-        column(
-          width=12,
-          align="right",
-          uiOutput("updatedInfoMaps")
-        )
-      )
-      
-    ), # end "map tracker" tabPanel
-    
-    tabPanel(
       "Cases by age",
+      value="tab_CBA",
       
       sidebarLayout(
         sidebarPanel(
@@ -530,6 +536,7 @@ Click on dates in the legend (key) to show/hide results
 
     tabPanel(
       "March-June Pillar 1 tracker",
+      value="tab_P1_tracker",
       
       # Sidebar with a slider inputs etc
       sidebarLayout(
@@ -647,7 +654,9 @@ Click on dates in the legend (key) to show/hide results
           ) # end sidebarLayout
     ), # end "Pillar 1" tabPanel
 
-    tabPanel("March-June Pillar 1 synthetic controls",
+    tabPanel(
+      "March-June Pillar 1 synthetic controls",
+      value="tab_synthetic_control",
       sidebarPanel(
         id="sidePanel.sc",
         style = "overflow-y: auto; max-height: 100vh; position:relative;", 
@@ -713,7 +722,9 @@ Click on dates in the legend (key) to show/hide results
 
     ), # end SC tabPanel
 
-    tabPanel("About",
+    tabPanel(
+      "About",
+      value="tab_about",
              style = "overflow-y: auto; height: 100%; position:relative;",
              withMathJax(includeMarkdown("markdown/about.md")),
              verbatimTextOutput("systeminfo") # server info

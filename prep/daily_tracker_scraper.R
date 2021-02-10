@@ -33,6 +33,12 @@ utlas.incidence <- lapply(utlas.alphabetical, function(area) {
   dat.area <- dat.UK.utla %>% 
     filter(areaName == area)
   
+  # the most recent date is sometimes missing, e.g. when only one of England and Wales has updated. 
+  # when this is the case, replicate the last entry for those missing one
+  if (!(last.date %in% dat.area$date)) {
+    dat.area[nrow(dat.area)+1,] <- dat.area[nrow(dat.area),] 
+    dat.area[nrow(dat.area),"date"] <- last.date
+  }
   stopifnot(!any(setdiff(all.dates,dat.area$date) > min(dat.area$date)) ) # check that missing dates are all at the start, so we are safe to fill in cumulative cases as zeroes
   
   dat.area <- dat.area %>%
@@ -185,6 +191,12 @@ regions.incidence <- lapply(regions.alphabetical, function(area) {
   print(area)
   dat.area <- dat.UK.regions %>% filter(areaName == area)
   
+  # the most recent date is sometimes missing, e.g. when only one of England and Wales has updated. 
+  # when this is the case, replicate the last entry for those missing one
+  if (!(last.date %in% dat.area$date)) {
+    dat.area[nrow(dat.area)+1,] <- dat.area[nrow(dat.area),] 
+    dat.area[nrow(dat.area),"date"] <- last.date
+  }
   stopifnot(!any(setdiff(all.dates,dat.area$date) > min(dat.area$date)) ) # check that missing dates are all at the start, so we are safe to fill in cumulative cases as zeroes
   
   dat.area <- dat.area %>%
@@ -338,6 +350,12 @@ ltlas.incidence <- lapply(ltlas.alphabetical, function(area) {
   print(area)
   dat.area <- dat.UK.ltla %>% filter(areaName == area)
   
+  # the most recent date is sometimes missing, e.g. when only one of England and Wales has updated. 
+  # when this is the case, replicate the last entry for those missing one
+  if (!(last.date %in% dat.area$date)) {
+    dat.area[nrow(dat.area)+1,] <- dat.area[nrow(dat.area),] 
+    dat.area[nrow(dat.area),"date"] <- last.date
+  }
   stopifnot(!any(setdiff(all.dates,dat.area$date) > min(dat.area$date)) ) # check that missing dates are all at the start, so we are safe to fill in cumulative cases as zeroes
   
   dat.area <- dat.area %>%
