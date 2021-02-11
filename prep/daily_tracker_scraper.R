@@ -151,7 +151,7 @@ projected.cases.utlas <- cbind.data.frame(
   "Dates" = unlist(lapply(1:length(utlas.alphabetical), function(area) utlas.R.backcalculated[[area]]$dates[-(1:7)] - 4)),
   "Projection" = unlist(lapply(1:length(utlas.alphabetical), function(area) {
     sapply(utlas.R.backcalculated[[area]]$R$t_end, function(i) { # the first t_end is 8
-      mean(utlas.R.backcalculated[[area]]$I[(i-6):i]) * # average incidence over that week
+      mean(utlas.R.backcalculated[[area]]$I[(i-7):(i-1)]) * # average incidence over that week
         utlas.R.backcalculated[[area]]$R$`Mean(R)`[[which(utlas.R.backcalculated[[area]]$R$t_end == i)]] # last R value
     })
   }
@@ -307,7 +307,7 @@ projected.cases.regions <- cbind.data.frame(
   "Dates" = unlist(lapply(1:length(regions.alphabetical), function(area) regions.R.backcalculated[[area]]$dates[-(1:7)] - 4)),
   "Projection" = unlist(lapply(1:length(regions.alphabetical), function(area) {
     sapply(regions.R.backcalculated[[area]]$R$t_end, function(i) { # the first t_end is 8
-      mean(regions.R.backcalculated[[area]]$I[(i-6):i]) * # average incidence over that week
+      mean(regions.R.backcalculated[[area]]$I[(i-7):(i-1)]) * # average incidence over that week
         regions.R.backcalculated[[area]]$R$`Mean(R)`[[which(regions.R.backcalculated[[area]]$R$t_end == i)]] # last R value
     })
   }
@@ -463,7 +463,7 @@ projected.cases.ltlas <- cbind.data.frame(
   "Dates" = unlist(lapply(1:length(ltlas.alphabetical), function(area) ltlas.R.backcalculated[[area]]$dates[-(1:7)] - 4)),
   "Projection" = unlist(lapply(1:length(ltlas.alphabetical), function(area) {
     sapply(ltlas.R.backcalculated[[area]]$R$t_end, function(i) { # the first t_end is 8
-      mean(ltlas.R.backcalculated[[area]]$I[(i-6):i]) * # average incidence over that week
+      mean(ltlas.R.backcalculated[[area]]$I[(i-7):(i-1)]) * # average incidence over that week
         ltlas.R.backcalculated[[area]]$R$`Mean(R)`[[which(ltlas.R.backcalculated[[area]]$R$t_end == i)]] # last R value
     })
   }
