@@ -28,7 +28,7 @@ ui <- fluidPage(
         choices = format(seq(from=as.Date("2020-03-01"), to = last.date - R.trim - 1, by=1), "%d %b %y"),
         selected = format(last.date - R.trim - 1, "%d %b %y"),
         animate = animationOptions(
-          interval = 1000,
+          interval = 1500,
           loop = FALSE,
           playButton = NULL,
           pauseButton = NULL
