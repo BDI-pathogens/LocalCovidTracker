@@ -1,6 +1,6 @@
 library(shiny)
 library(shinyWidgets)
-library(RColorBrewer) 
+library(RColorBrewer)
 library(glue)
 library(shinythemes) # for "yeti" theme
 library(shinycssloaders) # for "calculating" spinners
@@ -69,7 +69,7 @@ plotP1Incidence <- df.for.plotting.incidence.p1 %>%
     tickfont = f1,
     exponentformat = "E"#,
     #range=c(start.date, last.date - 9)
-  ), 
+  ),
   yaxis = list(
     title = "Estimated new infections per day which\nwent on to be confirmed by a positive test result,\nper 100,000 population",
     titlefont = f2,
@@ -88,7 +88,7 @@ plotP1R <- df.for.plotting.R.p1 %>%
               '<i>%{x|%d %B}</i><br>',
               'R = %{y:.1f}<extra></extra>'))  %>%
   add_segments(type="line",
-               x = start.date, xend = max(df.for.plotting.R.p1$Dates), 
+               x = start.date, xend = max(df.for.plotting.R.p1$Dates),
                y = 1, yend = 1,
                line=list(dash='dash',
                          color="black"),
@@ -100,7 +100,7 @@ plotP1R <- df.for.plotting.R.p1 %>%
                  text = "
                  See 'Details' for
                  explanation of why
-                 R appears to be 
+                 R appears to be
                  increasing here",
                  showarrow = F
                  #ax = 20,
@@ -113,7 +113,7 @@ plotP1R <- df.for.plotting.R.p1 %>%
     tickfont = f1,
     exponentformat = "E" #,
     #range=c(start.date, last.date - 12)
-  ), 
+  ),
   yaxis = list(
     title = "Estimated R",
     titlefont = f1,
@@ -138,7 +138,7 @@ plotP1Projection <- projected.cases.p1 %>%
     tickfont = f1,
     exponentformat = "E" #,
     #range=c(start.date, last.date - 9)
-  ), 
+  ),
   yaxis = list(
     title = "Expected number of infections which will go on\nto be confirmed by a positive test result\nper day in the near future, per 100,000 population\n",
     titlefont = f2,
@@ -158,7 +158,7 @@ plotP1ROneUTLA <- df.for.plotting.R.p1 %>%
   #             'R = %{y:.1f}<br>',
   #             'from Pillar', df.for.plotting.R$Pillar, ' data<extra></extra>'))  %>%
   add_segments(type="line",
-               x = start.date, xend = max(df.for.plotting.R.p1$Dates), 
+               x = start.date, xend = max(df.for.plotting.R.p1$Dates),
                y = 1, yend = 1,
                line=list(dash='dash',
                          color="black"),
@@ -170,7 +170,7 @@ plotP1ROneUTLA <- df.for.plotting.R.p1 %>%
                  text = "
                  See 'Details' for
                  explanation of why
-                 R appears to be 
+                 R appears to be
                  increasing here",
                  showarrow = F
                  #ax = 20,
@@ -183,7 +183,7 @@ plotP1ROneUTLA <- df.for.plotting.R.p1 %>%
     tickfont = f1,
     exponentformat = "E" #,
     #range=c(start.date, last.date - 9)
-  ), 
+  ),
   yaxis = list(
     title = "Estimated R with 95% credibility interval",
     titlefont = f1,
@@ -208,7 +208,7 @@ SCplotter <- function(scen) {
                 '%{y:.1f} difference in R between<br>',
                 'this area and its synthetic control<extra></extra>')) %>%
     add_segments(type="line",
-              x = "2020-05-05", xend = "2020-05-05", 
+              x = "2020-05-05", xend = "2020-05-05",
               y = -1, yend = 1.2,
               line=list(dash='dash',
                         color="black"),
@@ -222,7 +222,7 @@ SCplotter <- function(scen) {
       tickfont = f1,
       exponentformat = "E"
       #range=c(start.date, last.date - 14)
-    ), 
+    ),
     yaxis = list(
       title = "Difference in R between area\nand its synthetic control",
       titlefont = f1,

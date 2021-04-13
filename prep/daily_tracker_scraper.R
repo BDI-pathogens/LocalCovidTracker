@@ -483,5 +483,3 @@ projected.cases.ltlas <- projected.cases.ltlas %>%
 projected.cases.ltlas$Pillar <- "1+2"
 
 save(projected.cases.ltlas, file="data/latest_projected.cases.ltlas.RData")
-
-
