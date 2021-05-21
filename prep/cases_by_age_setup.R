@@ -228,6 +228,95 @@ mean_age_plot_E = plot_ly( mean_age_E, x = ~date, y = ~mean_age, type = "scatter
   )
 ) 
 
+# median_age_E <- t_E %>%
+#   group_by(date) %>%
+#   summarise("median_age" = median(rep(age_num + 2.5, cases )))
+# 
+# median_age_E$date_colour <- as.factor(1:(length(dates_E) - 1))
+# 
+# median_age_plot_E = plot_ly( median_age_E, x = ~date, y = ~median_age, type = "scatter",  mode = "markers" ,
+#                            color = ~date_colour, colors = palette_E,
+#                            hovertemplate = paste(
+#                              '<i>%{x|%d %B}</i><br>',
+#                              'Mean age = %{y:.1f}<extra></extra>'),
+#                            showlegend = FALSE,
+#                            size = 3) %>%
+# layout(showlegend = FALSE,
+#        xaxis = list(
+#          title = "Date",
+#          titlefont = f1,
+#          showticklabels = TRUE,
+#          tickfont = f1,
+#          range=c(min(dates_E), max(dates_E) + 2)
+#        ),
+#        yaxis = list(
+#          title = "Median age of cases",
+#          titlefont = f1,
+#          showticklabels = TRUE,
+#          tickfont = f1,
+#          range=c(floor(min(median_age_E$median_age, median_age_E$median_age)) - 1, ceiling(max(median_age_E$median_age, median_age_E$median_age)) + 1)
+#        )
+# ) 
+# 
+# distribution_age_E <- t_E %>%
+#   group_by(date) %>%
+#   summarise("lower_quantile" = quantile(rep(age_num + 2.5, cases ), 1/4),
+#             "median" = quantile(rep(age_num + 2.5, cases ), 1/2),
+#             "upper_quantile" = quantile(rep(age_num + 2.5, cases ), 3/4))
+# 
+# distribution_age_E$date_colour <- as.factor(1:(length(dates_E) - 1))
+
+# median_age_plot_E = plot_ly( median_age_E, x = ~date, y = ~median_age, type = "scatter",  mode = "markers" ,
+#                              color = ~date_colour, colors = palette_E,
+#                              hovertemplate = paste(
+#                                '<i>%{x|%d %B}</i><br>',
+#                                'Mean age = %{y:.1f}<extra></extra>'),
+#                              showlegend = FALSE,
+#                              size = 3) %>%
+#   layout(showlegend = FALSE,
+#          xaxis = list(
+#            title = "Date",
+#            titlefont = f1,
+#            showticklabels = TRUE,
+#            tickfont = f1,
+#            range=c(min(dates_E), max(dates_E) + 2)
+#          ),
+#          yaxis = list(
+#            title = "Median age of cases",
+#            titlefont = f1,
+#            showticklabels = TRUE,
+#            tickfont = f1,
+#            range=c(floor(min(median_age_E$median_age, median_age_E$median_age)) - 1, ceiling(max(median_age_E$median_age, median_age_E$median_age)) + 1)
+#          )
+#   ) 
+# 
+# distribution_age_plot_E = plot_ly(distribution_age_E) %>%
+#   add_ribbons(x=~date, ymin=~lower_quantile, ymax=~upper_quantile, color=I("lightgrey")) %>%
+#   add_trace(x = ~date, y = ~median, type = "scatter",  mode = "markers" ,
+#                              color = ~date_colour, colors = palette_E,
+#                              hovertemplate = paste(
+#                                '<i>%{x|%d %B}</i><br>',
+#                                'Mean age = %{y:.1f}<extra></extra>'),
+#                              showlegend = FALSE,
+#                              size = 3) %>%
+#   layout(showlegend = FALSE,
+#          xaxis = list(
+#            title = "Date",
+#            titlefont = f1,
+#            showticklabels = TRUE,
+#            tickfont = f1,
+#            range=c(min(dates_E), max(dates_E) + 2)
+#          ),
+#          yaxis = list(
+#            title = "Median age of cases",
+#            titlefont = f1,
+#            showticklabels = TRUE,
+#            tickfont = f1,
+#            range=c(floor(min(median_age_E$median_age, median_age_E$median_age)) - 1, ceiling(max(median_age_E$median_age, median_age_E$median_age)) + 1)
+#          )
+#   ) 
+
+
 # plot absolute numbers of cases for each age
 abs_age_palette <- viridis(19, option="plasma", direction=-1)
 
@@ -343,7 +432,7 @@ mean_age_plot_W = mean_age_plot_W %>%
            titlefont = f1,
            showticklabels = TRUE,
            tickfont = f1,
-           range=c(floor(min(mean_age_W$mean_age)) - 1, ceiling(max(mean_age_W$mean_age)) + 1)
+           range=c(floor(min(mean_age_W$mean_age)) - 2, ceiling(max(mean_age_W$mean_age)) + 2)
          )
   )
 
