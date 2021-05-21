@@ -148,6 +148,8 @@ server <- function(input, output, session) {
         
       })
       
+      
+      
       observeEvent(input$date.slider.maps, {
         this.date <-  getDateMaps()
         
@@ -989,7 +991,8 @@ server <- function(input, output, session) {
               title = "Date",
               titlefont = f1,
               showticklabels = TRUE,
-              tickfont = f1
+              tickfont = f1,
+              range=c(min(CBA_data$date),max(CBA_data$date)) # when there are no recent cases (hurrah!) we need to show this, and not cut the x-axis off prematurely
             ),
             yaxis   = list(
               title = "Daily cases",
