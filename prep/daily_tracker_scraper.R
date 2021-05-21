@@ -33,14 +33,14 @@ utlas.incidence <- lapply(utlas.alphabetical, function(area) {
   dat.area <- dat.UK.utla %>% 
     filter(areaName == area)
   
-  # the most recent date is sometimes missing, e.g. when only one of England and Wales has updated. 
-  # when this is the case, replicate the last entry for those missing one
-  if (!(last.date %in% dat.area$date)) {
-    dat.area[nrow(dat.area)+1,] <- dat.area[nrow(dat.area),] 
-    dat.area[nrow(dat.area),"date"] <- last.date
-  }
-  stopifnot(!any(setdiff(all.dates,dat.area$date) > min(dat.area$date)) ) # check that missing dates are all at the start, so we are safe to fill in cumulative cases as zeroes
+  # the most recent date or two are sometimes missing, e.g. when only one of England and Wales has updated. 
+  # NB this is particularly true as of 17th April, when Wales moved to six day reporting.
+  # When this is the case, replicate the last entry or two for those missing them
+
+  dat.area <- dat.area %>%
+    complete(date = as.Date(union(dat.area$date, c(last.date - 1, last.date)), origin="1970-01-01"), fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=max(dat.area$cumCasesBySpecimenDate)))
   
+  # then fill in any necessary zeroes at the start
   dat.area <- dat.area %>%
     complete(date = all.dates, fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=0))
   
@@ -191,14 +191,14 @@ regions.incidence <- lapply(regions.alphabetical, function(area) {
   print(area)
   dat.area <- dat.UK.regions %>% filter(areaName == area)
   
-  # the most recent date is sometimes missing, e.g. when only one of England and Wales has updated. 
-  # when this is the case, replicate the last entry for those missing one
-  if (!(last.date %in% dat.area$date)) {
-    dat.area[nrow(dat.area)+1,] <- dat.area[nrow(dat.area),] 
-    dat.area[nrow(dat.area),"date"] <- last.date
-  }
-  stopifnot(!any(setdiff(all.dates,dat.area$date) > min(dat.area$date)) ) # check that missing dates are all at the start, so we are safe to fill in cumulative cases as zeroes
+  # the most recent date or two are sometimes missing, e.g. when only one of England and Wales has updated. 
+  # NB this is particularly true as of 17th April, when Wales moved to six day reporting.
+  # When this is the case, replicate the last entry or two for those missing them
   
+  dat.area <- dat.area %>%
+    complete(date = as.Date(union(dat.area$date, c(last.date - 1, last.date)), origin="1970-01-01"), fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=max(dat.area$cumCasesBySpecimenDate)))
+  
+  # then fill in any necessary zeroes at the start
   dat.area <- dat.area %>%
     complete(date = all.dates, fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=0))
   
@@ -350,14 +350,13 @@ ltlas.incidence <- lapply(ltlas.alphabetical, function(area) {
   print(area)
   dat.area <- dat.UK.ltla %>% filter(areaName == area)
   
-  # the most recent date is sometimes missing, e.g. when only one of England and Wales has updated. 
-  # when this is the case, replicate the last entry for those missing one
-  if (!(last.date %in% dat.area$date)) {
-    dat.area[nrow(dat.area)+1,] <- dat.area[nrow(dat.area),] 
-    dat.area[nrow(dat.area),"date"] <- last.date
-  }
-  stopifnot(!any(setdiff(all.dates,dat.area$date) > min(dat.area$date)) ) # check that missing dates are all at the start, so we are safe to fill in cumulative cases as zeroes
+  # the most recent date or two are sometimes missing, e.g. when only one of England and Wales has updated. 
+  # NB this is particularly true as of 17th April, when Wales moved to six day reporting.
+  # When this is the case, replicate the last entry or two for those missing them
+  dat.area <- dat.area %>%
+    complete(date = as.Date(union(dat.area$date, c(last.date - 1, last.date)), origin="1970-01-01"), fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=max(dat.area$cumCasesBySpecimenDate)))
   
+  # then fill in any necessary zeroes at the start
   dat.area <- dat.area %>%
     complete(date = all.dates, fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=0))
   
@@ -483,3 +482,41 @@ projected.cases.ltlas <- projected.cases.ltlas %>%
 projected.cases.ltlas$Pillar <- "1+2"
 
 save(projected.cases.ltlas, file="data/latest_projected.cases.ltlas.RData")
+
+###########################
+# quick summary for myself:
+# latest.projections <- projected.cases.ltlas %>% filter(Dates == last.date - R.trim)
+# plot_ly(latest.projections,
+#         y=~scaled_per_capita,
+#         text=~Area,
+#         type="box") %>%
+#   layout(
+#     xaxis=list(
+#       titlefont = f1,
+#       title=paste0("Projected cases as of ", unique(latest.projections$Dates))
+#     )
+#   )
+# 
+# 
+# latest.projections %>% filter(scaled_per_capita < 0.5) %>% select(c("Area","scaled_per_capita"))
+# 
+# latest.R <- df.for.plotting.R.ltlas %>% filter(Dates == last.date - R.trim -1)
+# plot_ly(latest.R,
+#         y=~R,
+#         text=~Area,
+#         type="box",
+#         boxpoints = "all", jitter=0.5) %>%
+#   layout(
+#     xaxis=list(
+#       titlefont = f1,
+#       title=paste0("Estimated R on ", unique(latest.projections$Dates))
+#     )
+#   )
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#                                                                   
