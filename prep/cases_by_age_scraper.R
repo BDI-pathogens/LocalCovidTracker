@@ -12,7 +12,7 @@ library( tidyverse )
 updateCasesByAge = function( 
   nation = "",
   dir     = "",
-  timeout = 20,
+  timeout = 50,
   alwaysUpdate = FALSE
 )
 {
@@ -59,11 +59,13 @@ updateCasesByAge = function(
   data = jsonlite::fromJSON(data)$data
   
   # From 26th Oct the table for England has been including all historic cases.Since the last few are prone to vary, and it only takes a few seconds, I re-save them all each time here.
+  # From mid April 2021 there have been some empty csv files for early 2020 which mess this up,
+  # so I'm changing it to not re-save them right from the start - just save the last 100 days.
   if (nation == "england") {
-    for (i in 1:nrow(data)) {
+    for (i in 1:100) {
       write.csv( data$maleCases[[i]],   file = glue("data/{data$date[[i]]}_malecases.csv") )
     }
-    for (i in 1:nrow(data)) {
+    for (i in 1:100) {
       write.csv( data$femaleCases[[i]],   file = glue("data/{data$date[[i]]}_femalecases.csv") )
     }
   } else {
@@ -119,7 +121,7 @@ updateCasesByAge = function(
 
 }
 
-updateCasesByAge(nation = "england", dir = "data/", alwaysUpdate = TRUE)
+updateCasesByAge(nation = "england", dir = "data/", alwaysUpdate = TRUE) 
 
 updateCasesByAge(nation = "wales", dir = "data/", alwaysUpdate = TRUE)
 
