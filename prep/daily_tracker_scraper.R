@@ -38,7 +38,7 @@ utlas.incidence <- lapply(utlas.alphabetical, function(area) {
   # When this is the case, replicate the last entry or two for those missing them
 
   dat.area <- dat.area %>%
-    complete(date = as.Date(union(dat.area$date, c(last.date - 1, last.date)), origin="1970-01-01"), fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=max(dat.area$cumCasesBySpecimenDate)))
+    complete(date = as.Date(union(dat.area$date, c(last.date - 2, last.date - 1, last.date)), origin="1970-01-01"), fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=max(dat.area$cumCasesBySpecimenDate)))
   
   # then fill in any necessary zeroes at the start
   dat.area <- dat.area %>%
@@ -196,7 +196,7 @@ regions.incidence <- lapply(regions.alphabetical, function(area) {
   # When this is the case, replicate the last entry or two for those missing them
   
   dat.area <- dat.area %>%
-    complete(date = as.Date(union(dat.area$date, c(last.date - 1, last.date)), origin="1970-01-01"), fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=max(dat.area$cumCasesBySpecimenDate)))
+    complete(date = as.Date(union(dat.area$date, c(last.date - 2, last.date - 1, last.date)), origin="1970-01-01"), fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=max(dat.area$cumCasesBySpecimenDate)))
   
   # then fill in any necessary zeroes at the start
   dat.area <- dat.area %>%
@@ -354,7 +354,7 @@ ltlas.incidence <- lapply(ltlas.alphabetical, function(area) {
   # NB this is particularly true as of 17th April, when Wales moved to six day reporting.
   # When this is the case, replicate the last entry or two for those missing them
   dat.area <- dat.area %>%
-    complete(date = as.Date(union(dat.area$date, c(last.date - 1, last.date)), origin="1970-01-01"), fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=max(dat.area$cumCasesBySpecimenDate)))
+    complete(date = as.Date(union(dat.area$date, c(last.date - 2, last.date - 1, last.date)), origin="1970-01-01"), fill=list(areaName = area, areaType= unique(dat.area$areaType), areaCode = unique(dat.area$areaCode), cumCasesBySpecimenDate=max(dat.area$cumCasesBySpecimenDate)))
   
   # then fill in any necessary zeroes at the start
   dat.area <- dat.area %>%
