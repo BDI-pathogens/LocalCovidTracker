@@ -963,13 +963,13 @@ server <- function(input, output, session) {
           filter(areaName == la) 
         
         if (age_breadth == "narrow") {
-          ages.to.plot <- unique(la_data$age)[1:19]
+          ages.to.plot <- unique(la_data$age)[c(1,3:13,15:21)]
           la_data <- la_data %>% filter(age %in% ages.to.plot)
           la_data$age_format <- str_replace_all( la_data$age, "_", "-")
-          la_data$age_format <- factor(la_data$age_format, levels=sort(unique(la_data$age_format))[c(1,10,2:9,11:19)])
+          #la_data$age_format <- factor(la_data$age_format, levels=sort(unique(la_data$age_format))[c(1,10,2:9,11:19)])
         }
         else {
-          ages.to.plot <- unique(la_data$age)[c(22,21)]
+          ages.to.plot <- unique(la_data$age)[c(2,14)]
           la_data <- la_data %>% filter(age %in% ages.to.plot)
           la_data$age_format <- str_replace_all( la_data$age, "_", "-")
         }
