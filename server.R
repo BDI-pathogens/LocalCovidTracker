@@ -297,6 +297,10 @@ server <- function(input, output, session) {
         input$ltla
       })
       
+      getCountry <- reactive({
+        input$country
+      })
+      
       getXStart <- reactive({
         input$xrange[[1]]
       })
@@ -338,6 +342,38 @@ server <- function(input, output, session) {
       
       output$UTLARPlot <- renderPlotly({
         r.utla.plot
+      })
+      
+      output$ROneUTLAPlot <- renderPlotly({
+        UTLAToHighlight <- getUTLA()
+        x.start <- last.date - 91
+        x.end.r <- last.date - R.trim # plot no later than "last date of data - 12"
+        
+        ROneUTLA.plot %>%
+          filter(Dates %in% seq(as.Date(x.start),as.Date(x.end.r),by=1)) %>%
+          filter(Area == UTLAToHighlight) %>%
+          add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
+                      color = I("grey"),
+                      hovertemplate = paste(
+                        '<b>',UTLAToHighlight,'</b><br>',
+                        '<i>%{x|%d %B}</i><br>',
+                        '95% credibility interval<extra></extra>')) %>%
+          add_lines(color = I("#FC8D62"),
+                    line=list(width=4, alpha=1),
+                    hovertemplate = paste(
+                      '<b>',UTLAToHighlight,'</b><br>',
+                      '<i>%{x|%d %B}</i><br>',
+                      'R = %{y:.1f}<extra></extra>')) %>%
+          layout(
+            xaxis = list(
+              title = "",
+              titlefont = f1,
+              showticklabels = TRUE,
+              tickfont = f1,
+              exponentformat = "E",
+              range=c(x.start, x.end.r)
+            )
+          )
       })
       
       # highlight selected UTLA
@@ -441,6 +477,18 @@ server <- function(input, output, session) {
                                 range=c(x.start,x.end.r)
                               ))
             ) 
+          
+          plotlyProxy("ROneUTLAPlot", deferUntilFlush = FALSE) %>%
+            plotlyProxyInvoke("relayout",
+                              list(xaxis = list(
+                                title = "",
+                                titlefont = f1,
+                                showticklabels = TRUE,
+                                tickfont = f1,
+                                exponentformat = "E",
+                                range=c(x.start,x.end.r)
+                              ))
+            ) 
         }
       )
       
@@ -463,37 +511,7 @@ server <- function(input, output, session) {
       #   }
       # )
       
-      output$ROneUTLAPlot <- renderPlotly({
-        UTLAToHighlight <- getUTLA()
-        x.start <- getXStart()
-        x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
-        
-        ROneUTLA.plot %>%
-          filter(Dates %in% seq(as.Date(x.start),as.Date(x.end.r),by=1)) %>%
-          filter(Area == UTLAToHighlight) %>%
-          add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
-                      color = I("grey"),
-                      hovertemplate = paste(
-                        '<b>',UTLAToHighlight,'</b><br>',
-                        '<i>%{x|%d %B}</i><br>',
-                        '95% credibility interval<extra></extra>')) %>%
-          add_lines(color = I("#FC8D62"),
-                    line=list(width=4, alpha=1),
-                    hovertemplate = paste(
-                      '<b>',UTLAToHighlight,'</b><br>',
-                      '<i>%{x|%d %B}</i><br>',
-                      'R = %{y:.1f}<extra></extra>')) %>%
-          layout(
-            xaxis = list(
-              title = "",
-              titlefont = f1,
-              showticklabels = TRUE,
-              tickfont = f1,
-              exponentformat = "E",
-              range=c(x.start, x.end.r)
-            )
-          )
-      })
+      
       
       ### Regions
       
@@ -507,6 +525,38 @@ server <- function(input, output, session) {
       
       output$regionRPlot <- renderPlotly({
         r.region.plot
+      })
+      
+      output$ROneRegionPlot <- renderPlotly({
+        regionToHighlight <- getRegion()
+        x.start <- last.date - 91
+        x.end.r <- last.date - R.trim # plot no later than "last date of data - 12"
+        
+        ROneregion.plot %>%
+          filter(Dates %in% seq(as.Date(x.start),as.Date(x.end.r),by=1)) %>%
+          filter(Area == regionToHighlight) %>%
+          add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
+                      color = I("grey"),
+                      hovertemplate = paste(
+                        '<b>',regionToHighlight,'</b><br>',
+                        '<i>%{x|%d %B}</i><br>',
+                        '95% credibility interval<extra></extra>')) %>%
+          add_lines(color = I("#FC8D62"),
+                    line=list(width=4, alpha=1),
+                    hovertemplate = paste(
+                      '<b>',regionToHighlight,'</b><br>',
+                      '<i>%{x|%d %B}</i><br>',
+                      'R = %{y:.1f}<extra></extra>')) %>%
+          layout(
+            xaxis = list(
+              title = "",
+              titlefont = f1,
+              showticklabels = TRUE,
+              tickfont = f1,
+              exponentformat = "E",
+              range=c(x.start, x.end.r)
+            )
+          )
       })
       
       # highlight selected region
@@ -610,40 +660,22 @@ server <- function(input, output, session) {
                                 range=c(x.start,x.end.r)
                               ))
             ) 
+          
+          plotlyProxy("ROneRegionPlot", deferUntilFlush = FALSE) %>%
+            plotlyProxyInvoke("relayout",
+                              list(xaxis = list(
+                                title = "",
+                                titlefont = f1,
+                                showticklabels = TRUE,
+                                tickfont = f1,
+                                exponentformat = "E",
+                                range=c(x.start,x.end.r)
+                              ))
+            ) 
         }
       )
       
-      output$ROneRegionPlot <- renderPlotly({
-        regionToHighlight <- getRegion()
-        x.start <- getXStart()
-        x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
-        
-        ROneregion.plot %>%
-          filter(Dates %in% seq(as.Date(x.start),as.Date(x.end.r),by=1)) %>%
-          filter(Area == regionToHighlight) %>%
-          add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
-                      color = I("grey"),
-                      hovertemplate = paste(
-                        '<b>',regionToHighlight,'</b><br>',
-                        '<i>%{x|%d %B}</i><br>',
-                        '95% credibility interval<extra></extra>')) %>%
-          add_lines(color = I("#FC8D62"),
-                    line=list(width=4, alpha=1),
-                    hovertemplate = paste(
-                      '<b>',regionToHighlight,'</b><br>',
-                      '<i>%{x|%d %B}</i><br>',
-                      'R = %{y:.1f}<extra></extra>')) %>%
-          layout(
-            xaxis = list(
-              title = "",
-              titlefont = f1,
-              showticklabels = TRUE,
-              tickfont = f1,
-              exponentformat = "E",
-              range=c(x.start, x.end.r)
-            )
-          )
-      })
+      
       
       ### LTLAs
       
@@ -657,6 +689,38 @@ server <- function(input, output, session) {
       
       output$LTLARPlot <- renderPlotly({
         r.ltla.plot
+      })
+      
+      output$ROneLTLAPlot <- renderPlotly({
+        LTLAToHighlight <- getLTLA()
+        x.start <- last.date - 91
+        x.end.r <- last.date - R.trim # plot no later than "last date of data - 12"
+        
+        ROneLTLA.plot %>%
+          filter(Dates %in% seq(as.Date(x.start),as.Date(x.end.r),by=1)) %>%
+          filter(Area == LTLAToHighlight) %>%
+          add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
+                      color = I("grey"),
+                      hovertemplate = paste(
+                        '<b>',LTLAToHighlight,'</b><br>',
+                        '<i>%{x|%d %B}</i><br>',
+                        '95% credibility interval<extra></extra>')) %>%
+          add_lines(color = I("#FC8D62"),
+                    line=list(width=4, alpha=1),
+                    hovertemplate = paste(
+                      '<b>',LTLAToHighlight,'</b><br>',
+                      '<i>%{x|%d %B}</i><br>',
+                      'R = %{y:.1f}<extra></extra>')) %>%
+          layout(
+            xaxis = list(
+              title = "",
+              titlefont = f1,
+              showticklabels = TRUE,
+              tickfont = f1,
+              exponentformat = "E",
+              range=c(x.start, x.end.r)
+            )
+          )
       })
       
       # highlight selected LTLA
@@ -760,27 +824,55 @@ server <- function(input, output, session) {
                                 range=c(x.start,x.end.r)
                               ))
             ) 
+          
+          plotlyProxy("ROneLTLAPlot", deferUntilFlush = FALSE) %>%
+            plotlyProxyInvoke("relayout",
+                              list(xaxis = list(
+                                title = "",
+                                titlefont = f1,
+                                showticklabels = TRUE,
+                                tickfont = f1,
+                                exponentformat = "E",
+                                range=c(x.start,x.end.r)
+                              ))
+            ) 
         }
       )
       
-      output$ROneLTLAPlot <- renderPlotly({
-        LTLAToHighlight <- getLTLA()
+      
+      
+      ### Countries
+      
+      output$CountryProjectionPlot <- renderPlotly({
+        nowcast.countries.plot
+      })
+      
+      output$CountryIncidencePlot <- renderPlotly({
+        incidence.countries.plot
+      })
+      
+      output$CountryRPlot <- renderPlotly({
+        r.countries.plot
+      })
+      
+      output$ROneCountryPlot <- renderPlotly({
+        CountryToHighlight <- getCountry()
         x.start <- getXStart()
         x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
         
-        ROneLTLA.plot %>%
+        ROneCountry.plot %>%
           filter(Dates %in% seq(as.Date(x.start),as.Date(x.end.r),by=1)) %>%
-          filter(Area == LTLAToHighlight) %>%
+          filter(country == CountryToHighlight) %>%
           add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
                       color = I("grey"),
                       hovertemplate = paste(
-                        '<b>',LTLAToHighlight,'</b><br>',
+                        '<b>',CountryToHighlight,'</b><br>',
                         '<i>%{x|%d %B}</i><br>',
                         '95% credibility interval<extra></extra>')) %>%
           add_lines(color = I("#FC8D62"),
                     line=list(width=4, alpha=1),
                     hovertemplate = paste(
-                      '<b>',LTLAToHighlight,'</b><br>',
+                      '<b>',CountryToHighlight,'</b><br>',
                       '<i>%{x|%d %B}</i><br>',
                       'R = %{y:.1f}<extra></extra>')) %>%
           layout(
@@ -795,6 +887,124 @@ server <- function(input, output, session) {
           )
       })
       
+      # highlight selected country
+      observeEvent(
+        {getCountry()
+        },
+        {
+          x.start <- getXStart()
+          x.end.incidence <- min(getXEnd(), last.date - incidence.trim) # plot no later than "last date of data - 9"
+          x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
+
+          CountryToHighlight <- getCountry()
+
+          nowcast.data <- projected.cases.countries %>%
+            filter(country == CountryToHighlight)
+
+          plotlyProxy("CountryProjectionPlot", deferUntilFlush = FALSE) %>%
+            plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line, trace 2 is the (old) highlighted area
+            plotlyProxyInvoke("addTraces",
+                              x=nowcast.data$Dates,
+                              y=nowcast.data$scaled_per_capita,
+                              line=list(width=4, alpha=1, color = "#FC8D62"),
+                              hovertemplate = paste(
+                                '<b>',CountryToHighlight,'</b><br>',
+                                '<i>%{x|%d %B}</i><br>',
+                                '%{y:.1f} infections per 100,000<extra></extra>'))
+
+          incidence.data <- df.for.plotting.incidence.countries %>%
+            filter(country == CountryToHighlight)
+
+          plotlyProxy("CountryIncidencePlot", deferUntilFlush = FALSE) %>%
+            plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line
+            plotlyProxyInvoke("addTraces",
+                              x=incidence.data$Dates,
+                              y=incidence.data$scaled_per_capita,
+                              line=list(width=4, alpha=1, color = "#FC8D62"),
+                              hovertemplate = paste(
+                                '<b>',CountryToHighlight,'</b><br>',
+                                '<i>%{x|%d %B}</i><br>',
+                                '%{y:.1f} infections per 100,000<extra></extra>'))
+
+          r.data <- df.for.plotting.R.countries %>%
+            filter(country == CountryToHighlight)
+
+          plotlyProxy("CountryRPlot", deferUntilFlush = FALSE) %>%
+            plotlyProxyInvoke("deleteTraces", list(as.integer(3))) %>% # trace 0 is the blue lines, trace 1 is the widespread testing line, trace 2 is the R=1 line
+            plotlyProxyInvoke("addTraces",
+                              x=r.data$Dates,
+                              y=r.data$R,
+                              line=list(width=4, alpha=1, color = "#FC8D62"),
+                              hovertemplate = paste(
+                                '<b>',CountryToHighlight,'</b><br>',
+                                '<i>%{x|%d %B}</i><br>',
+                                'R = %{y:.1f}<extra></extra>'))
+        }
+      )
+      
+      # adjust x range to show selected dates
+      observeEvent(
+        {getXStart()
+          getXEnd()
+        }, 
+        {
+          x.start <- getXStart()
+          x.end.incidence <- min(getXEnd(), last.date - incidence.trim) # plot no later than "last date of data - 9"
+          x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
+          
+          plotlyProxy("CountryProjectionPlot", deferUntilFlush = FALSE) %>%
+            plotlyProxyInvoke("relayout",
+                              list(xaxis = list(
+                                title = "",
+                                titlefont = f1,
+                                showticklabels = TRUE,
+                                tickfont = f1,
+                                exponentformat = "E",
+                                range=c(x.start,x.end.r)
+                              )
+                              )
+            ) 
+          
+          plotlyProxy("CountryIncidencePlot", deferUntilFlush = FALSE) %>%
+            plotlyProxyInvoke("relayout",
+                              list(xaxis = list(
+                                title = "",
+                                titlefont = f1,
+                                showticklabels = TRUE,
+                                tickfont = f1,
+                                exponentformat = "E",
+                                range=c(x.start,x.end.incidence)
+                              ))
+            ) 
+          
+          plotlyProxy("CountryRPlot", deferUntilFlush = FALSE) %>%
+            plotlyProxyInvoke("relayout",
+                              list(xaxis = list(
+                                title = "",
+                                titlefont = f1,
+                                showticklabels = TRUE,
+                                tickfont = f1,
+                                exponentformat = "E",
+                                range=c(x.start,x.end.r)
+                              ))
+            ) 
+          
+          plotlyProxy("ROneCountryPlot", deferUntilFlush = FALSE) %>%
+            plotlyProxyInvoke("relayout",
+                              list(xaxis = list(
+                                title = "",
+                                titlefont = f1,
+                                showticklabels = TRUE,
+                                tickfont = f1,
+                                exponentformat = "E",
+                                range=c(x.start,x.end.r)
+                              ))
+            ) 
+        }
+      )
+      
+      
+      
       # download handlers
       output$downloadNowcast <- downloadHandler(
         filename = function() {
@@ -804,6 +1014,8 @@ server <- function(input, output, session) {
             paste('nowcast.utlas.', Sys.Date(), '.csv', sep='')
           } else if (input$level == 3) {
             paste('nowcast.ltlas.', Sys.Date(), '.csv', sep='')
+          } else if (input$level == 4) {
+            paste('nowcast.countries.', Sys.Date(), '.csv', sep='')
           }
         },
         content = function(file) {
@@ -813,6 +1025,8 @@ server <- function(input, output, session) {
             write.csv(projected.cases.utlas, file)
           } else if (input$level == 3) {
             write.csv(projected.cases.ltlas, file)
+          } else if (input$level == 4) {
+            write.csv(projected.cases.countries, file)
           }
         }
       )
@@ -825,6 +1039,8 @@ server <- function(input, output, session) {
             paste('estimated.incidence.utlas.', Sys.Date(), '.csv', sep='')
           } else if (input$level == 3) {
             paste('estimated.incidence.ltlas.', Sys.Date(), '.csv', sep='')
+          } else if (input$level == 4) {
+            paste('estimated.incidence.countries.', Sys.Date(), '.csv', sep='')
           }
         },
         content = function(file) {
@@ -834,6 +1050,8 @@ server <- function(input, output, session) {
             write.csv(df.for.plotting.incidence.utlas, file)
           } else if (input$level == 3) {
             write.csv(df.for.plotting.incidence.ltlas, file)
+          } else if (input$level == 4) {
+            write.csv(df.for.plotting.incidence.countries, file)
           }
         }
       )
@@ -846,6 +1064,8 @@ server <- function(input, output, session) {
             paste('estimated.R.utlas.', Sys.Date(), '.csv', sep='')
           } else if (input$level == 3) {
             paste('estimated.R.ltlas.', Sys.Date(), '.csv', sep='')
+          } else if (input$level == 4) {
+            paste('estimated.R.countries.', Sys.Date(), '.csv', sep='')
           }
         },
         content = function(file) {
@@ -855,6 +1075,8 @@ server <- function(input, output, session) {
             write.csv(df.for.plotting.R.utlas, file)
           } else if (input$level == 3) {
             write.csv(df.for.plotting.R.ltlas, file)
+          } else if (input$level == 4) {
+            write.csv(df.for.plotting.R.countries, file)
           }
         }
       )
@@ -868,7 +1090,7 @@ server <- function(input, output, session) {
         input$CBA_level
       })
       
-      getCountry <- reactive({
+      getCBACountry <- reactive({
         input$CBA_country
       })
       
@@ -895,12 +1117,12 @@ server <- function(input, output, session) {
       
       # outputs
       output$CaseDistributionTitle <- renderUI({
-        c <- getCountry()
+        c <- getCBACountry()
         h3(glue("Distribution of cases in {c} by age"))
       })
       
       output$casesByAgePlot <- renderPlotly({
-        c <- getCountry()
+        c <- getCBACountry()
         if (c == "England") {
           x.start <- getXStartCBA()
           x.end <- getXEndCBA()
@@ -927,23 +1149,23 @@ server <- function(input, output, session) {
       })
       
       output$MeanAgeCasesTitle <- renderUI({
-        c <- getCountry()
+        c <- getCBACountry()
         h3(glue("Mean age of cases in {c} by reporting date"))
       })
       
       output$meanCasesByAgePlot <- renderPlotly({
-        c <- getCountry()
+        c <- getCBACountry()
         if (c == "England") mean_age_plot_E
         else if (c == "Wales") mean_age_plot_W
       })
       
       output$AbsCasesByAgeTitle <- renderUI({
-        c <- getCountry()
+        c <- getCBACountry()
         h3(glue("Absolute number of cases in {c} by reporting date"))
       })
       
       output$AbsCasesByAgePlot <- renderPlotly({
-        c <- getCountry()
+        c <- getCBACountry()
         if (c == "England") CBA_absolute_E
         else if (c == "Wales") CBA_absolute_W
       })

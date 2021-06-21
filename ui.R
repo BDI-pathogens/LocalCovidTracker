@@ -90,10 +90,11 @@ ui <- fluidPage(
 
           selectInput("level",
                       h5("Select the area type of interest:"),
-                      choices = c("Region of England"=1,
+                      choices = c("Country"=4, # I know starting with 4 is illogical, sorry - a late addition!
+                                  "Region of England"=1,
                                   "Upper tier local authority" = 2,
                                   "Lower tier local authority" = 3),
-                      selected=2
+                      selected=4
                       ),
 
           conditionalPanel(
@@ -118,6 +119,14 @@ ui <- fluidPage(
                         h5("Select a lower tier local authority to highlight:"),
                         choices = ltlas.alphabetical,
                         selected = random.ltla)
+          ),
+          
+          conditionalPanel(
+            condition = "input.level == 4",
+            selectInput("country",
+                        h5("Select a country to highlight:"),
+                        choices = c("England", "Wales"),
+                        selected = random.country)
           ),
           
           dateRangeInput("xrange", 
@@ -157,7 +166,7 @@ ui <- fluidPage(
 
           h4("Interpretation"),
           
-          h5("The last date which can be shown in each graph is 9-12 days earlier than the last date for which
+          h5("The last date which can be shown in each graph is 12-15 days earlier than the last date for which
              we have case numbers. 
              This is to account for reporting lags and the delay between an infection
              starting and a swab being taken. 
@@ -228,6 +237,11 @@ ui <- fluidPage(
             withSpinner(plotlyOutput("LTLAProjectionPlot", height="60vh"), type=7)
           ),
           
+          conditionalPanel(
+            condition = "input.level == 4",
+            withSpinner(plotlyOutput("CountryProjectionPlot", height="60vh"), type=7)
+          ),
+          
           helpText("Please note that we base our estimates solely on positive test results -
                    we do not adjust for variations in test availability or testing backlogs. 
                    In particular, decreases in the last few days of the plots may be an artefact of
@@ -260,6 +274,11 @@ ui <- fluidPage(
           conditionalPanel(
             condition = "input.level == 3",
             withSpinner(plotlyOutput("LTLAIncidencePlot", height="60vh"), type=7)
+          ),
+          
+          conditionalPanel(
+            condition = "input.level == 4",
+            withSpinner(plotlyOutput("CountryIncidencePlot", height="60vh"), type=7)
           ),
 
           hr(),
@@ -296,6 +315,13 @@ ui <- fluidPage(
             withSpinner(plotlyOutput("LTLARPlot", height="60vh"), type=7),
 
             withSpinner(plotlyOutput("ROneLTLAPlot", height="60vh"), type=7)
+          ),
+          
+          conditionalPanel(
+            condition = "input.level == 4",
+            withSpinner(plotlyOutput("CountryRPlot", height="60vh"), type=7),
+            
+            withSpinner(plotlyOutput("ROneCountryPlot", height="60vh"), type=7)
           ),
 
           hr(),

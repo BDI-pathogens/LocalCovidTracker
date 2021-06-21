@@ -483,6 +483,49 @@ projected.cases.ltlas$Pillar <- "1+2"
 
 save(projected.cases.ltlas, file="data/latest_projected.cases.ltlas.RData")
 
+
+# calculate country data
+LTLA_to_country <- read_csv("data/LTLA_to_country.csv")
+
+
+df.for.plotting.incidence.countries <- left_join(df.for.plotting.incidence.ltlas,LTLA_to_country)
+
+df.for.plotting.incidence.countries <- df.for.plotting.incidence.countries %>%
+  group_by(Dates, country) %>%
+  summarise("scaled_per_capita" = mean(scaled_per_capita))
+
+save(df.for.plotting.incidence.countries, file="data/latest_df.for.plotting.incidence.countries.RData")
+
+projected.cases.countries <- left_join(projected.cases.ltlas, LTLA_to_country)
+projected.cases.countries <- projected.cases.countries %>%
+  group_by(Dates, country) %>%
+  summarise("scaled_per_capita" = mean(scaled_per_capita))
+
+save(projected.cases.countries, file="data/latest_projected.cases.countries.RData")
+
+df.for.plotting.R.countries <- left_join(df.for.plotting.R.ltlas,LTLA_to_country)
+df.for.plotting.R.countries <- left_join(df.for.plotting.R.countries, projected.cases.ltlas)
+
+df.for.plotting.R.countries <- df.for.plotting.R.countries %>% 
+  mutate("weighted.R.by.nowcast" = R * scaled_per_capita) %>% 
+  mutate("weighted.lower.R.by.nowcast" = lower * scaled_per_capita) %>% 
+  mutate("weighted.upper.R.by.nowcast" = upper * scaled_per_capita)
+                                         
+df.for.plotting.R.countries <- df.for.plotting.R.countries %>%
+  group_by(Dates, country) %>%
+  summarise("R.numerator" = sum(weighted.R.by.nowcast),
+            "R.lower.numerator" = sum(weighted.lower.R.by.nowcast),
+            "R.upper.numerator" = sum(weighted.upper.R.by.nowcast),
+            "R.denominator" = sum(scaled_per_capita))
+
+df.for.plotting.R.countries <- df.for.plotting.R.countries %>%
+  mutate("R" = R.numerator / R.denominator)  %>%
+  mutate("lower" = R.lower.numerator / R.denominator) %>%
+  mutate("upper" = R.upper.numerator / R.denominator) %>%
+  select(Dates, country, R, lower, upper)
+
+save(df.for.plotting.R.countries, file="data/latest_df.for.plotting.R.countries.RData")
+
 ###########################
 # quick summary for myself:
 # latest.projections <- projected.cases.ltlas %>% filter(Dates == last.date - R.trim)
