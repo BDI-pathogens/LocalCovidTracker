@@ -15,6 +15,9 @@ output: html_document
 
 This Shiny app is created and maintained by <a href="https://michellekendall.github.io/" target="_blank">Michelle Kendall</a>. 
 
+This version contains data from the entire epidemic in England and Wales, where available, and is such rather slow. 
+For a faster version with only 2021 data, please visit [LocalCovidTracker-2021](https://bdi-pathogens.shinyapps.io/LocalCovidTracker/).
+
 The tabs "March-June Pillar 1 tracker" and "March-June Pillar 1 synthetic controls" provide an interactive version of the results of [1].
 
 The "Daily tracker" tab which is updated daily builds upon our published analysis, using a shorter waiting time between infection and swab date to reflect shorter times to Pillar 2 testing.

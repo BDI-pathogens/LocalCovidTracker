@@ -526,40 +526,38 @@ df.for.plotting.R.countries <- df.for.plotting.R.countries %>%
 
 save(df.for.plotting.R.countries, file="data/latest_df.for.plotting.R.countries.RData")
 
-###########################
-# quick summary for myself:
-# latest.projections <- projected.cases.ltlas %>% filter(Dates == last.date - R.trim)
-# plot_ly(latest.projections,
-#         y=~scaled_per_capita,
-#         text=~Area,
-#         type="box") %>%
-#   layout(
-#     xaxis=list(
-#       titlefont = f1,
-#       title=paste0("Projected cases as of ", unique(latest.projections$Dates))
-#     )
-#   )
-# 
-# 
-# latest.projections %>% filter(scaled_per_capita < 0.5) %>% select(c("Area","scaled_per_capita"))
-# 
-# latest.R <- df.for.plotting.R.ltlas %>% filter(Dates == last.date - R.trim -1)
-# plot_ly(latest.R,
-#         y=~R,
-#         text=~Area,
-#         type="box",
-#         boxpoints = "all", jitter=0.5) %>%
-#   layout(
-#     xaxis=list(
-#       titlefont = f1,
-#       title=paste0("Estimated R on ", unique(latest.projections$Dates))
-#     )
-#   )
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#                                                                   
+#####################################################
+# And now trim everything and re-save for LCT-2021
+
+df.for.plotting.incidence.utlas <- df.for.plotting.incidence.utlas %>% filter(Dates >= as.Date("2021-01-01"))
+projected.cases.utlas <- projected.cases.utlas %>% filter(Dates >= as.Date("2021-01-01"))
+df.for.plotting.R.utlas <- df.for.plotting.R.utlas %>% filter(Dates >= as.Date("2021-01-01"))
+
+save(df.for.plotting.incidence.utlas, file="../LCT-2021/data/latest_df.for.plotting.incidence.utlas.RData")
+save(projected.cases.utlas, file="../LCT-2021/data/latest_projected.cases.utlas.RData")
+save(df.for.plotting.R.utlas, file="../LCT-2021/data/latest_df.for.plotting.R.utlas.RData")
+
+df.for.plotting.incidence.regions <- df.for.plotting.incidence.regions %>% filter(Dates >= as.Date("2021-01-01"))
+projected.cases.regions <- projected.cases.regions %>% filter(Dates >= as.Date("2021-01-01"))
+df.for.plotting.R.regions <- df.for.plotting.R.regions %>% filter(Dates >= as.Date("2021-01-01"))
+
+save(df.for.plotting.incidence.regions, file="../LCT-2021/data/latest_df.for.plotting.incidence.regions.RData")
+save(projected.cases.regions, file="../LCT-2021/data/latest_projected.cases.regions.RData")
+save(df.for.plotting.R.regions, file="../LCT-2021/data/latest_df.for.plotting.R.regions.RData")
+
+df.for.plotting.incidence.ltlas <- df.for.plotting.incidence.ltlas %>% filter(Dates >= as.Date("2021-01-01"))
+projected.cases.ltlas <- projected.cases.ltlas %>% filter(Dates >= as.Date("2021-01-01"))
+df.for.plotting.R.ltlas <- df.for.plotting.R.ltlas %>% filter(Dates >= as.Date("2021-01-01"))
+
+save(df.for.plotting.incidence.ltlas, file="../LCT-2021/data/latest_df.for.plotting.incidence.ltlas.RData")
+save(projected.cases.ltlas, file="../LCT-2021/data/latest_projected.cases.ltlas.RData")
+save(df.for.plotting.R.ltlas, file="../LCT-2021/data/latest_df.for.plotting.R.ltlas.RData")
+
+df.for.plotting.incidence.countries <- df.for.plotting.incidence.countries %>% filter(Dates >= as.Date("2021-01-01"))
+projected.cases.countries <- projected.cases.countries %>% filter(Dates >= as.Date("2021-01-01"))
+df.for.plotting.R.countries <- df.for.plotting.R.countries %>% filter(Dates >= as.Date("2021-01-01"))
+
+save(df.for.plotting.incidence.countries, file="../LCT-2021/data/latest_df.for.plotting.incidence.countries.RData")
+save(projected.cases.countries, file="../LCT-2021/data/latest_projected.cases.countries.RData")
+save(df.for.plotting.R.countries, file="../LCT-2021/data/latest_df.for.plotting.R.countries.RData")
+

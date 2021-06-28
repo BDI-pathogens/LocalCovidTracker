@@ -3,12 +3,12 @@ server <- function(input, output, session) {
 
   # because the app became very slow, we load each tab separately on demand rather than loading all at the start
   
-  observeEvent(input$tabs, {
-               print("watching tabs")
-    
-    if(input$tabs == "tab_map_tracker") {
-      print("watching map tracker tab")
-      
+  # observeEvent(input$tabs, {
+  #              print("watching tabs")
+  #   
+  #   if(input$tabs == "tab_map_tracker") {
+  #     print("watching map tracker tab")
+  #     
       # get date input
       getDateMaps <- reactive({
         as.Date(input$date.slider.maps, format="%d %b %y")
@@ -281,8 +281,8 @@ server <- function(input, output, session) {
       
       
       # end map tracker tab controls
-    } else if(input$tabs == "tab_daily_tracker") {
-      print("watching daily tracker tab")
+    # } else if(input$tabs == "tab_daily_tracker") {
+    #   print("watching daily tracker tab")
       
       # get inputs
       getUTLA <- reactive({
@@ -350,7 +350,6 @@ server <- function(input, output, session) {
         x.end.r <- last.date - R.trim # plot no later than "last date of data - 12"
         
         ROneUTLA.plot %>%
-          filter(Dates %in% seq(as.Date(x.start),as.Date(x.end.r),by=1)) %>%
           filter(Area == UTLAToHighlight) %>%
           add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
                       color = I("grey"),
@@ -533,7 +532,6 @@ server <- function(input, output, session) {
         x.end.r <- last.date - R.trim # plot no later than "last date of data - 12"
         
         ROneregion.plot %>%
-          filter(Dates %in% seq(as.Date(x.start),as.Date(x.end.r),by=1)) %>%
           filter(Area == regionToHighlight) %>%
           add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
                       color = I("grey"),
@@ -697,7 +695,6 @@ server <- function(input, output, session) {
         x.end.r <- last.date - R.trim # plot no later than "last date of data - 12"
         
         ROneLTLA.plot %>%
-          filter(Dates %in% seq(as.Date(x.start),as.Date(x.end.r),by=1)) %>%
           filter(Area == LTLAToHighlight) %>%
           add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
                       color = I("grey"),
@@ -861,7 +858,6 @@ server <- function(input, output, session) {
         x.end.r <- min(getXEnd(), last.date - R.trim) # plot no later than "last date of data - 12"
         
         ROneCountry.plot %>%
-          filter(Dates %in% seq(as.Date(x.start),as.Date(x.end.r),by=1)) %>%
           filter(country == CountryToHighlight) %>%
           add_ribbons(x=~Dates, ymin=~lower, ymax = ~upper,
                       color = I("grey"),
@@ -1082,8 +1078,8 @@ server <- function(input, output, session) {
       )
       
     # end daily tracker tab controls
-    } else if(input$tabs == "tab_CBA") {
-      print("watching CBA tab")
+    # } else if(input$tabs == "tab_CBA") {
+    #   print("watching CBA tab")
       
       # get inputs
       getCBALevel <- reactive({
@@ -1131,7 +1127,7 @@ server <- function(input, output, session) {
           
           for( ddx in date.nos) {
             CBA_plot_E = CBA_plot_E %>% add_bars( 
-              data   = t_E[ date == dates_E[ ddx ] ],
+              data   = t_E %>% filter(date == dates_E[[ddx]] ),
               x      = ~age_format,
               y      = ~cases_norm*100, 
               text   = format( dates_E[ ddx ], "%d %B" ),
@@ -1388,9 +1384,9 @@ server <- function(input, output, session) {
       
       
       # end CBA tab controls
-    } 
-    else if(input$tabs == "tab_P1_tracker") {
-      print("watching P1 tracker tab")
+    # } 
+    # else if(input$tabs == "tab_P1_tracker") {
+    #   print("watching P1 tracker tab")
       
       # get input
       getUTLAP1 <- reactive({
@@ -1494,9 +1490,9 @@ server <- function(input, output, session) {
       )
       
       # end P1 tracker tab controls
-    } 
-    else if(input$tabs == "tab_synthetic_control") {
-      print("watching synthetic control tab")
+    # } 
+    # else if(input$tabs == "tab_synthetic_control") {
+    #   print("watching synthetic control tab")
       
       # get inputs
       getAreaSC <- reactive({
@@ -1534,12 +1530,12 @@ server <- function(input, output, session) {
       })
       
       # end synthetic control tab controls
-    } 
-    else if(input$tabs == "tab_about") {
-      print("watching about tab")
-      # end about tab controls
-    } 
-  })
+    # } 
+    # else if(input$tabs == "tab_about") {
+    #   print("watching about tab")
+    #   # end about tab controls
+    # } 
+  # })
 
   
 } # end server function

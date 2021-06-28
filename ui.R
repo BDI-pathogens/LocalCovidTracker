@@ -2,7 +2,7 @@ ui <- fluidPage(
                  tags$style(type = "text/css",
                             "label { font-size: 16px; }"
                  ),
-                 tags$head(includeHTML(("google-analytics.html"))), # google analytics token
+                 #tags$head(includeHTML(("google-analytics.html"))), # google analytics token
                  tags$head(
                    tags$style(HTML(".leaflet-container { background: #FFFFFF; }"))
                  ), # make map backgrounds white
@@ -137,7 +137,7 @@ ui <- fluidPage(
                          max    = last.date,
                          format = "dd M yyyy"),
 
-          helpText("Note that the plots are truncated 9-12 days before the last date of data available - see details below."),
+          helpText("Note that the plots are truncated 11-14 days before the last date of data available - see details below."),
 
           # checkboxInput(
           #   inputId = "ytype",
@@ -152,8 +152,8 @@ ui <- fluidPage(
           h4("Data"),
           
           HTML("<h5>We use the 'combined pillars' data from 
-               <a href=\"https://coronavirus.data.gov.uk/about-data\" target=\"_blank\">PHE and NHSX</a> 
-               which reports the number of new cases per day in local authorities of England and Wales
+               <a href=\"https://coronavirus.data.gov.uk/about-data\" target=\"_blank\">Public Health England</a> 
+               which reports the number of new cases per day in England and Wales
                according to the date the swab was administered. 
                From this data we estimate the number of new infections per day 
                (infections typically start roughly a week before the swab is administered, though this varies considerably)
@@ -161,12 +161,14 @@ ui <- fluidPage(
                instantaneous reproduction number R.
                </h5>"),
           h5("We use an estimate for the typical time from the onset of symptoms to taking a swab test.
-              To improve the accuracy we hope that local area data will soon be publicly available
-             with more informative timing information such as the date of onset of symptoms or the date the test was requested."),
+             The distribution of times between infection and symptoms (the incubation period) which we use
+             is well-calibrated to the original Wuhan virus; there is reason to believe that the incubation
+             period may vary amongst new variants, and we will update our methods if and when we have good 
+             data on this."),
 
           h4("Interpretation"),
           
-          h5("The last date which can be shown in each graph is 12-15 days earlier than the last date for which
+          h5("The last date which can be shown in each graph is 11-14 days earlier than the last date for which
              we have case numbers. 
              This is to account for reporting lags and the delay between an infection
              starting and a swab being taken. 
@@ -180,7 +182,7 @@ ui <- fluidPage(
              is a measure of both the infectivity of the virus
              (expected to be roughly constant over this time frame)
              and the social network on which the virus is spreading.
-             Decreasing our social contacts (social distancing, mask wearing, self-isolating)
+             Decreasing our social contacts (social distancing, mask wearing, self-isolating) and getting vaccinated
              will reduce R; increasing social contacts will make it rise.
              When R is above 1 an epidemic will grow exponentially whereas when it is below 1 the epidemic will eventually die out.
              The further it is from 1, the faster these effects play out.</h5>"),
@@ -190,12 +192,14 @@ ui <- fluidPage(
              of infections, which will almost certainly be higher. 
              The results here are intended more as a means of comparing between areas than
              as an exact representation of the number of infections.
-             Widespread community testing was launched on May 18th for everyone over the age of 5 with symptoms; 
-             on May 28th the NHS Test and Trace programme was launched, with tests available for everyone with symptoms.
-             Testing capacity has been gradually increasing since then.
-             The rapid rise in infections shown in many areas in mid-late April is largely an artefact of 
-             increased testing in May because we do not make adjustments to the case numbers for any such effects."),
-          h5("Similarly, some of our estimates report R increasing through the first half of March.
+             Widespread community testing was launched on May 18th 2020 for everyone over the age of 5 with symptoms; 
+             on May 28th 2020 the NHS Test and Trace programme was launched, with tests available for everyone with symptoms.
+             Testing capacity then gradually increased. 
+             The rapid rise in infections shown in many areas in mid-late April 2020 is largely an artefact of 
+             increased testing in May 2020 because we do not make adjustments to the case numbers for any such effects.
+             It is worth highlighting that any such changes in testing practices,
+             for example the introduction of lateral flow device testing for school children, will be reflected in our plots."),
+          h5("Similarly, some of our estimates report R increasing through the first half of March 2020.
              This is also an artefact of our method: we are not aware of any reasons to
              suppose that R was actually increasing during this time."),
           
@@ -405,11 +409,10 @@ ui <- fluidPage(
           
           h3("Details"),
           
-          HTML("<h5>We present a breakdown of the daily cases by age category, using all the publicly available data from <a href=\"https://coronavirus.data.gov.uk/about-data\" target=\"_blank\">PHE and NHSX</a>.</h5>"),
+          HTML("<h5>We present a breakdown of the daily cases by age category, using all the publicly available data from <a href=\"https://coronavirus.data.gov.uk/about-data\" target=\"_blank\">Public Health England</a>.</h5>"),
           
           HTML("<h5>For Wales, this is unfortunately only available at the national level: the total (cumulative) 
-          number of new cases in each age category is published each day, and we have been
-               logging this data since late September.</h5>"),
+          number of new cases in each age category is published each day (since late September 2020).</h5>"),
           
           HTML("<h5>For England, cases by age are now available for the whole epidemic and can be explored here at the national and local authority levels.</h5>"),
           
@@ -561,7 +564,7 @@ Click on dates in the legend (key) to show/hide results
     ),
 
     tabPanel(
-      "March-June Pillar 1 tracker",
+      "March-June 2020 Pillar 1 tracker",
       value="tab_P1_tracker",
       
       # Sidebar with a slider inputs etc
@@ -591,7 +594,7 @@ Click on dates in the legend (key) to show/hide results
           h5("On 2nd July Public Health England changed to publishing the combined pillars 1 and 2 dataset, for which
              our delay functions were no longer appropriate (or as accurate, because the delays are more varied).
              In the 'Daily tracker' tab we use an adapted method tailored to the combined pillars dataset.
-             We present here our March-June detailed analysis so that the results of the paper can be explored in more detail
+             We present here our March-June 2020 detailed analysis so that the results of the paper can be explored in more detail
              and to record a more accurate analysis of the timing of local epidemics over this period.
              Note that the gradual shift over this period from most cases being recorded as Pillar 1 to most cases being recorded
              as Pillar 2 means that the decrease in infections (hence decrease in R) towards the end is exaggerated."),
@@ -681,7 +684,7 @@ Click on dates in the legend (key) to show/hide results
     ), # end "Pillar 1" tabPanel
 
     tabPanel(
-      "March-June Pillar 1 synthetic controls",
+      "March-June 2020 Pillar 1 synthetic controls",
       value="tab_synthetic_control",
       sidebarPanel(
         id="sidePanel.sc",
@@ -698,7 +701,7 @@ Click on dates in the legend (key) to show/hide results
 
         prettyCheckboxGroup(
           inputId = "characteristics",
-          label = h5("Match areas according to their reproduction number R in March-April and:"),
+          label = h5("Match areas according to their reproduction number R in March-April 2020 and:"),
           choices = c("age profile"="a",
                       "ethnicity"="e",
                       "poverty indicators and density"="p"

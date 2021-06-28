@@ -9,6 +9,8 @@ library( stringr ) # for cases by age
 library( stringi ) # for cases by age
 library( tidyverse )
 
+dir           = "data/"
+
 updateCasesByAge = function( 
   nation = "",
   dir     = "",
@@ -125,6 +127,153 @@ updateCasesByAge(nation = "england", dir = "data/", alwaysUpdate = TRUE)
 
 updateCasesByAge(nation = "wales", dir = "data/", alwaysUpdate = TRUE)
 
+### England data
+
+male_suffix_E   = "_malecases.csv"
+female_suffix_E = "_femalecases.csv"
+
+# get the all the available files
+files_E = system( sprintf( "ls %s*%s", dir, male_suffix_E ), intern = TRUE)
+dates_E = str_replace_all( str_replace_all( files_E, dir, "" ), male_suffix_E, "" )
+dates_E = as.Date( dates_E )
+
+# Use this if and when we re-automate updates
+# see if different to last date stored
+# last_date_file = "data/last_date_plotted"
+# if( file.exists( last_date_file ) )
+# {
+#   load( last_date_file )
+# } else
+#   last_date = as.Date( "2000-01-01")
+# 
+# if( dates[ length( dates ) ] == last_date )
+#   stop( "no new data" )
+# last_date = dates[ length( dates ) ] 
+
+# load the data
+t_E = list()
+for( ddx in 1:length( dates_E ) )
+{
+  t_E_m = fread( file = sprintf( "%s%s%s", dir, dates_E[ ddx ], male_suffix_E ) )
+  t_E_f = fread( file = sprintf( "%s%s%s", dir, dates_E[ ddx ], female_suffix_E ) )
+  t_E[[ddx ]] = t_E_m[ t_E_f[ ,.(age, cases_f = value)], on = "age"][ ,.( age, cases = value + cases_f, date = ddx )] 
+}
+t_E = rbindlist( t_E, use.names = TRUE)
+
+# calculate the daily increase and reformatting
+t_E = t_E[ , .(age, date, new = cases)][ t_E[,.( age, old = cases, date = date + 1 )], on = c( "age", "date" ) ]
+t_E = t_E[ !is.na( new ), .( age, date, cases = new - old )]
+t_E[, age_num := as.double( stri_replace_all_fixed( stri_split_fixed( age, "_", simplify = TRUE)[,1], "+","" ) )]
+t_E = t_E[ order( age_num)]
+t_E$age = factor( t_E$age, levels= t_E[ , unique( age)])
+t_E[ , age_format := str_replace_all( age, "_to_", "-")]
+t_E = t_E[ t_E[ , .(cases_tot = sum( cases)), by = "date"], on = "date"]
+t_E[ , cases_norm := cases / cases_tot]
+t_E[ , date := dates_E[ date ]]
+
+
+# ONS projection of population by age bracket for 2020 from https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationprojections/datasets/tableh24highpopulationvariantenglandpopulationinagegroups
+
+pop_by_age_E <- c(3269,
+                  3546,
+                  3442,
+                  3115,
+                  3468,
+                  3792,
+                  3845,
+                  3758,
+                  3487,
+                  3649,
+                  3881,
+                  3768,
+                  3206,
+                  2794,
+                  2821,
+                  2019,
+                  1461,
+                  895,
+                  402 + 111 + 13)
+
+prop_by_age_E <- cbind.data.frame(
+  "age_format" = unique(t_E$age_format),
+  "pc" = pop_by_age_E / sum(pop_by_age_E) * 100
+)
+
+mean_age_E    = t_E[ , .( mean_age = sum( ( age_num + 2.5 ) * cases ) / sum(cases) ), by = "date"] 
+mean_age_E$date_colour <- as.factor(1:(length(dates_E) - 1))
+
+write_csv(t_E, file="data/t_E.csv")
+save(dates_E, file="data/dates_E.RData")
+write_csv(prop_by_age_E, file="data/prob_by_age_E.csv")
+write_csv(mean_age_E, file="data/mean_age_E.csv")
+
+### Wales data
+
+male_suffix_W   = "_malecases_W.csv"
+female_suffix_W = "_femalecases_W.csv"
+
+# get the all the available files
+files_W = system( sprintf( "ls %s*%s", dir, male_suffix_W ), intern = TRUE)
+dates_W = str_replace_all( str_replace_all( files_W, dir, "" ), male_suffix_W, "" )
+dates_W = as.Date( dates_W )
+
+# load the data
+t_W = list()
+for( ddx in 1:length( dates_W ) )
+{
+  t_W_m = fread( file = sprintf( "%s%s%s", dir, dates_W[ ddx ], male_suffix_W ) )
+  t_W_f = fread( file = sprintf( "%s%s%s", dir, dates_W[ ddx ], female_suffix_W ) )
+  t_W[[ddx ]] = t_W_m[ t_W_f[ ,.(age, cases_f = value)], on = "age"][ ,.( age, cases = value + cases_f, date = ddx )] 
+}
+t_W = rbindlist( t_W, use.names = TRUE)
+
+# calculate the daily increase and reformatting
+t_W = t_W[ , .(age, date, new = cases)][ t_W[,.( age, old = cases, date = date + 1 )], on = c( "age", "date" ) ]
+t_W = t_W[ !is.na( new ), .( age, date, cases = new - old )]
+t_W[, age_num := as.double( stri_replace_all_fixed( stri_split_fixed( age, "_", simplify = TRUE)[,1], "+","" ) )]
+t_W = t_W[ order( age_num)]
+t_W$age = factor( t_W$age, levels= t_W[ , unique( age)])
+t_W[ , age_format := str_replace_all( age, "_to_", "-")]
+t_W = t_W[ t_W[ , .(cases_tot = sum( cases)), by = "date"], on = "date"]
+t_W[ , cases_norm := cases / cases_tot]
+t_W[ , date := dates_W[ date ]]
+
+
+# ONS projection of population by age bracket for 2020 from https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationprojections/datasets/tableh24highpopulationvariantenglandpopulationinagegroups
+
+pop_by_age_W <- c(164,
+                  183,
+                  185,
+                  172,
+                  203,
+                  206,
+                  196,
+                  186,
+                  173,
+                  193,
+                  217,
+                  222,
+                  197,
+                  180,
+                  182,
+                  131,
+                  91,
+                  55,
+                  24 + 6 + 1)
+
+prop_by_age_W <- cbind.data.frame(
+  "age_format" = unique(t_W$age_format),
+  "pc" = pop_by_age_W / sum(pop_by_age_W) * 100
+)
+
+mean_age_W    = t_W[ , .( mean_age = sum( ( age_num + 2.5 ) * cases ) / sum(cases) ), by = "date"] 
+mean_age_W$date_colour <- as.factor(1:(length(dates_W) - 1))
+
+write_csv(t_W, file="data/t_W.csv")
+save(dates_W, file="data/dates_W.RData")
+write_csv(prop_by_age_W, file="data/prob_by_age_W.csv")
+write_csv(mean_age_W, file="data/mean_age_W.csv")
+
 # get cases by age by local authority
 
 #CBA_data <- read_csv("https://coronavirus-staging.data.gov.uk/downloads/demographic/cases/specimenDate_ageDemographic-stacked.csv")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        # for now, manually download from https://coronavirus-staging.data.gov.uk/downloads/demographic/cases/specimenDate_ageDemographic-stacked.csv
@@ -145,4 +294,36 @@ CBA.ltlas.alphabetical <- sort(unique(CBA_data_ltla$areaName))
 
 save(CBA.utlas.alphabetical, file="data/CBA.utlas.alphabetical.RData")
 save(CBA.ltlas.alphabetical, file="data/CBA.ltlas.alphabetical.RData")
+
+
+
+#####################################################
+# And now trim everything and re-save for LCT-2021
+
+t_E <- t_E %>% filter(date >= as.Date("2021-01-01"))
+dates_E <- dates_E[which(dates_E > as.Date("2020-12-31"))]
+mean_age_E <- mean_age_E %>% filter(date >= as.Date("2021-01-01"))
+
+write_csv(t_E, file="../LCT-2021/data/t_E.csv")
+save(dates_E, file="../LCT-2021/data/dates_E.RData")
+write_csv(prop_by_age_E, file="../LCT-2021/data/prob_by_age_E.csv")
+write_csv(mean_age_E, file="../LCT-2021/data/mean_age_E.csv")
+
+
+t_W <- t_W %>% filter(date >= as.Date("2021-01-01"))
+dates_W <- dates_W[which(dates_W > as.Date("2020-12-31"))]
+mean_age_W <- mean_age_W %>% filter(date >= as.Date("2021-01-01"))
+
+write_csv(t_W, file="../LCT-2021/data/t_W.csv")
+save(dates_W, file="../LCT-2021/data/dates_W.RData")
+write_csv(prop_by_age_W, file="../LCT-2021/data/prob_by_age_W.csv")
+write_csv(mean_age_W, file="../LCT-2021/data/mean_age_W.csv")
+
+
+CBA_data <- CBA_data %>% filter(date >= as.Date("2021-01-01"))
+
+save(CBA_data, file=glue("../LCT-2021/data/CBA_data.RData"))
+save(CBA.utlas.alphabetical, file="../LCT-2021/data/CBA.utlas.alphabetical.RData")
+save(CBA.ltlas.alphabetical, file="../LCT-2021/data/CBA.ltlas.alphabetical.RData")
+
 
