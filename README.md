@@ -2,7 +2,7 @@
 
 This repository contains the code for the shiny app LocalCovidTracker. 
 
-The app used to be hosted at [LocalCovidTracker](https://bdi-pathogens.shinyapps.io/LocalCovidTracker/) but was retired in July 2022.
+The app used to be hosted online at [LocalCovidTracker](https://bdi-pathogens.shinyapps.io/LocalCovidTracker/) but was retired in July 2022.
 It was built in Summer 2020 to provide a daily analysis of covid-19 infections across England and Wales at local and regional levels using the method presented in [1] with the latest combined pillars 1 and 2 data from the [government dashboard](https://coronavirus.data.gov.uk/about-data) (originally by PHE and NHSX, later maintained by UKHSA).
 
 The app also presents interactive versions of our tracking and synthetic control analyses from [1] so that they can be explored in more detail. These use the Pillar 1 data which was available until July 2020.
