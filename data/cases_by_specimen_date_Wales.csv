@@ -1,7 +1,14 @@
 areaCode,areaName,areaType,date,newCasesBySpecimenDate
-W92000004,Wales,nation,2022-10-26,3
-W92000004,Wales,nation,2022-10-25,48
-W92000004,Wales,nation,2022-10-24,95
+W92000004,Wales,nation,2022-11-02,0
+W92000004,Wales,nation,2022-11-01,32
+W92000004,Wales,nation,2022-10-31,60
+W92000004,Wales,nation,2022-10-30,64
+W92000004,Wales,nation,2022-10-29,48
+W92000004,Wales,nation,2022-10-28,78
+W92000004,Wales,nation,2022-10-27,80
+W92000004,Wales,nation,2022-10-26,83
+W92000004,Wales,nation,2022-10-25,76
+W92000004,Wales,nation,2022-10-24,100
 W92000004,Wales,nation,2022-10-23,54
 W92000004,Wales,nation,2022-10-22,60
 W92000004,Wales,nation,2022-10-21,85
