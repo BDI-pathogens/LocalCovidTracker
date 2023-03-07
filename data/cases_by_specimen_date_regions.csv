@@ -1,16 +1,23 @@
 areaCode,areaName,areaType,date,newCasesBySpecimenDate
-E12000001,North East,region,2023-02-22,119
-E12000001,North East,region,2023-02-21,239
-E12000001,North East,region,2023-02-20,235
-E12000001,North East,region,2023-02-19,151
-E12000001,North East,region,2023-02-18,127
-E12000001,North East,region,2023-02-17,181
+E12000001,North East,region,2023-03-01,131
+E12000001,North East,region,2023-02-28,194
+E12000001,North East,region,2023-02-27,234
+E12000001,North East,region,2023-02-26,182
+E12000001,North East,region,2023-02-25,132
+E12000001,North East,region,2023-02-24,178
+E12000001,North East,region,2023-02-23,195
+E12000001,North East,region,2023-02-22,252
+E12000001,North East,region,2023-02-21,288
+E12000001,North East,region,2023-02-20,262
+E12000001,North East,region,2023-02-19,158
+E12000001,North East,region,2023-02-18,133
+E12000001,North East,region,2023-02-17,186
 E12000001,North East,region,2023-02-16,196
-E12000001,North East,region,2023-02-15,228
+E12000001,North East,region,2023-02-15,229
 E12000001,North East,region,2023-02-14,311
 E12000001,North East,region,2023-02-13,270
 E12000001,North East,region,2023-02-12,150
-E12000001,North East,region,2023-02-11,156
+E12000001,North East,region,2023-02-11,157
 E12000001,North East,region,2023-02-10,194
 E12000001,North East,region,2023-02-09,177
 E12000001,North East,region,2023-02-08,190
@@ -1087,16 +1094,23 @@ E12000001,North East,region,2020-03-05,2
 E12000001,North East,region,2020-03-04,1
 E12000001,North East,region,2020-03-03,0
 E12000001,North East,region,2020-03-02,1
-E12000002,North West,region,2023-02-22,220
-E12000002,North West,region,2023-02-21,355
-E12000002,North West,region,2023-02-20,435
-E12000002,North West,region,2023-02-19,392
-E12000002,North West,region,2023-02-18,333
-E12000002,North West,region,2023-02-17,376
-E12000002,North West,region,2023-02-16,463
-E12000002,North West,region,2023-02-15,387
+E12000002,North West,region,2023-03-01,280
+E12000002,North West,region,2023-02-28,451
+E12000002,North West,region,2023-02-27,496
+E12000002,North West,region,2023-02-26,319
+E12000002,North West,region,2023-02-25,240
+E12000002,North West,region,2023-02-24,370
+E12000002,North West,region,2023-02-23,421
+E12000002,North West,region,2023-02-22,459
+E12000002,North West,region,2023-02-21,615
+E12000002,North West,region,2023-02-20,520
+E12000002,North West,region,2023-02-19,436
+E12000002,North West,region,2023-02-18,362
+E12000002,North West,region,2023-02-17,394
+E12000002,North West,region,2023-02-16,482
+E12000002,North West,region,2023-02-15,399
 E12000002,North West,region,2023-02-14,482
-E12000002,North West,region,2023-02-13,519
+E12000002,North West,region,2023-02-13,520
 E12000002,North West,region,2023-02-12,333
 E12000002,North West,region,2023-02-11,254
 E12000002,North West,region,2023-02-10,335
@@ -1106,7 +1120,7 @@ E12000002,North West,region,2023-02-07,450
 E12000002,North West,region,2023-02-06,390
 E12000002,North West,region,2023-02-05,258
 E12000002,North West,region,2023-02-04,225
-E12000002,North West,region,2023-02-03,340
+E12000002,North West,region,2023-02-03,341
 E12000002,North West,region,2023-02-02,320
 E12000002,North West,region,2023-02-01,376
 E12000002,North West,region,2023-01-31,350
@@ -1128,7 +1142,7 @@ E12000002,North West,region,2023-01-16,322
 E12000002,North West,region,2023-01-15,232
 E12000002,North West,region,2023-01-14,179
 E12000002,North West,region,2023-01-13,294
-E12000002,North West,region,2023-01-12,307
+E12000002,North West,region,2023-01-12,308
 E12000002,North West,region,2023-01-11,336
 E12000002,North West,region,2023-01-10,384
 E12000002,North West,region,2023-01-09,517
@@ -1146,7 +1160,7 @@ E12000002,North West,region,2022-12-29,854
 E12000002,North West,region,2022-12-28,961
 E12000002,North West,region,2022-12-27,665
 E12000002,North West,region,2022-12-26,508
-E12000002,North West,region,2022-12-25,351
+E12000002,North West,region,2022-12-25,352
 E12000002,North West,region,2022-12-24,377
 E12000002,North West,region,2022-12-23,603
 E12000002,North West,region,2022-12-22,795
@@ -1154,7 +1168,7 @@ E12000002,North West,region,2022-12-21,768
 E12000002,North West,region,2022-12-20,808
 E12000002,North West,region,2022-12-19,972
 E12000002,North West,region,2022-12-18,531
-E12000002,North West,region,2022-12-17,446
+E12000002,North West,region,2022-12-17,447
 E12000002,North West,region,2022-12-16,575
 E12000002,North West,region,2022-12-15,567
 E12000002,North West,region,2022-12-14,714
@@ -2204,13 +2218,20 @@ E12000002,North West,region,2020-02-05,0
 E12000002,North West,region,2020-02-04,0
 E12000002,North West,region,2020-02-03,0
 E12000002,North West,region,2020-02-02,1
-E12000003,Yorkshire and The Humber,region,2023-02-22,203
-E12000003,Yorkshire and The Humber,region,2023-02-21,365
-E12000003,Yorkshire and The Humber,region,2023-02-20,446
-E12000003,Yorkshire and The Humber,region,2023-02-19,373
-E12000003,Yorkshire and The Humber,region,2023-02-18,276
-E12000003,Yorkshire and The Humber,region,2023-02-17,402
-E12000003,Yorkshire and The Humber,region,2023-02-16,442
+E12000003,Yorkshire and The Humber,region,2023-03-01,194
+E12000003,Yorkshire and The Humber,region,2023-02-28,298
+E12000003,Yorkshire and The Humber,region,2023-02-27,446
+E12000003,Yorkshire and The Humber,region,2023-02-26,312
+E12000003,Yorkshire and The Humber,region,2023-02-25,249
+E12000003,Yorkshire and The Humber,region,2023-02-24,393
+E12000003,Yorkshire and The Humber,region,2023-02-23,372
+E12000003,Yorkshire and The Humber,region,2023-02-22,372
+E12000003,Yorkshire and The Humber,region,2023-02-21,470
+E12000003,Yorkshire and The Humber,region,2023-02-20,482
+E12000003,Yorkshire and The Humber,region,2023-02-19,375
+E12000003,Yorkshire and The Humber,region,2023-02-18,290
+E12000003,Yorkshire and The Humber,region,2023-02-17,404
+E12000003,Yorkshire and The Humber,region,2023-02-16,446
 E12000003,Yorkshire and The Humber,region,2023-02-15,340
 E12000003,Yorkshire and The Humber,region,2023-02-14,430
 E12000003,Yorkshire and The Humber,region,2023-02-13,459
@@ -3324,17 +3345,24 @@ E12000003,Yorkshire and The Humber,region,2020-02-02,0
 E12000003,Yorkshire and The Humber,region,2020-02-01,0
 E12000003,Yorkshire and The Humber,region,2020-01-31,0
 E12000003,Yorkshire and The Humber,region,2020-01-30,1
-E12000004,East Midlands,region,2023-02-22,167
-E12000004,East Midlands,region,2023-02-21,305
-E12000004,East Midlands,region,2023-02-20,363
-E12000004,East Midlands,region,2023-02-19,297
-E12000004,East Midlands,region,2023-02-18,251
-E12000004,East Midlands,region,2023-02-17,333
-E12000004,East Midlands,region,2023-02-16,303
-E12000004,East Midlands,region,2023-02-15,346
+E12000004,East Midlands,region,2023-03-01,181
+E12000004,East Midlands,region,2023-02-28,293
+E12000004,East Midlands,region,2023-02-27,336
+E12000004,East Midlands,region,2023-02-26,283
+E12000004,East Midlands,region,2023-02-25,229
+E12000004,East Midlands,region,2023-02-24,278
+E12000004,East Midlands,region,2023-02-23,325
+E12000004,East Midlands,region,2023-02-22,325
+E12000004,East Midlands,region,2023-02-21,373
+E12000004,East Midlands,region,2023-02-20,416
+E12000004,East Midlands,region,2023-02-19,303
+E12000004,East Midlands,region,2023-02-18,257
+E12000004,East Midlands,region,2023-02-17,337
+E12000004,East Midlands,region,2023-02-16,305
+E12000004,East Midlands,region,2023-02-15,350
 E12000004,East Midlands,region,2023-02-14,351
 E12000004,East Midlands,region,2023-02-13,406
-E12000004,East Midlands,region,2023-02-12,288
+E12000004,East Midlands,region,2023-02-12,289
 E12000004,East Midlands,region,2023-02-11,171
 E12000004,East Midlands,region,2023-02-10,248
 E12000004,East Midlands,region,2023-02-09,241
@@ -4422,36 +4450,43 @@ E12000004,East Midlands,region,2020-02-24,0
 E12000004,East Midlands,region,2020-02-23,0
 E12000004,East Midlands,region,2020-02-22,0
 E12000004,East Midlands,region,2020-02-21,1
-E12000005,West Midlands,region,2023-02-22,163
-E12000005,West Midlands,region,2023-02-21,286
-E12000005,West Midlands,region,2023-02-20,358
-E12000005,West Midlands,region,2023-02-19,267
-E12000005,West Midlands,region,2023-02-18,220
-E12000005,West Midlands,region,2023-02-17,358
-E12000005,West Midlands,region,2023-02-16,372
-E12000005,West Midlands,region,2023-02-15,371
-E12000005,West Midlands,region,2023-02-14,397
-E12000005,West Midlands,region,2023-02-13,474
-E12000005,West Midlands,region,2023-02-12,326
+E12000005,West Midlands,region,2023-03-01,178
+E12000005,West Midlands,region,2023-02-28,307
+E12000005,West Midlands,region,2023-02-27,372
+E12000005,West Midlands,region,2023-02-26,257
+E12000005,West Midlands,region,2023-02-25,205
+E12000005,West Midlands,region,2023-02-24,275
+E12000005,West Midlands,region,2023-02-23,299
+E12000005,West Midlands,region,2023-02-22,338
+E12000005,West Midlands,region,2023-02-21,370
+E12000005,West Midlands,region,2023-02-20,415
+E12000005,West Midlands,region,2023-02-19,277
+E12000005,West Midlands,region,2023-02-18,230
+E12000005,West Midlands,region,2023-02-17,369
+E12000005,West Midlands,region,2023-02-16,378
+E12000005,West Midlands,region,2023-02-15,374
+E12000005,West Midlands,region,2023-02-14,408
+E12000005,West Midlands,region,2023-02-13,475
+E12000005,West Midlands,region,2023-02-12,325
 E12000005,West Midlands,region,2023-02-11,242
-E12000005,West Midlands,region,2023-02-10,309
-E12000005,West Midlands,region,2023-02-09,325
+E12000005,West Midlands,region,2023-02-10,311
+E12000005,West Midlands,region,2023-02-09,326
 E12000005,West Midlands,region,2023-02-08,319
-E12000005,West Midlands,region,2023-02-07,341
-E12000005,West Midlands,region,2023-02-06,362
+E12000005,West Midlands,region,2023-02-07,343
+E12000005,West Midlands,region,2023-02-06,363
 E12000005,West Midlands,region,2023-02-05,266
-E12000005,West Midlands,region,2023-02-04,209
-E12000005,West Midlands,region,2023-02-03,207
+E12000005,West Midlands,region,2023-02-04,210
+E12000005,West Midlands,region,2023-02-03,208
 E12000005,West Midlands,region,2023-02-02,289
-E12000005,West Midlands,region,2023-02-01,300
+E12000005,West Midlands,region,2023-02-01,301
 E12000005,West Midlands,region,2023-01-31,324
-E12000005,West Midlands,region,2023-01-30,301
+E12000005,West Midlands,region,2023-01-30,302
 E12000005,West Midlands,region,2023-01-29,203
 E12000005,West Midlands,region,2023-01-28,180
 E12000005,West Midlands,region,2023-01-27,235
 E12000005,West Midlands,region,2023-01-26,237
 E12000005,West Midlands,region,2023-01-25,279
-E12000005,West Midlands,region,2023-01-24,261
+E12000005,West Midlands,region,2023-01-24,263
 E12000005,West Midlands,region,2023-01-23,258
 E12000005,West Midlands,region,2023-01-22,217
 E12000005,West Midlands,region,2023-01-21,152
@@ -5529,17 +5564,24 @@ E12000005,West Midlands,region,2020-02-15,0
 E12000005,West Midlands,region,2020-02-14,0
 E12000005,West Midlands,region,2020-02-13,0
 E12000005,West Midlands,region,2020-02-12,1
-E12000006,East of England,region,2023-02-22,233
-E12000006,East of England,region,2023-02-21,362
-E12000006,East of England,region,2023-02-20,493
-E12000006,East of England,region,2023-02-19,401
-E12000006,East of England,region,2023-02-18,344
-E12000006,East of England,region,2023-02-17,387
-E12000006,East of England,region,2023-02-16,452
-E12000006,East of England,region,2023-02-15,526
+E12000006,East of England,region,2023-03-01,223
+E12000006,East of England,region,2023-02-28,389
+E12000006,East of England,region,2023-02-27,389
+E12000006,East of England,region,2023-02-26,291
+E12000006,East of England,region,2023-02-25,291
+E12000006,East of England,region,2023-02-24,310
+E12000006,East of England,region,2023-02-23,359
+E12000006,East of England,region,2023-02-22,409
+E12000006,East of England,region,2023-02-21,477
+E12000006,East of England,region,2023-02-20,538
+E12000006,East of England,region,2023-02-19,413
+E12000006,East of England,region,2023-02-18,368
+E12000006,East of England,region,2023-02-17,403
+E12000006,East of England,region,2023-02-16,463
+E12000006,East of England,region,2023-02-15,530
 E12000006,East of England,region,2023-02-14,506
-E12000006,East of England,region,2023-02-13,585
-E12000006,East of England,region,2023-02-12,310
+E12000006,East of England,region,2023-02-13,584
+E12000006,East of England,region,2023-02-12,311
 E12000006,East of England,region,2023-02-11,288
 E12000006,East of England,region,2023-02-10,375
 E12000006,East of England,region,2023-02-09,359
@@ -5563,7 +5605,7 @@ E12000006,East of England,region,2023-01-23,245
 E12000006,East of England,region,2023-01-22,211
 E12000006,East of England,region,2023-01-21,128
 E12000006,East of England,region,2023-01-20,246
-E12000006,East of England,region,2023-01-19,181
+E12000006,East of England,region,2023-01-19,182
 E12000006,East of England,region,2023-01-18,231
 E12000006,East of England,region,2023-01-17,214
 E12000006,East of England,region,2023-01-16,283
@@ -5743,7 +5785,7 @@ E12000006,East of England,region,2022-07-27,1053
 E12000006,East of England,region,2022-07-26,1137
 E12000006,East of England,region,2022-07-25,1361
 E12000006,East of England,region,2022-07-24,1188
-E12000006,East of England,region,2022-07-23,1004
+E12000006,East of England,region,2022-07-23,1005
 E12000006,East of England,region,2022-07-22,1318
 E12000006,East of England,region,2022-07-21,1498
 E12000006,East of England,region,2022-07-20,1629
@@ -6645,22 +6687,29 @@ E12000006,East of England,region,2020-02-06,0
 E12000006,East of England,region,2020-02-05,0
 E12000006,East of England,region,2020-02-04,0
 E12000006,East of England,region,2020-02-03,3
-E12000007,London,region,2023-02-22,225
-E12000007,London,region,2023-02-21,404
-E12000007,London,region,2023-02-20,460
-E12000007,London,region,2023-02-19,418
-E12000007,London,region,2023-02-18,354
-E12000007,London,region,2023-02-17,422
-E12000007,London,region,2023-02-16,437
-E12000007,London,region,2023-02-15,442
-E12000007,London,region,2023-02-14,511
-E12000007,London,region,2023-02-13,512
-E12000007,London,region,2023-02-12,303
+E12000007,London,region,2023-03-01,173
+E12000007,London,region,2023-02-28,344
+E12000007,London,region,2023-02-27,428
+E12000007,London,region,2023-02-26,310
+E12000007,London,region,2023-02-25,264
+E12000007,London,region,2023-02-24,306
+E12000007,London,region,2023-02-23,357
+E12000007,London,region,2023-02-22,469
+E12000007,London,region,2023-02-21,515
+E12000007,London,region,2023-02-20,537
+E12000007,London,region,2023-02-19,456
+E12000007,London,region,2023-02-18,383
+E12000007,London,region,2023-02-17,442
+E12000007,London,region,2023-02-16,443
+E12000007,London,region,2023-02-15,444
+E12000007,London,region,2023-02-14,515
+E12000007,London,region,2023-02-13,516
+E12000007,London,region,2023-02-12,304
 E12000007,London,region,2023-02-11,304
-E12000007,London,region,2023-02-10,324
+E12000007,London,region,2023-02-10,331
 E12000007,London,region,2023-02-09,346
-E12000007,London,region,2023-02-08,375
-E12000007,London,region,2023-02-07,338
+E12000007,London,region,2023-02-08,376
+E12000007,London,region,2023-02-07,339
 E12000007,London,region,2023-02-06,392
 E12000007,London,region,2023-02-05,353
 E12000007,London,region,2023-02-04,232
@@ -6680,7 +6729,7 @@ E12000007,London,region,2023-01-22,170
 E12000007,London,region,2023-01-21,116
 E12000007,London,region,2023-01-20,159
 E12000007,London,region,2023-01-19,195
-E12000007,London,region,2023-01-18,189
+E12000007,London,region,2023-01-18,190
 E12000007,London,region,2023-01-17,189
 E12000007,London,region,2023-01-16,213
 E12000007,London,region,2023-01-15,197
@@ -6723,7 +6772,7 @@ E12000007,London,region,2022-12-10,396
 E12000007,London,region,2022-12-09,452
 E12000007,London,region,2022-12-08,505
 E12000007,London,region,2022-12-07,588
-E12000007,London,region,2022-12-06,608
+E12000007,London,region,2022-12-06,609
 E12000007,London,region,2022-12-05,602
 E12000007,London,region,2022-12-04,431
 E12000007,London,region,2022-12-03,346
@@ -6757,7 +6806,7 @@ E12000007,London,region,2022-11-06,378
 E12000007,London,region,2022-11-05,280
 E12000007,London,region,2022-11-04,325
 E12000007,London,region,2022-11-03,388
-E12000007,London,region,2022-11-02,422
+E12000007,London,region,2022-11-02,424
 E12000007,London,region,2022-11-01,456
 E12000007,London,region,2022-10-31,550
 E12000007,London,region,2022-10-30,457
@@ -7761,26 +7810,33 @@ E12000007,London,region,2020-02-06,0
 E12000007,London,region,2020-02-05,0
 E12000007,London,region,2020-02-04,0
 E12000007,London,region,2020-02-03,1
-E12000008,South East,region,2023-02-22,408
-E12000008,South East,region,2023-02-21,625
-E12000008,South East,region,2023-02-20,772
-E12000008,South East,region,2023-02-19,617
-E12000008,South East,region,2023-02-18,521
-E12000008,South East,region,2023-02-17,731
-E12000008,South East,region,2023-02-16,748
-E12000008,South East,region,2023-02-15,707
-E12000008,South East,region,2023-02-14,790
-E12000008,South East,region,2023-02-13,757
-E12000008,South East,region,2023-02-12,532
-E12000008,South East,region,2023-02-11,439
-E12000008,South East,region,2023-02-10,570
-E12000008,South East,region,2023-02-09,541
+E12000008,South East,region,2023-03-01,342
+E12000008,South East,region,2023-02-28,579
+E12000008,South East,region,2023-02-27,622
+E12000008,South East,region,2023-02-26,454
+E12000008,South East,region,2023-02-25,415
+E12000008,South East,region,2023-02-24,487
+E12000008,South East,region,2023-02-23,651
+E12000008,South East,region,2023-02-22,704
+E12000008,South East,region,2023-02-21,708
+E12000008,South East,region,2023-02-20,841
+E12000008,South East,region,2023-02-19,639
+E12000008,South East,region,2023-02-18,539
+E12000008,South East,region,2023-02-17,756
+E12000008,South East,region,2023-02-16,765
+E12000008,South East,region,2023-02-15,716
+E12000008,South East,region,2023-02-14,796
+E12000008,South East,region,2023-02-13,759
+E12000008,South East,region,2023-02-12,533
+E12000008,South East,region,2023-02-11,441
+E12000008,South East,region,2023-02-10,571
+E12000008,South East,region,2023-02-09,542
 E12000008,South East,region,2023-02-08,605
 E12000008,South East,region,2023-02-07,582
 E12000008,South East,region,2023-02-06,576
 E12000008,South East,region,2023-02-05,463
 E12000008,South East,region,2023-02-04,386
-E12000008,South East,region,2023-02-03,515
+E12000008,South East,region,2023-02-03,516
 E12000008,South East,region,2023-02-02,535
 E12000008,South East,region,2023-02-01,520
 E12000008,South East,region,2023-01-31,544
@@ -7790,10 +7846,10 @@ E12000008,South East,region,2023-01-28,302
 E12000008,South East,region,2023-01-27,377
 E12000008,South East,region,2023-01-26,415
 E12000008,South East,region,2023-01-25,386
-E12000008,South East,region,2023-01-24,420
-E12000008,South East,region,2023-01-23,391
+E12000008,South East,region,2023-01-24,419
+E12000008,South East,region,2023-01-23,392
 E12000008,South East,region,2023-01-22,280
-E12000008,South East,region,2023-01-21,250
+E12000008,South East,region,2023-01-21,251
 E12000008,South East,region,2023-01-20,277
 E12000008,South East,region,2023-01-19,248
 E12000008,South East,region,2023-01-18,269
@@ -8877,14 +8933,21 @@ E12000008,South East,region,2020-02-06,0
 E12000008,South East,region,2020-02-05,1
 E12000008,South East,region,2020-02-04,0
 E12000008,South East,region,2020-02-03,5
-E12000009,South West,region,2023-02-22,253
-E12000009,South West,region,2023-02-21,322
-E12000009,South West,region,2023-02-20,367
-E12000009,South West,region,2023-02-19,308
-E12000009,South West,region,2023-02-18,269
-E12000009,South West,region,2023-02-17,381
-E12000009,South West,region,2023-02-16,416
-E12000009,South West,region,2023-02-15,417
+E12000009,South West,region,2023-03-01,233
+E12000009,South West,region,2023-02-28,306
+E12000009,South West,region,2023-02-27,416
+E12000009,South West,region,2023-02-26,281
+E12000009,South West,region,2023-02-25,294
+E12000009,South West,region,2023-02-24,290
+E12000009,South West,region,2023-02-23,360
+E12000009,South West,region,2023-02-22,417
+E12000009,South West,region,2023-02-21,377
+E12000009,South West,region,2023-02-20,408
+E12000009,South West,region,2023-02-19,313
+E12000009,South West,region,2023-02-18,276
+E12000009,South West,region,2023-02-17,386
+E12000009,South West,region,2023-02-16,420
+E12000009,South West,region,2023-02-15,420
 E12000009,South West,region,2023-02-14,455
 E12000009,South West,region,2023-02-13,481
 E12000009,South West,region,2023-02-12,366
